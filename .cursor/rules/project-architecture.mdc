@@ -1,0 +1,37 @@
+---
+description: Enforce MuseHub architecture layers and AI-agent handoff conventions
+globs: "src/**/*.{ts,tsx,css},docs/**/*.md,AGENTS.md"
+alwaysApply: false
+---
+
+# MuseHub Architecture
+
+Follow the project layers:
+
+- `src/app`: app assembly, route contracts, navigation, global config.
+- `src/pages`: route-level page modules and page contracts.
+- `src/widgets`: large page regions composed from features and entities.
+- `src/features`: user actions and interactive workflows.
+- `src/entities`: domain models and entity data contracts.
+- `src/shared`: reusable UI, contracts, primitives, and utilities.
+- `src/styles`: global CSS, HeroUI styles, tokens, and responsive rules.
+
+Dependency direction must stay one-way:
+
+`app` -> `pages/widgets/features/entities/shared`
+
+`pages` -> `widgets/features/entities/shared`
+
+`widgets` -> `features/entities/shared`
+
+`features` -> `entities/shared`
+
+`entities` -> `shared`
+
+`shared` must not import higher layers.
+
+Do not implement planned pages until requested. For preparatory work, add contracts, registry entries, types, docs, or empty module boundaries only.
+
+Keep routing declarations in `src/app/routing/route-paths.ts`, page metadata in `src/pages/*/contract.ts`, and navigation in `src/app/navigation/primary-navigation.ts`.
+
+Before adding a new dependency, verify the existing stack cannot solve the problem. HeroUI v3, React, TypeScript, Tailwind CSS v4, and local CSS are the default frontend toolkit.

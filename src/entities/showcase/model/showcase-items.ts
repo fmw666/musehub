@@ -1,0 +1,58 @@
+import type { ShowcaseItem } from "@/entities/showcase/model/types";
+
+export const showcaseItems = [
+  {
+    id: "fig-mint",
+    title: "Fig Mint",
+    source: "desktop landing",
+    kind: "Showcase",
+    tone: "mint",
+    span: "hero",
+    status: "featured",
+  },
+  {
+    id: "world-dial",
+    title: "World Dial",
+    source: "data artifact",
+    kind: "Archive",
+    tone: "fan",
+    span: "wide",
+    status: "new",
+  },
+  {
+    id: "authenticate",
+    title: "Authenticate",
+    source: "security flow",
+    kind: "Interaction",
+    tone: "void",
+    span: "medium",
+    status: "featured",
+  },
+  {
+    id: "post-post",
+    title: "Post Post",
+    source: "print system",
+    kind: "Editorial",
+    tone: "postal",
+    span: "medium",
+    status: "archived",
+  },
+  {
+    id: "arena-card",
+    title: "Arena Card",
+    source: "mobile sport",
+    kind: "Mobile",
+    tone: "phone",
+    span: "tall",
+    status: "new",
+  },
+  {
+    id: "agent-stack",
+    title: "Agent Stack",
+    source: "ai workflow",
+    kind: "Prompt",
+    tone: "stack",
+    span: "compact",
+    status: "featured",
+  },
+] satisfies ShowcaseItem[];

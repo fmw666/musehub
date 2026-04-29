@@ -1,0 +1,24 @@
+---
+description: Enforce testing expectations for MuseHub React features
+globs: "src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing Standards
+
+Use Vitest and Testing Library for tests.
+
+- Prefer user-visible assertions: roles, labels, text, and accessible names.
+- Do not test HeroUI internals. Test MuseHub composition, contracts, and user flows.
+- Add tests for new route-level pages, complex features, filtering/sorting logic, data transformations, and regression fixes.
+- Keep smoke tests small. Use focused unit tests for pure model or contract logic.
+- Put test setup in `src/test/setup.ts`.
+- Run `npm run test` before finishing feature or refactor work.
+
+Default commands:
+
+```bash
+npm run lint
+npm run test
+npm run build
+```

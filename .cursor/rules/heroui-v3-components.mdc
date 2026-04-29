@@ -1,0 +1,22 @@
+---
+description: Enforce HeroUI v3 as the frontend component system
+globs: "src/**/*.{ts,tsx,js,jsx,css,scss}"
+alwaysApply: false
+---
+
+# HeroUI v3 Component System
+
+When working on frontend UI or component code, use HeroUI v3 as the required component system.
+
+- Use `@heroui/react` v3 components for interactive UI primitives such as buttons, cards, forms, inputs, modals, popovers, tabs, chips, tooltips, menus, and scroll areas.
+- Do not introduce another component library for UI primitives unless the user explicitly requests it.
+- Do not hand-roll primitives that already exist in HeroUI v3. Compose and style HeroUI components instead.
+- Use Tailwind/CSS for layout, spacing, visual treatment, and project-specific art direction, but keep behavior, accessibility, and component semantics on HeroUI v3 primitives.
+- Prefer local wrappers only when they standardize repeated project patterns around HeroUI v3 components.
+- Import HeroUI components from `@heroui/react`.
+
+Example:
+
+```tsx
+import { Button, Card, Input } from "@heroui/react";
+```

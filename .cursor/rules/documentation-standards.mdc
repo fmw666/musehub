@@ -1,0 +1,24 @@
+---
+description: Enforce documentation, README, ADR, and file header standards
+globs: "**/*.{md,mdc,ts,tsx}"
+alwaysApply: false
+---
+
+# Documentation Standards
+
+- `README.md` is the project entry.
+- `AGENTS.md` is the AI coding agent guide.
+- `docs/README.md` is the documentation index.
+- `docs/architecture.md` explains architecture and evolution.
+- `docs/standards.md` defines component, directory, file, code, test, and documentation standards.
+- `docs/adr/` records significant decisions.
+
+Update docs when changing architecture, page plans, cross-layer contracts, tooling, quality gates, or project conventions.
+
+File header policy:
+
+- Do not add boilerplate headers to every source file.
+- Add a short top-of-file comment only for generated files, public cross-layer contracts with non-obvious constraints, temporary migration code, or external API/browser wrappers.
+- Avoid headers that merely restate the filename or obvious purpose.
+
+Use ADRs for decisions that are expensive to reverse, such as routing strategy, state management, data fetching, persistence, authentication, or major dependency choices.

@@ -1,0 +1,16 @@
+---
+description: Enforce TypeScript, React, naming, and code quality standards
+globs: "src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Code Quality
+
+- Use TypeScript strict mode patterns. Do not use `any` unless the user explicitly accepts the tradeoff.
+- Use `type` imports for types.
+- Export named functions/components from feature files. Default exports are allowed only for route/app entry modules.
+- Keep React components pure and data-driven. Derive UI from props, typed config, or entity contracts.
+- Prefer `readonly` arrays and `as const` for static config.
+- Keep component files focused. Split when a file mixes data loading, state orchestration, and presentational UI.
+- Use the `@/` alias for cross-layer imports. Use relative imports only inside the same small module folder.
+- Run `npm run lint`, `npm run format:check`, `npm run test`, and `npm run build` after meaningful changes.

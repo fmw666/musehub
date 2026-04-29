@@ -1,0 +1,28 @@
+---
+description: Enforce MuseHub file and directory naming conventions
+globs: "src/**/*"
+alwaysApply: false
+---
+
+# File Structure
+
+Use these folders for new code:
+
+- `src/app`: app assembly, route contracts, navigation, global config.
+- `src/pages/<page>`: route-level page contracts and future page implementations.
+- `src/widgets/<widget>/ui`: large composed page regions.
+- `src/features/<feature>/ui`: user-facing workflows and interactions.
+- `src/entities/<entity>/model`: stable domain types and entity contracts.
+- `src/shared/ui`: reusable UI helpers and small primitives.
+- `src/shared/contracts`: reusable cross-domain types.
+- `src/styles`: global styles, tokens, HeroUI imports, and responsive rules.
+
+Naming:
+
+- React component files use `PascalCase.tsx`.
+- Non-component modules use `kebab-case.ts`.
+- Type-only domain files use `types.ts`.
+- Page metadata files use `contract.ts`.
+- Test files live next to the unit under test as `*.test.tsx` or `*.test.ts`.
+
+Do not create generic folders like `components`, `utils`, or `helpers` unless the existing layer cannot express the ownership clearly.
