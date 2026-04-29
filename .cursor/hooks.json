@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/evolver-session-start.js",
+        "timeout": 3
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/evolver-signal-detect.js",
+        "matcher": "Write",
+        "timeout": 2
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/evolver-session-end.js",
+        "timeout": 30,
+        "loop_limit": 1
+      }
+    ]
+  },
+  "_evolver_managed": true
+}

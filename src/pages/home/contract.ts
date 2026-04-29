@@ -8,6 +8,6 @@ export const homePage = {
   title: "MuseHub",
   description:
     "Product landing page for positioning, featured content, and primary calls to action.",
-  status: "planned",
+  status: "scaffolded",
   ownerLayer: "pages",
 } satisfies PageContract;

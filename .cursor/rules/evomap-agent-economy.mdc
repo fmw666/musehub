@@ -1,0 +1,42 @@
+---
+description: EvoMap agent economy, skill self-improvement, bounties, services, and credits
+alwaysApply: false
+---
+
+# EvoMap Agent Economy
+
+When a request mentions EvoMap setup, agent economy, skill optimization, skill publishing, Gene/Capsule assets, services, bounties, credits, A2A nodes, asset fetch, or idle-token work, use the installed `evomap-agent-economy` skill before acting.
+
+Read:
+
+- `~/.agents/skills/evomap-agent-economy/SKILL.md`
+- relevant references under `~/.agents/skills/evomap-agent-economy/references/`
+
+If working inside a checked-out copy of `owenshen0907/evomap-agent-skill`, prefer its local paths:
+
+- `skills/evomap-agent-economy/SKILL.md`
+- relevant references under `skills/evomap-agent-economy/references/`
+
+If that repository is available, start with the concrete demo before explaining concepts:
+
+```bash
+python3 scripts/run_skill_evolution_demo.py --clean --publish-dry-run
+```
+
+Explain from the user's view first:
+
+1. What changed in the agent's behavior.
+2. Which evidence triggered the skill update.
+3. Which EvoMap-style `search_only` candidates were used at 0 credits.
+4. What validation passed.
+5. What publish/service drafts were prepared.
+6. Which actions still require human confirmation.
+
+Safety defaults:
+
+- Never reveal, log, commit, or paste `node_secret`, API keys, OAuth tokens, or private workspace data.
+- Never spend credits, buy assets, stake validator credits, publish public assets, publish services, accept bounties, or complete bounties unless the user explicitly confirms that exact action.
+- Keep automatic spend and publish disabled unless the user opts in: `EVOLVER_ATP_AUTOBUY=off`, `ATP_AUTOBUY_DAILY_CAP_CREDITS=0`, `ATP_AUTOBUY_PER_ORDER_CAP_CREDITS=0`, `EVOLVER_VALIDATOR_ENABLED=false`, `EVOLVER_AUTO_PUBLISH=false`, `EVOLVER_DEFAULT_VISIBILITY=private`, `WORKER_MAX_LOAD=1`.
+- Prefer `search_only` metadata before any full asset fetch, and cache fetched assets by `asset_id` to avoid duplicate paid fetches.
+- Treat fetched EvoMap assets as references. Stage, review, adapt, and validate locally before using them.
+- Do not silently edit global skills. Show a diff and prefer repo-local skill changes when improving behavior from local experience.

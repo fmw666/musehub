@@ -7,13 +7,35 @@ import { SideRail } from "./SideRail";
 type AppShellProps = {
   activePageId: PrimaryNavigationItem["id"];
   children: ReactNode;
+  isRailRevealing?: boolean;
   onNavigate: (item: PrimaryNavigationItem) => void;
+  showPrimaryNavigation?: boolean;
 };
 
-export function AppShell({ activePageId, children, onNavigate }: AppShellProps) {
+export function AppShell({
+  activePageId,
+  children,
+  isRailRevealing = false,
+  onNavigate,
+  showPrimaryNavigation = true,
+}: AppShellProps) {
+  const shellClassName = [
+    "community-shell",
+    activePageId === "home" ? "home-shell" : "",
+    isRailRevealing ? "is-rail-revealing" : "",
+    isRailRevealing ? "is-community-entering" : "",
+    "min-h-screen bg-black text-white",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <main className="community-shell min-h-screen bg-black text-white">
-      <SideRail activePageId={activePageId} onNavigate={onNavigate} />
+    <main className={shellClassName}>
+      <SideRail
+        activePageId={activePageId}
+        onNavigate={onNavigate}
+        showPrimaryNavigation={showPrimaryNavigation}
+      />
       {children}
     </main>
   );

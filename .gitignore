@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 tmp
+memory/
+assets/gep/
 *.local
 
 # Editor directories and files

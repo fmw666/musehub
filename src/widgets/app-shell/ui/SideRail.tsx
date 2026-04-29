@@ -21,9 +21,14 @@ const findNavigationItem = (id: PrimaryNavigationItem["id"]) =>
 type SideRailProps = {
   activePageId: PrimaryNavigationItem["id"];
   onNavigate: (item: PrimaryNavigationItem) => void;
+  showPrimaryNavigation?: boolean;
 };
 
-export function SideRail({ activePageId, onNavigate }: SideRailProps) {
+export function SideRail({
+  activePageId,
+  onNavigate,
+  showPrimaryNavigation = true,
+}: SideRailProps) {
   const centerItems = centerRailIds
     .map((id) => findNavigationItem(id))
     .filter((item): item is CenterRailItem => Boolean(item));
@@ -45,24 +50,26 @@ export function SideRail({ activePageId, onNavigate }: SideRailProps) {
         <BrandMark />
       </Button>
 
-      <div className="rail-icon-group" aria-label="Primary sections">
-        {centerItems.map((item) => (
-          <Button
-            className={`rail-icon${item.id === activePageId ? " is-active" : ""}`}
-            isIconOnly
-            key={item.id}
-            type="button"
-            variant="light"
-            aria-label={item.label}
-            aria-current={item.id === activePageId ? "page" : undefined}
-            onPress={() => {
-              onNavigate(item);
-            }}
-          >
-            <RailGlyph name={railIconById[item.id]} />
-          </Button>
-        ))}
-      </div>
+      {showPrimaryNavigation ? (
+        <div className="rail-icon-group" aria-label="Primary sections">
+          {centerItems.map((item) => (
+            <Button
+              className={`rail-icon${item.id === activePageId ? " is-active" : ""}`}
+              isIconOnly
+              key={item.id}
+              type="button"
+              variant="light"
+              aria-label={item.label}
+              aria-current={item.id === activePageId ? "page" : undefined}
+              onPress={() => {
+                onNavigate(item);
+              }}
+            >
+              <RailGlyph name={railIconById[item.id]} />
+            </Button>
+          ))}
+        </div>
+      ) : null}
 
       <Button
         className="rail-user"

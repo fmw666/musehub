@@ -6,7 +6,7 @@ MuseHub is prepared as a scalable React + Vite + HeroUI v3 application.
 
 | Page         | Path            | Current status | Purpose                                                    |
 | ------------ | --------------- | -------------- | ---------------------------------------------------------- |
-| Home         | `/`             | planned        | Landing page, value proposition, featured references       |
+| Home         | `/`             | scaffolded     | Landing page, value proposition, featured references       |
 | Community    | `/community`    | scaffolded     | Variant-style content discovery and dense list exploration |
 | Favorites    | `/favorites`    | planned        | Saved references and collections                           |
 | Repositories | `/repositories` | planned        | Source repositories and linked content                     |
