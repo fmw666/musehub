@@ -45,7 +45,9 @@ export default function App() {
         navigate(getPageByPath(item.path));
       }}
     >
-      <CurrentPage page={currentPage} renderHomePage={renderHomePage} />
+      <div className="page-transition-frame" data-page-id={currentPage.id} key={currentPage.id}>
+        <CurrentPage page={currentPage} renderHomePage={renderHomePage} />
+      </div>
       <DissolveTransition
         className="home-transition-layer"
         durationMs={homeDissolveDurationMs}

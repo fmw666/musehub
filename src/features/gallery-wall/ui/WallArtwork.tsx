@@ -1,12 +1,25 @@
-import type { ShowcaseTone } from "@/entities/showcase/model/types";
+import type { ShowcaseItem } from "@/entities/showcase/model/types";
 
 type WallArtworkProps = {
-  tone: ShowcaseTone;
+  item: ShowcaseItem;
 };
 
-export function WallArtwork({ tone }: WallArtworkProps) {
+export function WallArtwork({ item }: WallArtworkProps) {
+  if (item.assetPath) {
+    return (
+      <div className="wall-art wall-art-embed">
+        <iframe
+          src={item.assetPath}
+          title={`${item.title} preview`}
+          loading="lazy"
+          sandbox="allow-scripts"
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className={`wall-art wall-art-${tone}`}>
+    <div className={`wall-art wall-art-${item.tone}`}>
       <div className="art-chrome" />
       <span />
       <i />

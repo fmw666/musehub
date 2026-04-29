@@ -9,6 +9,14 @@ type GalleryCardProps = {
 };
 
 export function GalleryCard({ item, priority }: GalleryCardProps) {
+  const openAsset = () => {
+    if (!item.assetPath) {
+      return;
+    }
+
+    window.open(item.assetPath, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <Tooltip content={`${item.title} / ${item.source}`} delay={200}>
       <Card className={`gallery-card gallery-card-${item.span}`} data-priority={priority}>
@@ -22,7 +30,7 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
         </Card.Header>
 
         <Card.Content className="gallery-card-content">
-          <WallArtwork tone={item.tone} />
+          <WallArtwork item={item} />
         </Card.Content>
 
         <Card.Footer className="card-caption">
@@ -30,7 +38,13 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
             <Card.Title>{item.title}</Card.Title>
             <p>{item.source}</p>
           </div>
-          <Button className="open-pen-button" size="sm" variant="light">
+          <Button
+            className="open-pen-button"
+            isDisabled={!item.assetPath}
+            size="sm"
+            variant="light"
+            onPress={openAsset}
+          >
             Open
           </Button>
         </Card.Footer>

@@ -30,9 +30,26 @@ describe("App", () => {
 
     expect(window.location.pathname).toBe("/community");
     expect(screen.getByRole("region", { name: /musehub community feed/i })).toBeInTheDocument();
+    expect(screen.getByText(/harnesskit agent cards/i)).toBeInTheDocument();
     expect(screen.getByRole("textbox")).toBeInTheDocument();
     expect(container.querySelector(".dissolve-transition-layer")).toBeInTheDocument();
     expect(container.querySelector(".is-rail-revealing")).toBeInTheDocument();
     expect(container.querySelector(".is-community-entering")).toBeInTheDocument();
+  });
+
+  it("uses the shared page transition frame for rail navigation", async () => {
+    const user = userEvent.setup();
+    window.history.pushState(null, "", "/community");
+
+    const { container } = render(<App />);
+
+    await user.click(screen.getByRole("button", { name: /favorites/i }));
+
+    expect(window.location.pathname).toBe("/favorites");
+    expect(screen.getByRole("region", { name: /favorites page placeholder/i })).toBeInTheDocument();
+    expect(container.querySelector(".page-transition-frame")).toHaveAttribute(
+      "data-page-id",
+      "favorites",
+    );
   });
 });

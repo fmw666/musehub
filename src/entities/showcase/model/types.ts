@@ -8,4 +8,8 @@ export type ShowcaseItem = {
   tone: ShowcaseTone;
   span: "hero" | "wide" | "medium" | "tall" | "compact";
   status: "featured" | "new" | "archived";
+  tags?: readonly string[];
+  sourceUrl?: string;
+  sourcePlatform?: string;
+  assetPath?: string;
 };

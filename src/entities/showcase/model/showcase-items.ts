@@ -2,6 +2,19 @@ import type { ShowcaseItem } from "@/entities/showcase/model/types";
 
 export const showcaseItems = [
   {
+    id: "harnesskit-agent-cards",
+    title: "HarnessKit Agent Cards",
+    source: "local tmp import",
+    kind: "Demo",
+    tone: "stack",
+    span: "wide",
+    status: "new",
+    tags: ["agent", "cards", "ui", "demo"],
+    sourceUrl: "tmp/index.html",
+    sourcePlatform: "local tmp import",
+    assetPath: "/community-showcases/harnesskit-agent-cards/index.html",
+  },
+  {
     id: "fig-mint",
     title: "Fig Mint",
     source: "desktop landing",
