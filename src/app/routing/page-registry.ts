@@ -11,3 +11,12 @@ export const pageRegistry = [
   repositoriesPage,
   uploadPage,
 ] as const;
+
+export type RegisteredPage = (typeof pageRegistry)[number];
+export type RegisteredPageId = RegisteredPage["id"];
+
+export const defaultPage = communityPage;
+
+export function getPageByPath(pathname: string): RegisteredPage {
+  return pageRegistry.find((page) => page.path === pathname) ?? defaultPage;
+}

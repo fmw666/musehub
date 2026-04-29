@@ -50,7 +50,7 @@ a {
 
 .community-shell {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 40px minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -64,7 +64,8 @@ a {
   align-items: center;
   border-right: 1px solid rgb(255 255 255 / 0.06);
   background: #000;
-  padding: 10px 0;
+  overflow: visible;
+  padding: 14px 0 16px;
 }
 
 .community-stage {
@@ -76,10 +77,66 @@ a {
     radial-gradient(circle at 82% 0%, rgb(21 56 42 / 0.16), transparent 21rem), var(--muse-bg);
 }
 
+.planned-stage {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 18% 10%, rgb(245 245 240 / 0.08), transparent 22rem),
+    radial-gradient(circle at 78% 0%, rgb(159 40 255 / 0.12), transparent 20rem), var(--muse-bg);
+}
+
+.planned-card {
+  width: min(520px, 100%);
+  border: 1px solid var(--muse-border);
+  border-radius: 18px;
+  background: rgb(10 10 10 / 0.76);
+  color: var(--muse-text);
+  box-shadow: var(--muse-shadow);
+}
+
+.planned-card-body {
+  gap: 14px;
+  padding: 28px;
+}
+
+.planned-chip {
+  width: max-content;
+  text-transform: capitalize;
+}
+
+.planned-eyebrow {
+  margin: 0;
+  color: rgb(245 245 240 / 0.38);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+}
+
+.planned-card h1 {
+  margin: 0;
+  color: rgb(245 245 240 / 0.94);
+  font-size: clamp(32px, 6vw, 56px);
+  letter-spacing: -0.06em;
+  line-height: 0.94;
+}
+
+.planned-card p {
+  margin: 0;
+  color: rgb(245 245 240 / 0.58);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.planned-card span {
+  color: rgb(245 245 240 / 0.36);
+  font-size: 12px;
+}
+
 .stage-meta {
   position: fixed;
   top: 8px;
-  left: 48px;
+  left: 52px;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -277,103 +334,113 @@ a {
 }
 
 .rail-brand {
+  position: absolute;
+  top: 14px;
+  left: 6px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: max-content;
+  width: 24px;
   min-width: 0;
-  height: auto;
-  transform: translateY(4px);
-  color: rgb(245 245 240 / 0.72);
-  font-size: 10px;
+  height: 24px;
+  color: rgb(245 245 240 / 0.5);
+  font-size: 11px;
+  font-weight: 560;
   line-height: 1;
   padding: 0;
 }
 
-.rail-spacer {
-  flex: 1;
+.rail-icon-group {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 14px;
+  place-items: center;
+  transform: translate(-50%, -50%);
 }
 
 .rail-icon {
   display: grid;
-  width: 24px;
-  min-width: 24px;
-  height: 24px;
-  margin-bottom: 8px;
+  width: 25px;
+  min-width: 25px;
+  height: 25px;
   place-items: center;
   border: 0;
-  border-radius: 7px;
+  border-radius: 8px;
   background: transparent;
-  color: rgb(245 245 240 / 0.42);
+  color: rgb(245 245 240 / 0.52);
   font: inherit;
 }
 
 .rail-icon:hover,
 .rail-icon.is-active {
-  background: rgb(255 255 255 / 0.08);
+  background: transparent;
   color: rgb(245 245 240 / 0.86);
 }
 
 .brand-spark,
-.rail-glyph,
-.rail-glyph::before,
-.rail-glyph::after {
+.rail-glyph {
   display: block;
-  content: "";
+  flex: 0 0 auto;
 }
 
 .brand-spark {
-  position: relative;
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
+  color: rgb(245 245 240 / 0.88);
+  fill: currentcolor;
 }
 
-.brand-spark::before,
-.brand-spark::after {
+.rail-glyph {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.15;
+}
+
+.rail-user {
   position: absolute;
-  inset: 0;
-  content: "";
-  background: rgb(245 245 240 / 0.9);
-  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-}
-
-.brand-spark::after {
-  inset: 3px;
-  background: #000;
-}
-
-.rail-glyph-orbit {
-  width: 10px;
-  height: 10px;
-  border: 1px solid currentcolor;
+  bottom: 13px;
+  left: 6px;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
   border-radius: var(--muse-radius-control);
+  padding: 0;
 }
 
-.rail-glyph-spark {
-  width: 11px;
-  height: 11px;
-  background:
-    linear-gradient(currentcolor, currentcolor) 50% 0 / 1px 100% no-repeat,
-    linear-gradient(90deg, currentcolor, currentcolor) 0 50% / 100% 1px no-repeat;
-  transform: rotate(45deg);
+.rail-avatar {
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
 }
 
-.rail-glyph-square {
-  width: 10px;
-  height: 10px;
-  border: 1px solid currentcolor;
-  border-radius: 2px;
+.rail-avatar-kite,
+.rail-avatar-spine,
+.rail-avatar-tail {
+  fill: none;
+  stroke: rgb(245 245 240 / 0.58);
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.rail-glyph-dots {
-  position: relative;
-  width: 3px;
-  height: 3px;
-  border-radius: var(--muse-radius-control);
-  background: currentcolor;
-  box-shadow:
-    -5px 0 0 currentcolor,
-    5px 0 0 currentcolor;
+.rail-avatar-kite {
+  stroke: rgb(245 245 240 / 0.72);
+  stroke-width: 1.45;
+}
+
+.rail-avatar-spine {
+  stroke-width: 1.25;
+}
+
+.rail-avatar-tail {
+  stroke: rgb(245 245 240 / 0.42);
+  stroke-width: 1.2;
+}
+
+.rail-avatar-node {
+  fill: #a82dff;
+  filter: drop-shadow(0 0 3px rgb(168 45 255 / 0.9));
 }
 
 .wall-art {
@@ -628,11 +695,16 @@ a {
   }
 
   .rail-brand {
+    position: static;
     transform: none;
   }
 
-  .rail-spacer {
-    flex: 1;
+  .rail-icon-group {
+    position: static;
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+    transform: none;
   }
 
   .rail-icon {
@@ -640,8 +712,18 @@ a {
     margin-bottom: 0;
   }
 
+  .rail-user {
+    position: static;
+    margin-left: 2px;
+  }
+
   .community-stage {
     padding-top: 42px;
+  }
+
+  .planned-stage {
+    min-height: calc(100vh - 42px);
+    padding: 64px 16px 24px;
   }
 
   .stage-meta {
