@@ -12,4 +12,13 @@ export type ShowcaseItem = {
   sourceUrl?: string;
   sourcePlatform?: string;
   assetPath?: string;
+  prompt?: string;
+  zipPath?: string;
+  linkUrl?: string;
+  favorites?: number;
+  likes?: number;
+  preview?: {
+    width: number;
+    height: number;
+  };
 };

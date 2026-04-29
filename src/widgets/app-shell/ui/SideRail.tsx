@@ -4,19 +4,15 @@ import { primaryNavigation, type PrimaryNavigationItem } from "@/app/navigation/
 import { BrandMark } from "@/shared/ui/BrandMark";
 import { type RailGlyphName, RailGlyph } from "@/shared/ui/RailGlyph";
 
-const centerRailIds = ["upload", "community", "repositories", "favorites"] as const;
-type CenterRailId = (typeof centerRailIds)[number];
+type CenterRailId = Exclude<PrimaryNavigationItem["id"], "home">;
 type CenterRailItem = Extract<PrimaryNavigationItem, { id: CenterRailId }>;
 
 const railIconById = {
-  upload: "compose",
   community: "compass",
-  repositories: "folder",
+  upload: "compose",
   favorites: "bookmark",
+  repositories: "folder",
 } satisfies Record<CenterRailId, RailGlyphName>;
-
-const findNavigationItem = (id: PrimaryNavigationItem["id"]) =>
-  primaryNavigation.find((item) => item.id === id);
 
 type SideRailProps = {
   activePageId: PrimaryNavigationItem["id"];
@@ -29,10 +25,10 @@ export function SideRail({
   onNavigate,
   showPrimaryNavigation = true,
 }: SideRailProps) {
-  const centerItems = centerRailIds
-    .map((id) => findNavigationItem(id))
-    .filter((item): item is CenterRailItem => Boolean(item));
-  const homeItem = findNavigationItem("home");
+  const centerItems = primaryNavigation.filter(
+    (item): item is CenterRailItem => item.id !== "home",
+  );
+  const homeItem = primaryNavigation.find((item) => item.id === "home");
 
   return (
     <nav className="side-rail" aria-label="MuseHub navigation">

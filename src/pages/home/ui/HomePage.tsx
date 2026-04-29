@@ -41,14 +41,14 @@ export function HomePage({
     >
       <div className="home-orbit" aria-hidden="true">
         {homeOrbitCards.map((card) => (
-          <div
-            className={`home-orbit-card home-orbit-card-${card.tone}`}
-            key={card.label}
-            style={getOrbitCardStyle(card)}
-          >
-            <span>{card.label}</span>
-            <i />
-            <b />
+          <div className="home-orbit-slot" key={card.label} style={getOrbitCardStyle(card)}>
+            <div className={`home-orbit-card home-orbit-card-${card.tone}`}>
+              <div className="home-orbit-card-surface">
+                <span>{card.label}</span>
+                <i />
+                <b />
+              </div>
+            </div>
           </div>
         ))}
       </div>

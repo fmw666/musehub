@@ -9,10 +9,12 @@ export function WallArtwork({ item }: WallArtworkProps) {
     return (
       <div className="wall-art wall-art-embed">
         <iframe
+          className="wall-art-frame"
           src={item.assetPath}
           title={`${item.title} preview`}
           loading="lazy"
-          sandbox="allow-scripts"
+          referrerPolicy="no-referrer"
+          sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
         />
       </div>
     );

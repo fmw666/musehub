@@ -7,9 +7,39 @@ export type HomeOrbitCard = {
 };
 
 export const homeOrbitCards = [
-  { label: "Capture", tone: "ink", rotation: "-10deg", x: "-210px", y: "-118px" },
-  { label: "Remix", tone: "forest", rotation: "8deg", x: "168px", y: "-138px" },
-  { label: "Preview", tone: "tangerine", rotation: "-7deg", x: "-246px", y: "116px" },
-  { label: "Ship", tone: "paper", rotation: "11deg", x: "206px", y: "116px" },
-  { label: "Trace", tone: "paper", rotation: "-4deg", x: "0px", y: "190px" },
+  {
+    label: "Capture",
+    rotation: "-10deg",
+    tone: "ink",
+    x: "-336px",
+    y: "-168px",
+  },
+  {
+    label: "Remix",
+    rotation: "8deg",
+    tone: "forest",
+    x: "318px",
+    y: "-176px",
+  },
+  {
+    label: "Preview",
+    rotation: "-7deg",
+    tone: "tangerine",
+    x: "-318px",
+    y: "158px",
+  },
+  {
+    label: "Ship",
+    rotation: "11deg",
+    tone: "paper",
+    x: "332px",
+    y: "146px",
+  },
+  {
+    label: "Trace",
+    rotation: "-4deg",
+    tone: "paper",
+    x: "0px",
+    y: "286px",
+  },
 ] as const satisfies readonly HomeOrbitCard[];

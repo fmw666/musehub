@@ -9,7 +9,7 @@ type GalleryWallProps = {
 
 export function GalleryWall({ items }: GalleryWallProps) {
   return (
-    <ScrollShadow className="gallery-wall" hideScrollBar>
+    <ScrollShadow className="gallery-wall" data-count={items.length} hideScrollBar>
       {items.map((item, index) => (
         <GalleryCard item={item} key={item.id} priority={index + 1} />
       ))}

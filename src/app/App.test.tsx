@@ -30,7 +30,12 @@ describe("App", () => {
 
     expect(window.location.pathname).toBe("/community");
     expect(screen.getByRole("region", { name: /musehub community feed/i })).toBeInTheDocument();
-    expect(screen.getByText(/harnesskit agent cards/i)).toBeInTheDocument();
+    expect(screen.getByText(/harnesskit agent cards high fidelity demo/i)).toBeInTheDocument();
+    expect(screen.getAllByTitle(/preview/i)).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /new page/i })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /download zip/i })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /open link/i })).toHaveLength(1);
     expect(screen.getByRole("textbox")).toBeInTheDocument();
     expect(container.querySelector(".dissolve-transition-layer")).toBeInTheDocument();
     expect(container.querySelector(".is-rail-revealing")).toBeInTheDocument();
@@ -51,6 +56,19 @@ describe("App", () => {
       "data-page-id",
       "favorites",
     );
+  });
+
+  it("keeps the side rail ordered by primary navigation", () => {
+    window.history.pushState(null, "", "/community");
+
+    render(<App />);
+
+    const primarySections = screen.getByLabelText(/primary sections/i);
+    const sectionLabels = Array.from(primarySections.querySelectorAll("button")).map((button) =>
+      button.getAttribute("aria-label"),
+    );
+
+    expect(sectionLabels).toEqual(["Community", "Upload", "Favorites", "Repositories"]);
   });
 
   it("renders the upload workspace with agent and manual PR flows", () => {

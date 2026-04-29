@@ -1,12 +1,21 @@
 {
   "id": "harnesskit-agent-cards",
   "title": "HarnessKit Agent Cards High Fidelity Demo",
-  "tags": ["agent", "cards", "ui", "demo"],
+  "tags": [
+    "agent",
+    "cards",
+    "ui",
+    "demo"
+  ],
   "sourceUrl": "tmp/index.html",
   "sourcePlatform": "local tmp import",
   "originalFile": "tmp/index.html",
   "assetPath": "/community-showcases/harnesskit-agent-cards/index.html",
   "importedAt": "2026-04-29",
+  "preview": {
+    "width": 1060,
+    "height": 640
+  },
   "files": {
     "index.html": {
       "sha256": "086e55317553c9aa96f66a0a1cbcdff934054e21343fa371062ee3b0653ff3f1",
