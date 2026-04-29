@@ -52,4 +52,18 @@ describe("App", () => {
       "favorites",
     );
   });
+
+  it("renders the upload workspace with agent and manual PR flows", () => {
+    window.history.pushState(null, "", "/upload");
+
+    render(<App />);
+
+    expect(screen.getByRole("region", { name: /musehub upload workspace/i })).toBeInTheDocument();
+    expect(screen.getByText(/upload community assets/i)).toBeInTheDocument();
+    expect(screen.getByText(/agent skill/i)).toBeInTheDocument();
+    expect(screen.getByText(/manual pr package/i)).toBeInTheDocument();
+    expect(screen.getByLabelText<HTMLTextAreaElement>(/agent upload prompt/i).value).toContain(
+      "/upload/skill.md",
+    );
+  });
 });

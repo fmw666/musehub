@@ -8,6 +8,6 @@ export const uploadPage = {
   title: "Upload",
   description:
     "Submission workspace for URLs, screenshots, repositories, prompts, and metadata enrichment.",
-  status: "planned",
+  status: "scaffolded",
   ownerLayer: "pages",
 } satisfies PageContract;

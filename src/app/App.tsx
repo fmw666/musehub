@@ -7,6 +7,7 @@ import { useCurrentPage } from "@/app/routing/use-current-page";
 import { useRouteTransition } from "@/app/routing/use-route-transition";
 import { CommunityPage } from "@/pages/community/ui/CommunityPage";
 import { HomePage } from "@/pages/home/ui/HomePage";
+import { UploadPage } from "@/pages/upload/ui/UploadPage";
 import { DissolveTransition } from "@/shared/ui/DissolveTransition";
 import { PagePlaceholder } from "@/shared/ui/PagePlaceholder";
 import { AppShell } from "@/widgets/app-shell/ui/AppShell";
@@ -68,6 +69,10 @@ type CurrentPageProps = {
 function CurrentPage({ page, renderHomePage }: CurrentPageProps) {
   if (page.id === "home") {
     return renderHomePage();
+  }
+
+  if (page.id === "upload") {
+    return <UploadPage page={page} />;
   }
 
   if (page.id !== "community") {

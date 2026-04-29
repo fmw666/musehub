@@ -5,6 +5,7 @@
 - Use HeroUI v3 primitives from `@heroui/react`.
 - Keep behavior, accessibility, forms, overlays, menus, cards, and controls on HeroUI components.
 - Use Tailwind CSS v4 and local CSS for layout, spacing, visual style, and art direction.
+- Manage global color decisions through `src/styles/index.css` tokens: base palette tokens feed semantic tokens, and semantic tokens feed component-specific tokens.
 - Prefer typed config and data-driven rendering over hard-coded repeated UI.
 - Do not add another UI component library unless explicitly approved.
 
