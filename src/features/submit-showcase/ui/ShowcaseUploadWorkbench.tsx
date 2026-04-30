@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Modal,
   ModalBackdrop,
@@ -23,6 +23,7 @@ type SkillState =
 export function ShowcaseUploadWorkbench() {
   const [copied, setCopied] = useState(false);
   const [skill, setSkill] = useState<SkillState>({ status: "idle" });
+  const skillFetchRef = useRef<Promise<void> | null>(null);
   const modalState = useOverlayState();
 
   const skillUrl =
@@ -47,9 +48,10 @@ export function ShowcaseUploadWorkbench() {
 
   const openSkill = useCallback(() => {
     modalState.open();
-    setSkill((previous) => (previous.status === "ready" ? previous : { status: "loading" }));
+    if (skill.status === "ready" || skillFetchRef.current) return;
 
-    void fetch(showcaseUploadSkillPath)
+    setSkill({ status: "loading" });
+    skillFetchRef.current = fetch(showcaseUploadSkillPath)
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -60,8 +62,11 @@ export function ShowcaseUploadWorkbench() {
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : "Unknown error";
         setSkill({ status: "error", message });
+      })
+      .finally(() => {
+        skillFetchRef.current = null;
       });
-  }, [modalState]);
+  }, [modalState, skill.status]);
 
   const skillBody = useMemo(() => {
     if (skill.status === "ready") {

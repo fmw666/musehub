@@ -12,7 +12,7 @@ describe("App", () => {
 
     expect(screen.getByRole("navigation", { name: /musehub navigation/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /musehub home/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /guest profile/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /profile menu/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /musehub home/i })).toBeInTheDocument();
     expect(screen.queryByLabelText(/primary sections/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/figment/i)).not.toBeInTheDocument();
@@ -31,7 +31,9 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: /enter musehub community/i }));
 
     expect(window.location.pathname).toBe("/community");
-    expect(screen.getByRole("region", { name: /musehub community feed/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("region", { name: /musehub community feed/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/harnesskit agent cards high fidelity demo/i)).toBeInTheDocument();
     expect(screen.getAllByTitle(/preview/i)).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: /open in new window/i })).toHaveLength(1);
@@ -50,6 +52,7 @@ describe("App", () => {
 
     const { container } = render(<App />);
 
+    await screen.findByRole("region", { name: /musehub community feed/i });
     await user.click(screen.getByRole("button", { name: /favorites/i }));
 
     expect(window.location.pathname).toBe("/favorites");
@@ -60,10 +63,12 @@ describe("App", () => {
     );
   });
 
-  it("keeps the side rail ordered by primary navigation", () => {
+  it("keeps the side rail ordered by primary navigation", async () => {
     window.history.pushState(null, "", "/community");
 
     render(<App />);
+
+    await screen.findByRole("region", { name: /musehub community feed/i });
 
     const primarySections = screen.getByLabelText(/primary sections/i);
     const sectionLabels = Array.from(primarySections.querySelectorAll("button")).map((button) =>
@@ -73,12 +78,14 @@ describe("App", () => {
     expect(sectionLabels).toEqual(["Community", "Upload", "Favorites", "Repositories"]);
   });
 
-  it("renders the minimal upload workspace that hands off to an agent", () => {
+  it("renders the minimal upload workspace that hands off to an agent", async () => {
     window.history.pushState(null, "", "/upload");
 
     render(<App />);
 
-    expect(screen.getByRole("region", { name: /musehub upload workspace/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("region", { name: /musehub upload workspace/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/hand it/i);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/your agent/i);
     expect(screen.queryByText(/manual pr package/i)).not.toBeInTheDocument();

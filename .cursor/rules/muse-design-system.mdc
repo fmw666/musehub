@@ -29,7 +29,7 @@ Components must consume **semantic** or **component** tokens, never raw hex / rg
   - `--muse-ease-emerge` for arrivals / hover-in / state changes.
   - `--muse-ease-dissolve` for exits / cross-fades.
 - Durations live in component-local CSS but should cluster around these tiers: 140–180ms (press), 220–320ms (state change), 420–640ms (hero arrival / pulse), 760–1200ms (scene entry).
-- Respect `@media (prefers-reduced-motion: reduce)` via the global block in `src/styles/responsive.css`. Do not add a second `*, *::before, *::after { animation-duration: 0.01ms !important }`; reuse the global one.
+- Respect `@media (prefers-reduced-motion: reduce)` via the global block at the bottom of `src/styles/motion.css`, which collapses every animation + transition duration to ~0ms. Do not add a second `*, *::before, *::after { animation-duration: 0.01ms !important }` elsewhere; reuse the global one.
 - `@keyframes` names are globally scoped. Prefix with the feature / page namespace (e.g. `upload-action-pulse`, `upload-skill-modal-in`, `home-orbit-drift`). Do not re-declare a keyframe name that already exists.
 
 ## 3. Action buttons — the `/upload` pattern

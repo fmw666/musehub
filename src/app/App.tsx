@@ -1,16 +1,23 @@
-import { type ReactNode, useCallback } from "react";
+import { type ReactNode, Suspense, lazy, useCallback } from "react";
 
 import { siteConfig } from "@/app/config/site";
 import { getPageByPath, type RegisteredPage } from "@/app/routing/page-registry";
 import { routePaths } from "@/app/routing/route-paths";
 import { useCurrentPage } from "@/app/routing/use-current-page";
 import { useRouteTransition } from "@/app/routing/use-route-transition";
-import { CommunityPage } from "@/pages/community/ui/CommunityPage";
 import { HomePage } from "@/pages/home/ui/HomePage";
-import { UploadPage } from "@/pages/upload/ui/UploadPage";
 import { DissolveTransition } from "@/shared/ui/DissolveTransition";
 import { PagePlaceholder } from "@/shared/ui/PagePlaceholder";
 import { AppShell } from "@/widgets/app-shell/ui/AppShell";
+
+const CommunityPage = lazy(() =>
+  import("@/pages/community/ui/CommunityPage").then((module) => ({
+    default: module.CommunityPage,
+  })),
+);
+const UploadPage = lazy(() =>
+  import("@/pages/upload/ui/UploadPage").then((module) => ({ default: module.UploadPage })),
+);
 
 const homeDissolveDurationMs = 1120;
 
@@ -47,7 +54,9 @@ export default function App() {
       }}
     >
       <div className="page-transition-frame" data-page-id={currentPage.id} key={currentPage.id}>
-        <CurrentPage page={currentPage} renderHomePage={renderHomePage} />
+        <Suspense fallback={<PageLoadingFallback />}>
+          <CurrentPage page={currentPage} renderHomePage={renderHomePage} />
+        </Suspense>
       </div>
       <DissolveTransition
         className="home-transition-layer"
@@ -80,4 +89,8 @@ function CurrentPage({ page, renderHomePage }: CurrentPageProps) {
   }
 
   return <CommunityPage siteName={siteConfig.name} />;
+}
+
+function PageLoadingFallback() {
+  return <div className="page-loading-fallback" aria-hidden="true" />;
 }

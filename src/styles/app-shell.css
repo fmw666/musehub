@@ -50,3 +50,9 @@
   animation: page-transition-wash var(--motion-page-wash) var(--muse-ease-emerge) both;
   will-change: opacity, transform;
 }
+
+.page-loading-fallback {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--muse-color-ink-rgb) / 0.04);
+}
