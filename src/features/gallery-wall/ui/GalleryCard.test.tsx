@@ -66,7 +66,17 @@ describe("GalleryCard", () => {
 
     expect(writeText).toHaveBeenCalledWith(
       expect.stringContaining(
-        "Preview URL: http://localhost:3000/community-showcases/sample/index.html",
+        "HTML URL: http://localhost:3000/community-showcases/sample/index.html",
+      ),
+    );
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "CSS URL: http://localhost:3000/community-showcases/sample/styles.css",
+      ),
+    );
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "JS URL: http://localhost:3000/community-showcases/sample/script.js",
       ),
     );
     expect(writeText).toHaveBeenCalledWith(
