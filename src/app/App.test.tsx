@@ -17,6 +17,8 @@ describe("App", () => {
     expect(screen.queryByLabelText(/primary sections/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/figment/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/about/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/open-source, non-commercial homage to variant/i)).toBeInTheDocument();
+    expect(screen.getByText(/if your open-source work appears here/i)).toBeInTheDocument();
     expect(container.querySelector(".home-shell")).toBeInTheDocument();
   });
 
