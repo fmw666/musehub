@@ -742,16 +742,8 @@
 
 .upload-skill-modal-backdrop {
   background:
-    radial-gradient(
-      circle at 18% 24%,
-      rgb(var(--muse-color-honey-rgb) / 0.14),
-      transparent 32rem
-    ),
-    radial-gradient(
-      circle at 78% 8%,
-      rgb(var(--muse-color-iris-rgb) / 0.16),
-      transparent 28rem
-    ),
+    radial-gradient(circle at 18% 24%, rgb(var(--muse-color-honey-rgb) / 0.14), transparent 32rem),
+    radial-gradient(circle at 78% 8%, rgb(var(--muse-color-iris-rgb) / 0.16), transparent 28rem),
     rgb(var(--muse-color-black-rgb) / 0.62);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -832,11 +824,7 @@
   border-radius: 18px;
   border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.16);
   background:
-    linear-gradient(
-      180deg,
-      rgb(var(--muse-color-white-rgb) / 0.04),
-      transparent 40%
-    ),
+    linear-gradient(180deg, rgb(var(--muse-color-white-rgb) / 0.04), transparent 40%),
     rgb(var(--muse-color-black-rgb) / 0.88);
   box-shadow:
     0 40px 120px rgb(var(--muse-color-black-rgb) / 0.55),
@@ -851,16 +839,8 @@
   inset: 0;
   border-radius: inherit;
   background:
-    linear-gradient(
-      135deg,
-      rgb(var(--muse-color-honey-rgb) / 0.08),
-      transparent 45%
-    ),
-    linear-gradient(
-      315deg,
-      rgb(var(--muse-color-iris-rgb) / 0.08),
-      transparent 55%
-    );
+    linear-gradient(135deg, rgb(var(--muse-color-honey-rgb) / 0.08), transparent 45%),
+    linear-gradient(315deg, rgb(var(--muse-color-iris-rgb) / 0.08), transparent 55%);
   pointer-events: none;
   opacity: 0.6;
 }
