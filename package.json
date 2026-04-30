@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && vite build",
-    "ci": "npm run validate:showcases && npm run lint && npm run guard:design && npm run test && npm run build",
+    "ci": "npm run validate:showcases && npm run lint && npm run guard:design && npm run test && npm run build && npm run guard:perf -- --no-build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\" \"vite.config.ts\" \"vitest.config.ts\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" \"vite.config.ts\" \"vitest.config.ts\" --fix",
@@ -15,6 +15,7 @@
     "validate:showcases": "node scripts/validate-community-showcases.mjs",
     "guard": "node scripts/structural-guard.mjs",
     "guard:design": "node scripts/design-guard.mjs",
+    "guard:perf": "node scripts/perf-guard.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview"
