@@ -50,4 +50,27 @@ describe("GalleryCard", () => {
 
     expect(screen.queryByRole("button", { name: /view source project/i })).not.toBeInTheDocument();
   });
+
+  it("copies a generated agent prompt for the deployed asset", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(<GalleryCard item={baseItem} priority={0} />);
+
+    await user.click(screen.getByRole("button", { name: /copy prompt/i }));
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Preview URL: http://localhost:3000/community-showcases/sample/index.html",
+      ),
+    );
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining("current project architecture, technology stack"),
+    );
+  });
 });

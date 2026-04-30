@@ -1,7 +1,8 @@
 import { Bookmark, Copy, Download, ExternalLink, Heart, Link } from "lucide-react";
 import { Button, Card, Chip } from "@heroui/react";
-import type { CSSProperties } from "react";
+import { type CSSProperties, useMemo, useState } from "react";
 
+import { createShowcaseCopyPrompt } from "@/entities/showcase/model/copy-prompt";
 import type { ShowcaseItem } from "@/entities/showcase/model/types";
 import { WallArtwork } from "./WallArtwork";
 
@@ -16,6 +17,12 @@ type PreviewCardStyle = CSSProperties & {
 };
 
 export function GalleryCard({ item, priority }: GalleryCardProps) {
+  const [hasCopiedPrompt, setHasCopiedPrompt] = useState(false);
+  const copyablePrompt = useMemo(
+    () => createShowcaseCopyPrompt(item, window.location.origin),
+    [item],
+  );
+
   const openAsset = () => {
     if (!item.assetPath) {
       return;
@@ -25,11 +32,14 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
   };
 
   const copyPrompt = () => {
-    if (!item.prompt) {
+    if (!copyablePrompt) {
       return;
     }
 
-    void navigator.clipboard.writeText(item.prompt);
+    void navigator.clipboard.writeText(copyablePrompt).then(() => {
+      setHasCopiedPrompt(true);
+      window.setTimeout(() => setHasCopiedPrompt(false), 1600);
+    });
   };
 
   const downloadZip = () => {
@@ -108,13 +118,13 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
           </Button>
           <Button
             className="asset-mask-control"
-            isDisabled={!item.prompt}
+            isDisabled={!copyablePrompt}
             size="sm"
             startContent={<Copy aria-hidden="true" size={14} />}
             variant="flat"
             onPress={copyPrompt}
           >
-            Copy prompt
+            {hasCopiedPrompt ? "Prompt copied" : "Copy prompt"}
           </Button>
           <Button
             className="asset-mask-control"

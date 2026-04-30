@@ -38,7 +38,7 @@ describe("App", () => {
     expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: /download code zip/i })).toHaveLength(1);
     expect(screen.getAllByRole("button", { name: /view source project/i })).toHaveLength(1);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: /search by title or tag/i })).toBeInTheDocument();
     expect(container.querySelector(".dissolve-transition-layer")).toBeInTheDocument();
     expect(container.querySelector(".is-rail-revealing")).toBeInTheDocument();
     expect(container.querySelector(".is-community-entering")).toBeInTheDocument();
