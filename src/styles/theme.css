@@ -167,3 +167,52 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/*
+ * Bridge HeroUI v3 design tokens to the MuseHub (Atelier Ink) palette.
+ * HeroUI components (Popover, Tooltip, Modal, Dropdown, ...) read --overlay,
+ * --overlay-foreground, --overlay-shadow, --border, --separator, --foreground,
+ * --background, --focus, --radius, etc. We remap them so HeroUI surfaces feel
+ * native in the MuseHub dark shell instead of showing a bright default-light
+ * chrome on top of our deep warm ink background.
+ *
+ * These overrides apply whenever the document is in dark mode (html.dark or
+ * [data-theme="dark"]), which MuseHub declares globally in index.html.
+ */
+html.dark,
+html[data-theme="dark"] {
+  /* Base surfaces */
+  --background: var(--muse-color-bg);
+  --foreground: var(--muse-text);
+
+  /* Non-overlay components (cards, accordions) */
+  --surface: var(--muse-color-surface);
+  --surface-foreground: var(--muse-text);
+  --surface-secondary: var(--muse-color-surface-raised);
+  --surface-secondary-foreground: var(--muse-text);
+  --surface-tertiary: var(--muse-color-glass);
+  --surface-tertiary-foreground: var(--muse-text);
+
+  /* Overlay surfaces (Popover / Tooltip / Modal / Dropdown / Menu) */
+  --overlay: var(--muse-color-surface);
+  --overlay-foreground: var(--muse-text);
+  --overlay-shadow: var(--muse-shadow);
+
+  /* Muted text, borders, separators */
+  --muted: var(--muse-text-muted);
+  --border: var(--muse-border);
+  --separator: var(--muse-border-soft);
+
+  /* Neutral default component tone */
+  --default: rgb(var(--muse-color-ink-rgb) / 0.08);
+  --default-foreground: var(--muse-text);
+
+  /* Honey accent is MuseHub's primary action color */
+  --accent: var(--muse-accent-primary);
+  --accent-foreground: var(--muse-text-inverse);
+  --focus: var(--muse-accent-primary);
+  --link: var(--muse-text);
+
+  /* Backdrop dim behind modals/drawers */
+  --backdrop: rgb(var(--muse-color-black-rgb) / 0.6);
+}
