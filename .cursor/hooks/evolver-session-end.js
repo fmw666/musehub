@@ -275,14 +275,32 @@ async function autoPublishEvolutionAsset(outcome, diffInfo) {
   }
 
   const sanitize = require(path.join(evolverPackageRoot, 'src', 'gep', 'sanitize.js'));
+  // sanitize's leak scanner treats "/home/<user>/" as a Linux user-dir leak.
+  // FSD-style project paths like "src/pages/home/model/..." collide with that rule
+  // (the separator-less "/home/<word>/" substring is indistinguishable by regex).
+  // Neutralize repo-relative path fragments before running leak check; we only need
+  // the stat for file/line counts, not the literal path strings.
+  const sanitizedStat = String(diffInfo.stat || '')
+    .split(/\r?\n/)
+    .map((line) => {
+      const m = line.match(/^(\s*)(\S+)(\s+\|.*)$/);
+      if (!m) return line;
+      return `${m[1]}<repo-file>${m[3]}`;
+    })
+    .join('\n');
   const publishPreview = [
     outcome.summary,
-    diffInfo.stat,
+    sanitizedStat,
     `blast_radius files=${Number(diffInfo.fileCount || 0)} lines=${Number(diffInfo.lineCount || 0)}`,
   ].join('\n');
   const leakCheck = sanitize.fullLeakCheck(publishPreview);
   if (leakCheck.found) {
-    return { requested: false, reason: 'leak_check_failed', leakTypes: leakCheck.leaks.map((leak) => leak.type) };
+    return {
+      requested: false,
+      reason: 'leak_check_failed',
+      leakTypes: leakCheck.leaks.map((leak) => leak.type),
+      leakSamples: leakCheck.leaks.slice(0, 3).map((leak) => leak.value),
+    };
   }
 
   const nodeCheck = spawnSync(process.execPath, ['--version'], {
@@ -391,7 +409,15 @@ function main() {
       const target = hubOk ? 'Hub' : localOk ? 'local memory' : 'nowhere (no Hub or local path)';
       const publishMsg = publishResult.requested
         ? ` Auto asset publish requested: gene=${publishResult.geneId || 'none'}, capsule=${publishResult.capsuleId || 'none'}, publishOk=${publishResult.publishOk}.`
-        : ` Auto asset publish skipped: ${publishResult.reason}.`;
+        : ` Auto asset publish skipped: ${publishResult.reason}${
+            publishResult.leakTypes && publishResult.leakTypes.length
+              ? ` [${publishResult.leakTypes.join(',')}${
+                  publishResult.leakSamples && publishResult.leakSamples.length
+                    ? ' → ' + publishResult.leakSamples.map((s) => JSON.stringify(s)).join(' ')
+                    : ''
+                }]`
+              : ''
+          }.`;
       const msg = `[Evolution] Session outcome recorded to ${target}: ${outcome.summary}.${publishMsg}`;
 
       process.stdout.write(JSON.stringify({
