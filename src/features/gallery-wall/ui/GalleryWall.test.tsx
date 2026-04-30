@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
@@ -36,8 +36,8 @@ describe("GalleryWall", () => {
 
     await user.type(screen.getByRole("searchbox", { name: /search by title or tag/i }), "metrics");
 
-    expect(screen.getByText("Metrics Console")).toBeInTheDocument();
-    expect(screen.queryByText("Agent Cards")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Metrics Console" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Agent Cards" })).not.toBeInTheDocument();
   });
 
   it("expands tags and filters showcases by selected tag", async () => {
@@ -48,8 +48,8 @@ describe("GalleryWall", () => {
     await user.click(screen.getByRole("button", { name: /expand tag filters/i }));
     await user.click(screen.getByRole("button", { name: "dashboard" }));
 
-    expect(screen.getByText("Metrics Console")).toBeInTheDocument();
-    expect(screen.queryByText("Agent Cards")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Metrics Console" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Agent Cards" })).not.toBeInTheDocument();
     expect(screen.getByLabelText(/selected tags/i)).toHaveTextContent("dashboard");
   });
 
@@ -63,8 +63,27 @@ describe("GalleryWall", () => {
     await user.click(screen.getByRole("button", { name: "dashboard" }));
     await user.click(screen.getByRole("button", { name: /clear search filters/i }));
 
-    expect(screen.getByText("Agent Cards")).toBeInTheDocument();
-    expect(screen.getByText("Metrics Console")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Agent Cards" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Metrics Console" })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: /search by title or tag/i })).toHaveValue("");
+  });
+
+  it("shows an empty search recovery panel with suggested tags", async () => {
+    const user = userEvent.setup();
+
+    render(<GalleryWall items={wallItems} />);
+
+    await user.type(screen.getByRole("searchbox", { name: /search by title or tag/i }), "zzz");
+
+    expect(screen.getByRole("status")).toHaveTextContent(/no showcase found/i);
+    expect(screen.getByLabelText(/active empty search filters/i)).toHaveTextContent("Search: zzz");
+
+    await user.click(
+      within(screen.getByLabelText(/suggested tags/i)).getByRole("button", { name: "agent" }),
+    );
+
+    expect(screen.getByRole("heading", { name: "Agent Cards" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Metrics Console" })).not.toBeInTheDocument();
     expect(screen.getByRole("searchbox", { name: /search by title or tag/i })).toHaveValue("");
   });
 });
