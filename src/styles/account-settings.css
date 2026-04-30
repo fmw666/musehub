@@ -27,6 +27,17 @@
   box-shadow: var(--muse-shadow);
 }
 
+@media (max-width: 520px) {
+  .account-settings-dialog.modal__dialog {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .account-settings-header {
+    padding: 4px 2px 12px 2px;
+  }
+}
+
 .account-settings-header {
   display: flex;
   align-items: center;
@@ -58,9 +69,33 @@
   padding: 0;
 }
 
+/* Responsive: keep the two-column (left preview / right fields) layout
+   just like the app shell keeps the side rail on the left. We only
+   shrink the preview column and tighten the gap on narrower viewports
+   instead of stacking it on top. */
 @media (max-width: 760px) {
   .account-settings-body {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .account-settings-body {
+    grid-template-columns: minmax(0, 132px) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .account-settings-pill {
+    min-width: 0;
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .account-settings-preview-actions {
+    gap: 4px;
+    width: calc(100% - 16px);
   }
 }
 

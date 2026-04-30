@@ -15,6 +15,9 @@ memory/
 assets/gep/
 *.local
 
+# Vercel
+.vercel
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
