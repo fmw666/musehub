@@ -1,0 +1,25 @@
+{
+  "name": "MuseHub",
+  "short_name": "MuseHub",
+  "description": "Collect. Remix. Ship. A gallery of beautiful AI UI pens with source metadata, runnable previews, and prompts agents can reuse.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0b09",
+  "theme_color": "#17140e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    }
+  ]
+}
