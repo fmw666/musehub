@@ -1,4 +1,4 @@
-﻿/* agent-mascot/mascot.css */
+/* agent-mascot/mascot.css */
       :root {
         --mascot-icon-color: #000000;
         --mascot-bg-color: #ffffff;
@@ -1239,7 +1239,8 @@
           sans-serif;
       }
       .demo {
-        width: min(920px, calc(100vw - 40px));
+        width: fit-content;
+        max-width: calc(100vw - 40px);
         padding: 28px;
       }
       .demo-header {
@@ -1280,6 +1281,8 @@
         background: var(--demo-panel);
       }
       .surface {
+        width: fit-content;
+        max-width: 100%;
         border: 1px solid color-mix(in oklch, var(--demo-border) 70%, transparent);
         border-radius: 24px;
         background: color-mix(in oklch, var(--demo-panel) 58%, transparent);

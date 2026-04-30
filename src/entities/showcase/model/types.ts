@@ -20,5 +20,6 @@ export type ShowcaseItem = {
   preview?: {
     width: number;
     height: number;
+    displayWidth?: number;
   };
 };

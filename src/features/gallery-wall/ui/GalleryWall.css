@@ -22,6 +22,10 @@
   columns: clamp(320px, 43vw, 820px);
 }
 
+.gallery-results-grid[data-count="1"] {
+  columns: auto;
+}
+
 .gallery-empty-state {
   position: relative;
   display: grid;
@@ -367,7 +371,6 @@
 .gallery-card:hover .asset-hover-mask,
 .gallery-card:focus-within .asset-hover-mask {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .asset-tags,
@@ -850,7 +853,6 @@
       linear-gradient(0deg, rgb(0 0 0 / 0.84), rgb(0 0 0 / 0.38) 42%, transparent 72%);
     opacity: 1;
     padding: 12px 10px 10px;
-    pointer-events: auto;
   }
 
   .asset-tags,
@@ -914,7 +916,6 @@
 @media (hover: none), (pointer: coarse) {
   .asset-hover-mask {
     opacity: 1;
-    pointer-events: auto;
   }
 
   .asset-mask-control {

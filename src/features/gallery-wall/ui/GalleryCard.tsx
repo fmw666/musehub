@@ -66,7 +66,7 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
   const previewStyle: PreviewCardStyle | undefined = item.preview
     ? {
         "--asset-preview-ratio": `${item.preview.width} / ${item.preview.height}`,
-        "--asset-preview-width": `${item.preview.width}px`,
+        "--asset-preview-width": `${item.preview.displayWidth ?? item.preview.width}px`,
       }
     : undefined;
 

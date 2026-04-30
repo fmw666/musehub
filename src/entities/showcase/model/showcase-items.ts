@@ -16,8 +16,9 @@ export const showcaseItems = [
     zipPath: "/community-zips/harnesskit-agent-cards.zip",
     linkUrl: "/community-showcases/harnesskit-agent-cards/index.html",
     preview: {
-      width: 1060,
-      height: 640,
+      width: 812,
+      height: 274,
+      displayWidth: 1060,
     },
   },
 ] satisfies ShowcaseItem[];
