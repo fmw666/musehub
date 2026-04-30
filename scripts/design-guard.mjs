@@ -34,14 +34,7 @@ const VAR_DECL_RE = /(--(?:muse|action|hk|upload)-[a-z0-9-]+)\s*:/gi;
 const KEYFRAMES_RE = /@keyframes\s+([a-zA-Z0-9_-]+)\s*\{/g;
 
 // Hardcoded color values that are allowed anywhere (kept intentionally tiny).
-const COLOR_ALLOWLIST = new Set([
-  "#000",
-  "#fff",
-  "#111",
-  "#15140f",
-  "transparent",
-  "currentcolor",
-]);
+const COLOR_ALLOWLIST = new Set(["#000", "#fff", "#111", "#15140f", "transparent", "currentcolor"]);
 
 // Files that are allowed to hold raw palette literals — the token definition itself.
 const TOKEN_SOURCE_FILES = new Set([
@@ -52,9 +45,7 @@ const TOKEN_SOURCE_FILES = new Set([
 // Vendor / ported-artwork surfaces keep their upstream palette and easing verbatim
 // so we can diff them against the original showcase. They are exempt from the
 // MuseHub token rules, but must still opt in via a comment header declaring why.
-const VENDOR_PATH_FRAGMENTS = [
-  path.join("shared", "ui", "agent-mascot"),
-];
+const VENDOR_PATH_FRAGMENTS = [path.join("shared", "ui", "agent-mascot")];
 
 // Community-showcase vendor CSS is user-submitted artwork, not MuseHub surface.
 const IGNORE_PATH_FRAGMENTS = [
@@ -120,9 +111,7 @@ for (const file of cssFiles) {
   if (vendor) {
     const first200 = src.slice(0, 400).toLowerCase();
     const hasVendorHeader =
-      first200.includes("port") ||
-      first200.includes("vendor") ||
-      first200.includes("showcase");
+      first200.includes("port") || first200.includes("vendor") || first200.includes("showcase");
     if (!hasVendorHeader) {
       report(
         "vendor-missing-header",
@@ -134,11 +123,7 @@ for (const file of cssFiles) {
     for (const m of src.matchAll(KEYFRAMES_RE)) {
       const name = m[1];
       if (seenKeyframes.has(name) && seenKeyframes.get(name) !== file) {
-        report(
-          "duplicate-keyframes",
-          file,
-          `${name} (also in ${rel(seenKeyframes.get(name))})`,
-        );
+        report("duplicate-keyframes", file, `${name} (also in ${rel(seenKeyframes.get(name))})`);
       } else if (!seenKeyframes.has(name)) {
         seenKeyframes.set(name, file);
       }
@@ -177,11 +162,7 @@ for (const file of cssFiles) {
   for (const m of src.matchAll(KEYFRAMES_RE)) {
     const name = m[1];
     if (seenKeyframes.has(name) && seenKeyframes.get(name) !== file) {
-      report(
-        "duplicate-keyframes",
-        file,
-        `${name} (also in ${rel(seenKeyframes.get(name))})`,
-      );
+      report("duplicate-keyframes", file, `${name} (also in ${rel(seenKeyframes.get(name))})`);
     } else if (!seenKeyframes.has(name)) {
       seenKeyframes.set(name, file);
     }
