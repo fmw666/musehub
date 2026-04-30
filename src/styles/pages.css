@@ -400,86 +400,621 @@
 }
 
 .upload-actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  padding-top: 2px;
 }
 
-.upload-primary-action,
-.upload-secondary-action {
-  height: 36px;
-  border-radius: var(--muse-radius-control);
-  font-size: 12px;
+/*
+ * Unified action control — both copy and view skill share the same chassis,
+ * only the surface treatment and glow differ. Keeps hover / focus / active
+ * transitions soft and consistent (no hard snapping on click).
+ */
+.upload-action {
+  --action-border: rgb(var(--muse-color-ink-rgb) / 0.14);
+  --action-border-hover: rgb(var(--muse-color-ink-rgb) / 0.28);
+  --action-text: rgb(var(--muse-color-ink-rgb) / 0.82);
+  --action-bg: transparent;
+  --action-bg-hover: rgb(var(--muse-color-ink-rgb) / 0.04);
+  --action-shadow: 0 1px 0 rgb(var(--muse-color-ink-rgb) / 0.04) inset;
+  --action-shadow-hover: 0 10px 28px rgb(var(--muse-color-black-rgb) / 0.32);
+
+  position: relative;
+  height: 38px;
+  min-width: 0;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--action-border);
+  background: var(--action-bg);
+  color: var(--action-text);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  box-shadow: var(--action-shadow);
   transition:
-    transform 200ms var(--muse-ease-emerge),
-    box-shadow 200ms var(--muse-ease-emerge),
-    border-color 200ms var(--muse-ease-emerge),
-    background 200ms var(--muse-ease-emerge);
+    color 260ms var(--muse-ease-emerge),
+    border-color 260ms var(--muse-ease-emerge),
+    background 260ms var(--muse-ease-emerge),
+    box-shadow 320ms var(--muse-ease-emerge),
+    transform 360ms var(--muse-ease-emerge);
+  will-change: transform, box-shadow;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
 }
 
-.upload-primary-action {
-  background: var(--muse-gradient-action);
-  color: var(--muse-text-inverse);
-  box-shadow: 0 14px 36px rgb(var(--muse-color-honey-rgb) / 0.22);
+.upload-action::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgb(var(--muse-color-ink-rgb) / 0.08) 45%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 900ms var(--muse-ease-emerge);
+  z-index: -1;
 }
 
-.upload-primary-action:not([data-disabled="true"]):hover {
+.upload-action:hover::before {
+  transform: translateX(120%);
+}
+
+.upload-action:hover {
+  border-color: var(--action-border-hover);
+  background: var(--action-bg-hover);
+  color: rgb(var(--muse-color-ink-rgb) / 0.95);
+  box-shadow: var(--action-shadow-hover);
   transform: translateY(-1px);
-  box-shadow: 0 18px 44px rgb(var(--muse-color-honey-rgb) / 0.28);
 }
 
-.upload-primary-action:not([data-disabled="true"]):active {
-  transform: translateY(0);
-  box-shadow: 0 10px 24px rgb(var(--muse-color-honey-rgb) / 0.22);
+.upload-action:active {
+  transform: translateY(0) scale(0.985);
+  transition:
+    transform 140ms var(--muse-ease-emerge),
+    box-shadow 180ms var(--muse-ease-emerge);
 }
 
-.upload-primary-action[data-disabled="true"] {
-  opacity: 0.5;
-  box-shadow: none;
+.upload-action:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--action-shadow-hover),
+    0 0 0 2px rgb(var(--muse-color-honey-rgb) / 0.45);
+}
+
+.upload-action[data-disabled="true"] {
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-.upload-secondary-action {
-  border: 1px solid var(--muse-border-medium);
-  color: rgb(var(--muse-color-ink-rgb) / 0.7);
-}
-
-.upload-secondary-action:hover {
-  border-color: rgb(var(--muse-color-acid-rgb) / 0.4);
-  color: rgb(var(--muse-color-ink-rgb) / 0.9);
-}
-
-.upload-icon-swap {
+.upload-action__icon {
   position: relative;
   display: inline-flex;
-  width: 1em;
-  height: 1em;
-  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+  color: currentColor;
 }
 
-.upload-icon-swap svg {
+.upload-action__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.upload-action__label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.upload-action__trail {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.55;
+  transform: translate(0, 0);
+  transition:
+    opacity 260ms var(--muse-ease-emerge),
+    transform 320ms var(--muse-ease-emerge);
+}
+
+.upload-action:hover .upload-action__trail {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+/* Primary — agent prompt copy. Honey surface, softened glow, icon + label swap. */
+.upload-action--primary {
+  --action-border: rgb(var(--muse-color-honey-rgb) / 0.35);
+  --action-border-hover: rgb(var(--muse-color-honey-rgb) / 0.55);
+  --action-text: var(--muse-text-inverse, #111);
+  --action-bg: var(--muse-gradient-action);
+  --action-bg-hover: var(--muse-gradient-action);
+  --action-shadow:
+    0 10px 28px rgb(var(--muse-color-honey-rgb) / 0.18),
+    0 1px 0 rgb(var(--muse-color-white-rgb) / 0.18) inset;
+  --action-shadow-hover:
+    0 18px 44px rgb(var(--muse-color-honey-rgb) / 0.28),
+    0 1px 0 rgb(var(--muse-color-white-rgb) / 0.26) inset;
+  padding: 0 18px;
+}
+
+.upload-action--primary:hover {
+  color: var(--muse-text-inverse, #111);
+}
+
+.upload-action__glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--muse-color-honey-rgb) / 0.45),
+    transparent 65%
+  );
+  opacity: 0;
+  filter: blur(14px);
+  transition: opacity 380ms var(--muse-ease-emerge);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.upload-action--primary:hover .upload-action__glow {
+  opacity: 0.9;
+}
+
+/* Icon swap for primary (copy ↔ check). Both icons share the same cell. */
+.upload-action--primary .upload-action__icon-idle,
+.upload-action--primary .upload-action__icon-done {
   position: absolute;
   inset: 0;
+  margin: auto;
   transition:
-    opacity 220ms var(--muse-ease-emerge),
+    opacity 260ms var(--muse-ease-emerge),
+    transform 320ms var(--muse-ease-emerge);
+}
+
+.upload-action--primary .upload-action__icon-done {
+  opacity: 0;
+  transform: scale(0.6) rotate(-18deg);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__icon-idle,
+.upload-action--primary.is-copied .upload-action__icon-idle {
+  opacity: 0;
+  transform: scale(0.6) rotate(18deg);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__icon-done,
+.upload-action--primary.is-copied .upload-action__icon-done {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+
+/* Label swap for primary: idle vs done share the same footprint, crossfade. */
+.upload-action--primary .upload-action__label {
+  display: inline-grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.upload-action--primary .upload-action__label-idle,
+.upload-action--primary .upload-action__label-done {
+  grid-area: 1 / 1;
+  transition:
+    opacity 260ms var(--muse-ease-emerge),
+    transform 320ms var(--muse-ease-emerge);
+}
+
+.upload-action--primary .upload-action__label-done {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__label-idle,
+.upload-action--primary.is-copied .upload-action__label-idle {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__label-done,
+.upload-action--primary.is-copied .upload-action__label-done {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+ * Copied success feedback. Smoothly shifts the surface from honey → acid,
+ * adds a short shadow pulse, and fires a ripple ring from inside the button.
+ */
+.upload-action--primary[data-copied="true"],
+.upload-action--primary.is-copied {
+  --action-border: rgb(var(--muse-color-acid-rgb) / 0.65);
+  --action-border-hover: rgb(var(--muse-color-acid-rgb) / 0.85);
+  --action-text: var(--muse-text-inverse, #111);
+  --action-bg: linear-gradient(
+    135deg,
+    rgb(var(--muse-color-acid-rgb) / 1),
+    color-mix(in srgb, rgb(var(--muse-color-acid-rgb) / 1) 68%, var(--muse-accent-primary))
+  );
+  --action-bg-hover: var(--action-bg);
+  --action-shadow:
+    0 10px 28px rgb(var(--muse-color-acid-rgb) / 0.3),
+    0 0 0 4px rgb(var(--muse-color-acid-rgb) / 0.18),
+    0 1px 0 rgb(var(--muse-color-white-rgb) / 0.22) inset;
+  --action-shadow-hover: var(--action-shadow);
+  animation: upload-action-pulse 520ms var(--muse-ease-emerge);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__icon-done,
+.upload-action--primary.is-copied .upload-action__icon-done {
+  color: var(--muse-text-inverse, #111);
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__glow,
+.upload-action--primary.is-copied .upload-action__glow {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--muse-color-acid-rgb) / 0.55),
+    transparent 65%
+  );
+  opacity: 0.9;
+}
+
+.upload-action__ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 999px;
+  background: rgb(var(--muse-color-acid-rgb) / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.upload-action--primary[data-copied="true"] .upload-action__ripple,
+.upload-action--primary.is-copied .upload-action__ripple {
+  animation: upload-action-ripple 640ms var(--muse-ease-emerge);
+}
+
+@keyframes upload-action-pulse {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  28% {
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes upload-action-ripple {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 0;
+    transform: scale(18);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(18);
+  }
+}
+
+/* Ghost — View skill.md. Subtle, outline. Icon color warms on hover. */
+.upload-action--ghost {
+  --action-bg-hover: rgb(var(--muse-color-ink-rgb) / 0.05);
+}
+
+.upload-action--ghost:hover {
+  border-color: rgb(var(--muse-color-honey-rgb) / 0.45);
+  color: rgb(var(--muse-color-ink-rgb) / 0.98);
+}
+
+.upload-action--ghost:hover .upload-action__icon {
+  color: rgb(var(--muse-color-honey-rgb) / 0.95);
+}
+
+/* ------------------------------------------------------------------ */
+/* skill.md modal */
+/* ------------------------------------------------------------------ */
+
+.upload-skill-modal-backdrop {
+  background:
+    radial-gradient(
+      circle at 18% 24%,
+      rgb(var(--muse-color-honey-rgb) / 0.14),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 78% 8%,
+      rgb(var(--muse-color-iris-rgb) / 0.16),
+      transparent 28rem
+    ),
+    rgb(var(--muse-color-black-rgb) / 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 1;
+  transition:
+    opacity 260ms var(--muse-ease-emerge),
+    backdrop-filter 260ms var(--muse-ease-emerge);
+}
+
+.upload-skill-modal-backdrop[data-entering="true"] {
+  animation: upload-skill-backdrop-in 320ms var(--muse-ease-emerge) both;
+}
+
+.upload-skill-modal-backdrop[data-exiting="true"] {
+  animation: upload-skill-backdrop-out 220ms var(--muse-ease-emerge) both;
+}
+
+@keyframes upload-skill-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes upload-skill-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.upload-skill-modal-container.upload-skill-modal-container {
+  padding: 16px;
+}
+
+.upload-skill-modal-container[data-entering="true"] {
+  animation: upload-skill-modal-in 440ms var(--muse-ease-emerge) both;
+}
+
+.upload-skill-modal-container[data-exiting="true"] {
+  animation: upload-skill-modal-out 240ms var(--muse-ease-emerge) both;
+}
+
+@keyframes upload-skill-modal-in {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.965);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes upload-skill-modal-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+.upload-skill-modal-dialog.upload-skill-modal-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, calc(100vw - 32px)) !important;
+  max-width: none;
+  max-height: calc(100vh - 56px);
+  padding: 22px 22px 20px;
+  border-radius: 18px;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.16);
+  background:
+    linear-gradient(
+      180deg,
+      rgb(var(--muse-color-white-rgb) / 0.04),
+      transparent 40%
+    ),
+    rgb(var(--muse-color-black-rgb) / 0.88);
+  box-shadow:
+    0 40px 120px rgb(var(--muse-color-black-rgb) / 0.55),
+    0 0 0 1px rgb(var(--muse-color-ink-rgb) / 0.04) inset;
+  outline: none;
+  overflow: hidden;
+}
+
+.upload-skill-modal-dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      135deg,
+      rgb(var(--muse-color-honey-rgb) / 0.08),
+      transparent 45%
+    ),
+    linear-gradient(
+      315deg,
+      rgb(var(--muse-color-iris-rgb) / 0.08),
+      transparent 55%
+    );
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.upload-skill-modal-head {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgb(var(--muse-color-ink-rgb) / 0.08);
+}
+
+.upload-skill-modal-head-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.upload-skill-modal-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.52);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.upload-skill-modal-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--muse-color-acid-rgb) / 0.85);
+  box-shadow: 0 0 0 3px rgb(var(--muse-color-acid-rgb) / 0.16);
+}
+
+.upload-skill-modal-heading {
+  margin: 0;
+  color: rgb(var(--muse-color-ink-rgb) / 0.96);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.upload-skill-modal-path {
+  color: rgb(var(--muse-color-ink-rgb) / 0.4);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-skill-modal-close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.6);
+  background: rgb(var(--muse-color-ink-rgb) / 0.04);
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.1);
+  transition:
+    color 200ms var(--muse-ease-emerge),
+    background 200ms var(--muse-ease-emerge),
+    border-color 200ms var(--muse-ease-emerge),
     transform 260ms var(--muse-ease-emerge);
 }
 
-.upload-icon-swap .upload-icon-done {
-  opacity: 0;
-  transform: scale(0.6);
-  color: rgb(var(--muse-color-acid-rgb) / 0.95);
+.upload-skill-modal-close:hover {
+  color: rgb(var(--muse-color-ink-rgb) / 0.95);
+  background: rgb(var(--muse-color-ink-rgb) / 0.09);
+  border-color: rgb(var(--muse-color-ink-rgb) / 0.24);
+  transform: rotate(90deg);
 }
 
-.upload-icon-swap[data-active="true"] .upload-icon-idle {
-  opacity: 0;
-  transform: scale(0.6);
+.upload-skill-modal-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(var(--muse-color-honey-rgb) / 0.55);
 }
 
-.upload-icon-swap[data-active="true"] .upload-icon-done {
-  opacity: 1;
-  transform: scale(1);
+.upload-skill-modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 16px 0 0;
+  overflow: hidden;
+}
+
+.upload-skill-modal-code {
+  margin: 0;
+  max-height: min(60vh, 520px);
+  padding: 16px 18px;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.08);
+  border-radius: 12px;
+  background: rgb(var(--muse-color-black-rgb) / 0.5);
+  color: rgb(var(--muse-color-ink-rgb) / 0.88);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.72;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muse-scrollbar-thumb) transparent;
+}
+
+.upload-skill-modal-code:focus-visible {
+  outline: none;
+  border-color: rgb(var(--muse-color-honey-rgb) / 0.5);
+}
+
+.upload-skill-modal-code::-webkit-scrollbar {
+  width: 8px;
+}
+
+.upload-skill-modal-code::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.upload-skill-modal-code::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--muse-scrollbar-thumb);
+}
+
+.upload-skill-modal-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 20px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.6);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+}
+
+.upload-skill-modal-state-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.12);
+  color: rgb(var(--muse-color-ink-rgb) / 0.72);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.upload-skill-modal-state-hint {
+  color: rgb(var(--muse-color-ink-rgb) / 0.5);
 }
 
 /*
@@ -491,45 +1026,54 @@
 .upload-agent-picker {
   position: relative;
   z-index: 1;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
   width: min(1080px, 100%);
   margin: 0 auto;
-  gap: 14px;
   animation: upload-fade-in 900ms var(--muse-ease-emerge) both 420ms;
 }
 
 .upload-agent-picker-head {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   padding: 0 4px;
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 10.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .upload-agent-picker-kicker {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: rgb(var(--muse-color-ink-rgb) / 0.55);
+  color: rgb(var(--muse-color-ink-rgb) / 0.62);
 }
 
 .upload-agent-picker-kicker::before,
 .upload-agent-picker-kicker::after {
   content: "";
   display: inline-block;
-  width: 22px;
+  width: 28px;
   height: 1px;
-  background: rgb(var(--muse-color-acid-rgb) / 0.55);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(var(--muse-color-acid-rgb) / 0.55),
+    transparent
+  );
 }
 
 .upload-agent-picker-sub {
   color: rgb(var(--muse-color-ink-rgb) / 0.3);
   text-transform: none;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  font-size: 10px;
 }
 
 /* --- Muse-themed overrides for the ported HarnessKit card tokens --- */
@@ -601,7 +1145,7 @@
 }
 
 .hk-agent-card.is-clicked {
-  animation: hk-card-click 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: hk-card-click 260ms var(--muse-ease-emerge);
 }
 
 .hk-agent-card__icon {

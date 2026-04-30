@@ -140,19 +140,6 @@
     text-align: center;
   }
 
-  .upload-agent-picker-head {
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .stage-meta {
-    top: 58px;
-    left: 12px;
-    right: 12px;
-    flex-wrap: wrap;
-  }
-
   .floating-composer {
     bottom: 12px;
     width: calc(100vw - 24px);
@@ -164,10 +151,6 @@
   .home-stage::after,
   .home-orbit {
     opacity: 0.38;
-  }
-
-  .upload-agent-picker {
-    justify-items: stretch;
   }
 
   .hk-agent-card-row {

@@ -12,10 +12,6 @@
   will-change: opacity, transform;
 }
 
-.is-community-entering .stage-meta {
-  animation: community-meta-reveal 760ms var(--muse-ease-emerge) 280ms both;
-}
-
 .is-community-entering .gallery-card {
   animation: community-card-reveal 860ms var(--muse-ease-emerge) both;
   transform-origin: 50% 70%;
@@ -41,23 +37,6 @@
 .is-community-entering .floating-composer {
   animation: community-composer-reveal 820ms var(--muse-ease-emerge) 360ms both;
   will-change: opacity, transform;
-}
-
-.stage-meta {
-  position: fixed;
-  top: 8px;
-  left: 52px;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgb(var(--muse-color-ink-rgb) / 0.42);
-  font-size: 10px;
-  letter-spacing: -0.01em;
-}
-
-.stage-meta time {
-  color: var(--muse-text-faint);
 }
 
 .stage-chip,

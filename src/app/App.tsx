@@ -72,12 +72,12 @@ function CurrentPage({ page, renderHomePage }: CurrentPageProps) {
   }
 
   if (page.id === "upload") {
-    return <UploadPage page={page} />;
+    return <UploadPage />;
   }
 
   if (page.id !== "community") {
     return <PagePlaceholder page={page} />;
   }
 
-  return <CommunityPage page={page} siteName={siteConfig.name} />;
+  return <CommunityPage siteName={siteConfig.name} />;
 }

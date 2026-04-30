@@ -1,11 +1,29 @@
-import { useEffect, useState } from "react";
-import { Button } from "@heroui/react";
-import { ArrowUpRight, Check, Copy } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseTrigger,
+  ModalContainer,
+  ModalDialog,
+  ModalHeader,
+  ModalHeading,
+  useOverlayState,
+} from "@heroui/react";
+import { ArrowUpRight, Check, Copy, FileText } from "lucide-react";
 
 import { showcaseUploadSkillPath } from "@/entities/upload/model/showcase-upload-schema";
 
+type SkillState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ready"; content: string }
+  | { status: "error"; message: string };
+
 export function ShowcaseUploadWorkbench() {
   const [copied, setCopied] = useState(false);
+  const [skill, setSkill] = useState<SkillState>({ status: "idle" });
+  const modalState = useOverlayState();
 
   const skillUrl =
     typeof window === "undefined"
@@ -16,13 +34,58 @@ export function ShowcaseUploadWorkbench() {
 
   useEffect(() => {
     if (!copied) return;
-    const timeout = window.setTimeout(() => setCopied(false), 1600);
+    const timeout = window.setTimeout(() => setCopied(false), 2200);
     return () => window.clearTimeout(timeout);
   }, [copied]);
 
-  const copyPrompt = () => {
-    void navigator.clipboard.writeText(agentPrompt).then(() => setCopied(true));
-  };
+  const copyPrompt = useCallback(() => {
+    setCopied(true);
+    navigator.clipboard.writeText(agentPrompt).catch((error: unknown) => {
+      console.warn("[upload] clipboard copy failed", error);
+    });
+  }, [agentPrompt]);
+
+  const openSkill = useCallback(() => {
+    modalState.open();
+    setSkill((previous) => (previous.status === "ready" ? previous : { status: "loading" }));
+
+    void fetch(showcaseUploadSkillPath)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const content = await response.text();
+        setSkill({ status: "ready", content });
+      })
+      .catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        setSkill({ status: "error", message });
+      });
+  }, [modalState]);
+
+  const skillBody = useMemo(() => {
+    if (skill.status === "ready") {
+      return (
+        <pre className="upload-skill-modal-code" tabIndex={0}>
+          {skill.content}
+        </pre>
+      );
+    }
+    if (skill.status === "error") {
+      return (
+        <div className="upload-skill-modal-state" role="alert">
+          <span className="upload-skill-modal-state-label">failed</span>
+          <span className="upload-skill-modal-state-hint">{skill.message}</span>
+        </div>
+      );
+    }
+    return (
+      <div className="upload-skill-modal-state" aria-live="polite">
+        <span className="upload-skill-modal-state-label">loading</span>
+        <span className="upload-skill-modal-state-hint">fetching skill.md…</span>
+      </div>
+    );
+  }, [skill]);
 
   return (
     <div className="upload-workbench">
@@ -42,30 +105,63 @@ export function ShowcaseUploadWorkbench() {
           <span className="upload-prompt-caret" aria-hidden="true" />
         </code>
         <div className="upload-actions">
-          <Button
-            className="upload-primary-action"
-            onPress={copyPrompt}
-            startContent={
-              <span className="upload-icon-swap" data-active={copied}>
-                <Copy aria-hidden="true" className="upload-icon-idle" size={14} />
-                <Check aria-hidden="true" className="upload-icon-done" size={14} />
-              </span>
-            }
+          <button
+            type="button"
+            className={`upload-action upload-action--primary${copied ? " is-copied" : ""}`}
+            onClick={copyPrompt}
+            data-copied={copied ? "true" : "false"}
+            aria-label="Copy agent prompt"
           >
-            {copied ? "Copied — paste it into your agent" : "Copy agent prompt"}
-          </Button>
-          <Button
-            as="a"
-            className="upload-secondary-action"
-            href={showcaseUploadSkillPath}
-            target="_blank"
-            rel="noreferrer"
-            endContent={<ArrowUpRight aria-hidden="true" size={14} />}
+            <span className="upload-action__glow" aria-hidden="true" />
+            <span className="upload-action__ripple" aria-hidden="true" />
+            <span className="upload-action__icon" aria-hidden="true">
+              <Copy className="upload-action__icon-idle" size={14} />
+              <Check className="upload-action__icon-done" size={14} />
+            </span>
+            <span className="upload-action__label">
+              <span className="upload-action__label-idle">Copy agent prompt</span>
+              <span className="upload-action__label-done">Copied — paste into your agent</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            className="upload-action upload-action--ghost"
+            onClick={openSkill}
+            aria-label="View skill.md"
           >
-            View skill.md
-          </Button>
+            <span className="upload-action__icon" aria-hidden="true">
+              <FileText size={14} />
+            </span>
+            <span className="upload-action__label">View skill.md</span>
+            <span className="upload-action__trail" aria-hidden="true">
+              <ArrowUpRight size={12} />
+            </span>
+          </button>
         </div>
       </article>
+
+      <Modal state={modalState}>
+        <ModalBackdrop className="upload-skill-modal-backdrop">
+          <ModalContainer className="upload-skill-modal-container" placement="center">
+            <ModalDialog className="upload-skill-modal-dialog">
+              <ModalHeader className="upload-skill-modal-head">
+                <div className="upload-skill-modal-head-text">
+                  <span className="upload-skill-modal-eyebrow">
+                    <span className="upload-skill-modal-eyebrow-dot" aria-hidden="true" />
+                    skill · /upload
+                  </span>
+                  <ModalHeading className="upload-skill-modal-heading">skill.md</ModalHeading>
+                  <span className="upload-skill-modal-path" aria-hidden="true">
+                    {showcaseUploadSkillPath}
+                  </span>
+                </div>
+                <ModalCloseTrigger className="upload-skill-modal-close" />
+              </ModalHeader>
+              <ModalBody className="upload-skill-modal-body">{skillBody}</ModalBody>
+            </ModalDialog>
+          </ModalContainer>
+        </ModalBackdrop>
+      </Modal>
     </div>
   );
 }

@@ -2,13 +2,7 @@ import { useCallback, useState } from "react";
 import { Chip } from "@heroui/react";
 
 import { ShowcaseUploadWorkbench } from "@/features/submit-showcase/ui/ShowcaseUploadWorkbench";
-import type { PageContract } from "@/shared/contracts/page";
 import { AgentMascot, type AgentName } from "@/shared/ui/agent-mascot";
-import { StageMeta } from "@/widgets/app-shell/ui/StageMeta";
-
-type UploadPageProps = {
-  page: PageContract;
-};
 
 type AgentCardDef = {
   name: AgentName;
@@ -32,7 +26,7 @@ const CLICK_DURATION: Record<AgentName, number> = {
   copilot: 1900,
 };
 
-export function UploadPage({ page }: UploadPageProps) {
+export function UploadPage() {
   const [hovered, setHovered] = useState<AgentName | null>(null);
   const [clicked, setClicked] = useState<AgentName | null>(null);
 
@@ -45,8 +39,6 @@ export function UploadPage({ page }: UploadPageProps) {
 
   return (
     <section className="upload-stage" aria-label="MuseHub upload workspace">
-      <StageMeta page={page} />
-
       <div className="upload-atmos" aria-hidden="true">
         <span className="upload-atmos-grid" />
         <span className="upload-atmos-glow upload-atmos-glow-acid" />
