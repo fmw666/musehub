@@ -20,6 +20,12 @@ const getOrbitCardStyle = (card: HomeOrbitCard) =>
     "--home-card-y": card.y,
   }) satisfies CSSProperties & Record<`--home-card-${"rotation" | "x" | "y"}`, string>;
 
+const homeSignals = [
+  { label: "Runnable previews", value: "Live" },
+  { label: "Prompt memory", value: "Trace" },
+  { label: "Team handoff", value: "Ship" },
+] as const;
+
 export function HomePage({
   communityPath,
   description,
@@ -57,6 +63,14 @@ export function HomePage({
         <p className="home-kicker">Collect. Remix. Ship.</p>
         <h1>{title}</h1>
         <p className="home-copy">{description}</p>
+        <dl className="home-signal-grid" aria-label={`${title} workflow highlights`}>
+          {homeSignals.map((signal) => (
+            <div className="home-signal" key={signal.label}>
+              <dt>{signal.label}</dt>
+              <dd>{signal.value}</dd>
+            </div>
+          ))}
+        </dl>
         <Button
           className="home-cta"
           isDisabled={!isInteractive || isDissolving}

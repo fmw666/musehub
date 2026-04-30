@@ -1,15 +1,17 @@
-{
+﻿{
   "id": "harnesskit-agent-cards",
   "title": "HarnessKit Agent Cards High Fidelity Demo",
   "tags": [
     "agent",
     "cards",
     "ui",
-    "demo"
+    "demo",
+    "github",
+    "open-source"
   ],
-  "sourceUrl": "tmp/index.html",
-  "sourcePlatform": "local tmp import",
-  "originalFile": "tmp/index.html",
+  "sourceUrl": "https://github.com/RealZST/HarnessKit",
+  "sourcePlatform": "github",
+  "originalFile": "src/components/shared/agent-card.tsx",
   "assetPath": "/community-showcases/harnesskit-agent-cards/index.html",
   "importedAt": "2026-04-29",
   "preview": {

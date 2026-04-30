@@ -45,13 +45,11 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
   };
 
   const openSourceLink = () => {
-    const href = item.linkUrl ?? item.sourceUrl ?? item.assetPath;
-
-    if (!href) {
+    if (!item.sourceUrl) {
       return;
     }
 
-    window.open(href, "_blank", "noopener,noreferrer");
+    window.open(item.sourceUrl, "_blank", "noopener,noreferrer");
   };
 
   const tags = item.tags?.length ? item.tags : [item.kind, item.status];
@@ -106,7 +104,7 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
             variant="flat"
             onPress={openAsset}
           >
-            New page
+            Open in new window
           </Button>
           <Button
             className="asset-mask-control"
@@ -126,18 +124,19 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
             variant="flat"
             onPress={downloadZip}
           >
-            Download zip
+            Download code ZIP
           </Button>
-          <Button
-            className="asset-mask-control"
-            isDisabled={!item.linkUrl && !item.sourceUrl && !item.assetPath}
-            size="sm"
-            startContent={<Link aria-hidden="true" size={14} />}
-            variant="flat"
-            onPress={openSourceLink}
-          >
-            Open link
-          </Button>
+          {item.sourceUrl ? (
+            <Button
+              className="asset-mask-control"
+              size="sm"
+              startContent={<Link aria-hidden="true" size={14} />}
+              variant="flat"
+              onPress={openSourceLink}
+            >
+              View source project
+            </Button>
+          ) : null}
         </div>
       </div>
     </Card>
