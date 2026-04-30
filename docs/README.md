@@ -6,6 +6,7 @@ This directory is the project knowledge base. Keep docs short, current, and usef
 
 - `architecture.md`: source layers, page plan, future implementation order, and performance strategy.
 - `standards.md`: component, directory, file, code, test, and documentation standards.
+- `guard.md`: structural guard pattern for defending against cross-file type-resolution false positives.
 - `adr/`: architectural decision records.
 
 ## Documentation Rules

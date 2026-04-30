@@ -13,6 +13,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "validate:showcases": "node scripts/validate-community-showcases.mjs",
+    "guard": "node scripts/structural-guard.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "preview": "vite preview"
