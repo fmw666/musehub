@@ -764,7 +764,7 @@
 ::view-transition-new(gallery-results) {
   height: 100%;
   animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  animation-timing-function: var(--muse-ease-emerge);
   mix-blend-mode: normal;
 }
 

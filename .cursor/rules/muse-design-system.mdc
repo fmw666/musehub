@@ -1,0 +1,79 @@
+---
+description: MuseHub design-system guardrails — tokens, palette, motion, action buttons, modals
+globs: "src/**/*.{ts,tsx,css},public/community-showcases/**/*.css"
+alwaysApply: false
+---
+
+# MuseHub Design System
+
+MuseHub runs on a three-layer token system defined in `src/styles/theme.css`:
+
+```
+palette  -> semantic role -> component slot
+```
+
+Components must consume **semantic** or **component** tokens, never raw hex / rgb / rgba / oklch.
+
+## 1. Color — tokens only
+
+- Use CSS variables from `src/styles/theme.css`. Never hardcode `#fff`, `#0c0b09`, `rgb(242, 177, 74)`, etc. in `src/**/*.css`.
+- The signature tone palette is Atelier Ink: `honey`, `citrine` (acid), `coral` (tangerine), `sage`, `iris`. Any new color must first be added as a palette token, then exposed as a semantic role.
+- Allowed hard-coded exceptions: `#000`, `transparent`, `currentColor`, and `#111` / `#15140f` only when used as the contrast text-on-honey fallback (already encoded as `--muse-text-inverse`). If in doubt, use the token.
+- Alpha values: always express as `rgb(var(--muse-color-X-rgb) / 0.NN)`. Do not write `rgba(242, 177, 74, 0.24)`.
+- Gradients: compose from tokens (`var(--muse-accent-primary)`, `color-mix(in srgb, var(--muse-accent-primary) 72%, var(--muse-accent-tangerine))`). New page gradients should be named `--muse-gradient-*` and declared in `theme.css`, not redefined in feature CSS.
+- `/upload` uses `acid` (citrine) as the success/copied tone. Other features should reuse this mapping for success states instead of inventing a green.
+
+## 2. Motion — shared easings and keyframes
+
+- Always transition with a `--muse-ease-*` token. No inline `cubic-bezier(...)` literals in feature CSS.
+  - `--muse-ease-emerge` for arrivals / hover-in / state changes.
+  - `--muse-ease-dissolve` for exits / cross-fades.
+- Durations live in component-local CSS but should cluster around these tiers: 140–180ms (press), 220–320ms (state change), 420–640ms (hero arrival / pulse), 760–1200ms (scene entry).
+- Respect `@media (prefers-reduced-motion: reduce)` via the global block in `src/styles/responsive.css`. Do not add a second `*, *::before, *::after { animation-duration: 0.01ms !important }`; reuse the global one.
+- `@keyframes` names are globally scoped. Prefix with the feature / page namespace (e.g. `upload-action-pulse`, `upload-skill-modal-in`, `home-orbit-drift`). Do not re-declare a keyframe name that already exists.
+
+## 3. Action buttons — the `/upload` pattern
+
+For primary + ghost action pairs (copy / open / download / submit), follow the `/upload` pattern captured in `src/styles/pages.css`:
+
+- Base class: `.upload-action` (or feature-prefixed equivalent). Variants: `--primary` (honey gradient, text-inverse), `--ghost` (transparent, border on hover).
+- Each action button has an internal structure: `__glow` (radial honey halo), `__ripple` (success expand), `__icon` (Copy/Check swap), `__label` (idle/done crossfade), `__trail` (ghost arrow).
+- Copied / success state uses `data-copied="true"` **and** a `.is-copied` class (both for resilience). The CSS selector must combine them: `.upload-action--primary[data-copied="true"], .upload-action--primary.is-copied { ... }`.
+- Success feedback must include: surface shift to `acid` via `--action-bg`, pulse animation, ripple expand, and icon/label swap. All driven by `--muse-ease-emerge`.
+- Auto-reset window after a successful copy: 2–2.5s. No permanent sticky success.
+- Use a native `<button>` when React Aria `PressResponder` warnings appear or when `data-*` attribute forwarding through a third-party component is not guaranteed. HeroUI `Button` remains the default for standard buttons.
+
+## 4. Modals — the `/upload` skill.md pattern
+
+When a feature opens a modal to display remote or long-form content (docs, prompt previews, skill text):
+
+- Use HeroUI `Modal` compound API: `Modal` + `ModalBackdrop` + `ModalContainer` + `ModalDialog` + `ModalHeader` + `ModalBody` + `ModalCloseTrigger`, driven by `useOverlayState`.
+- Backdrop: combine MuseHub radial glows with `backdrop-filter: blur(14px)` and a `rgb(var(--muse-color-black-rgb) / 0.62)` layer.
+- Custom enter/exit animations: define `@keyframes <feature>-<thing>-in / -out` and attach via `data-entering` / `data-exiting` on the backdrop and dialog.
+- Width: do not rely on HeroUI's default container flex behavior. Force `width: min(760px, calc(100vw - 32px)) !important` and `align-items: stretch !important` on the container when you need a fixed centered dialog. This is a known override and should be commented.
+- Close trigger: custom 32px round button, rotates `90deg` on hover.
+- Content: render fetched text in a `<pre>` with `max-height`, internal scrolling, and monospace styling via shared scrollbar tokens.
+
+## 5. Layout rules for page-level sections
+
+- Page root section (e.g. `/upload` workspace, `/community` shell) lives in `src/pages/<page>/ui/` and uses a `flex-direction: column; align-items: center; gap: Npx;` stack, not a bare `display: grid` without explicit row/column control. Grid is fine **only** when columns are declared.
+- Visual subsections (hero, prompt card, agent picker, footer) are standalone flex/grid containers; each manages its own internal alignment. Do not rely on the page-level grid's implicit row sizing to align subsections.
+- Keep decorative atmospheric layers (ambient grid, large outline text, glows) behind `z-index: 0` with `position: absolute; inset: 0; pointer-events: none`, and interactive content at `z-index: 1`.
+
+## 6. Component placement
+
+- Reusable visual primitives (mascots, icons, chips specific to MuseHub art direction): `src/shared/ui/<primitive>/`.
+- Feature-specific widgets (upload workbench, agent picker card grid): `src/features/<feature>/ui/`.
+- Page shell and layout composition: `src/pages/<page>/ui/`.
+
+## 7. Verification
+
+Run after meaningful CSS / component edits:
+
+```
+npm run guard          # tsc + eslint
+npm run guard:design   # design-system lint (colors, tokens, keyframes)
+npm run ci             # full: showcases + lint + test + build
+```
+
+`guard:design` enforces sections 1 and 2 of this file automatically.
