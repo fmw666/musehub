@@ -73,17 +73,17 @@ describe("App", () => {
     expect(sectionLabels).toEqual(["Community", "Upload", "Favorites", "Repositories"]);
   });
 
-  it("renders the upload workspace with agent and manual PR flows", () => {
+  it("renders the minimal upload workspace that hands off to an agent", () => {
     window.history.pushState(null, "", "/upload");
 
     render(<App />);
 
     expect(screen.getByRole("region", { name: /musehub upload workspace/i })).toBeInTheDocument();
-    expect(screen.getByText(/upload community assets/i)).toBeInTheDocument();
-    expect(screen.getByText(/agent skill/i)).toBeInTheDocument();
-    expect(screen.getByText(/manual pr package/i)).toBeInTheDocument();
-    expect(screen.getByLabelText<HTMLTextAreaElement>(/agent upload prompt/i).value).toContain(
-      "/upload/skill.md",
-    );
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/hand it/i);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/your agent/i);
+    expect(screen.queryByText(/manual pr package/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /copy agent prompt/i })).toBeInTheDocument();
+    const prompt = screen.getByLabelText(/agent upload prompt/i, { selector: "code" });
+    expect(prompt.textContent).toContain("/upload/skill.md");
   });
 });

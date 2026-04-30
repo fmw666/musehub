@@ -109,28 +109,35 @@
   }
 
   .upload-stage {
-    padding: 78px 12px 20px;
+    padding: 78px 16px 32px;
+    gap: 24px;
   }
 
   .upload-hero {
-    grid-template-columns: 1fr;
+    justify-items: start;
   }
 
-  .upload-hero-card {
-    display: none;
+  .upload-atmos-signature {
+    font-size: clamp(200px, 70vw, 360px);
+    top: 28vh;
+    -webkit-text-stroke-width: 0.8px;
   }
 
-  .upload-workbench {
-    grid-template-columns: 1fr;
+  .upload-atmos-grid {
+    background-size: 42px 42px;
   }
 
-  .upload-form-grid {
+  .upload-stage-footer {
     grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
   }
 
-  .upload-flow-strip,
-  .upload-output-grid {
-    grid-template-columns: 1fr;
+  .upload-stage-footer-left,
+  .upload-stage-footer-right {
+    justify-items: center;
+    text-align: center;
   }
 
   .stage-meta {

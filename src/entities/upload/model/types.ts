@@ -1,5 +1,5 @@
 export type UploadSourceType = "url" | "image" | "repository" | "prompt" | "showcase";
-export type UploadMethod = "agent-skill" | "manual-pr-package";
+export type UploadMethod = "agent-skill";
 
 export type UploadDraft = {
   id: string;
