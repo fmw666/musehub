@@ -38,7 +38,7 @@
   border-radius: 30px;
   background:
     radial-gradient(circle at 18% 12%, rgb(var(--muse-color-acid-rgb) / 0.18), transparent 10rem),
-    radial-gradient(circle at 86% 18%, rgb(122 92 255 / 0.16), transparent 12rem),
+    radial-gradient(circle at 86% 18%, rgb(var(--muse-color-violet-rgb) / 0.16), transparent 12rem),
     linear-gradient(180deg, rgb(var(--muse-color-white-rgb) / 0.08), transparent 74%),
     rgb(var(--muse-color-black-rgb) / 0.34);
   padding: clamp(24px, 4vw, 34px);
@@ -143,8 +143,8 @@
 .gallery-empty-reset {
   position: relative;
   width: max-content;
-  background: rgb(var(--muse-color-acid-rgb) / 0.14);
-  color: rgb(var(--muse-color-ink-rgb) / 0.82);
+  background: var(--muse-accent-acid-soft);
+  color: rgb(var(--muse-color-acid-rgb) / 0.86);
 }
 
 .gallery-discovery {
@@ -233,7 +233,7 @@
 
 .gallery-tag-filter[aria-pressed="true"] {
   border-color: rgb(var(--muse-color-acid-rgb) / 0.3);
-  background: rgb(var(--muse-color-acid-rgb) / 0.82);
+  background: var(--muse-gradient-action);
   color: rgb(var(--muse-color-black-rgb) / 0.86);
 }
 
@@ -263,7 +263,7 @@
 
 .gallery-search-input:focus-within {
   border-color: rgb(var(--muse-color-acid-rgb) / 0.38);
-  box-shadow: 0 0 0 3px rgb(var(--muse-color-acid-rgb) / 0.08);
+  box-shadow: var(--muse-focus-ring);
 }
 
 .gallery-search-native {
@@ -305,7 +305,8 @@
   border: 1px solid rgb(var(--muse-color-white-rgb) / 0.06);
   border-radius: clamp(18px, 2vw, 28px);
   background:
-    linear-gradient(180deg, rgb(var(--muse-color-white-rgb) / 0.035), transparent), #050505;
+    linear-gradient(180deg, rgb(var(--muse-color-white-rgb) / 0.035), transparent),
+    var(--muse-color-bg);
   box-shadow:
     0 20px 62px rgb(var(--muse-color-ink-rgb) / 0.12),
     0 1px 0 rgb(var(--muse-color-white-rgb) / 0.05) inset;
@@ -361,8 +362,8 @@
   z-index: 5;
   display: grid;
   background:
-    linear-gradient(180deg, rgb(0 0 0 / 0.34), transparent 34%),
-    linear-gradient(0deg, rgb(0 0 0 / 0.62), transparent 48%);
+    linear-gradient(180deg, rgb(var(--muse-color-black-rgb) / 0.34), transparent 34%),
+    linear-gradient(0deg, rgb(var(--muse-color-black-rgb) / 0.62), transparent 48%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 160ms ease;
@@ -390,7 +391,7 @@
   gap: 5px;
   border: 1px solid rgb(var(--muse-color-white-rgb) / 0.16);
   border-radius: 999px;
-  background: rgb(12 12 12 / 0.18);
+  background: rgb(var(--muse-color-surface-rgb) / 0.18);
   padding: 4px;
   backdrop-filter: blur(14px) saturate(1.15);
 }
@@ -406,7 +407,7 @@
   font-weight: 680;
   letter-spacing: 0.012em;
   line-height: 1;
-  text-shadow: 0 1px 6px rgb(0 0 0 / 0.24);
+  text-shadow: 0 1px 6px rgb(var(--muse-color-black-rgb) / 0.24);
   backdrop-filter: blur(10px);
 }
 
@@ -422,7 +423,7 @@
   color: rgb(var(--muse-color-white-rgb) / 0.86);
   font-size: 12px;
   font-weight: 680;
-  text-shadow: 0 1px 8px rgb(0 0 0 / 0.34);
+  text-shadow: 0 1px 8px rgb(var(--muse-color-black-rgb) / 0.34);
 }
 
 .asset-social span {
@@ -437,7 +438,7 @@
   max-width: min(52%, 440px);
   color: rgb(var(--muse-color-white-rgb) / 0.78);
   font-size: 11px;
-  text-shadow: 0 1px 10px rgb(0 0 0 / 0.36);
+  text-shadow: 0 1px 10px rgb(var(--muse-color-black-rgb) / 0.36);
 }
 
 .asset-caption h3,
@@ -479,7 +480,7 @@
   min-width: 0;
   height: 29px;
   border-radius: 9px;
-  background: rgb(22 22 22 / 0.64);
+  background: rgb(var(--muse-color-glass-rgb) / 0.64);
   color: rgb(var(--muse-color-white-rgb) / 0.9);
   padding: 0 10px;
   font-size: 12px;
@@ -504,7 +505,7 @@
 }
 
 .wall-art-embed {
-  background: #050505;
+  background: var(--muse-color-bg);
 }
 
 .wall-art-frame {
@@ -527,13 +528,13 @@
 }
 
 .wall-art-mint {
-  background: linear-gradient(135deg, #f7f2df, #ded9bf);
+  background: linear-gradient(135deg, var(--muse-color-ink), var(--muse-paper-signal));
 }
 
 .wall-art-mint span {
   top: 30%;
   left: 14%;
-  color: #191612;
+  color: var(--muse-text-inverse);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(32px, 5vw, 76px);
   letter-spacing: -0.08em;
@@ -548,10 +549,11 @@
   right: 16%;
   width: 30%;
   aspect-ratio: 0.95;
-  border: 18px solid #e2ddca;
+  border: 18px solid var(--muse-paper-warm);
   border-radius: 18px;
-  background: linear-gradient(#1c211d, #111), #e6dfc8;
-  box-shadow: 18px 24px 34px rgb(20 20 14 / 0.22);
+  background:
+    linear-gradient(var(--muse-color-surface-raised), var(--muse-color-bg)), var(--muse-color-ink);
+  box-shadow: 18px 24px 34px rgb(var(--muse-color-black-rgb) / 0.22);
 }
 
 .wall-art-mint b {
@@ -560,16 +562,16 @@
   width: 28%;
   height: 5%;
   border-radius: var(--muse-radius-control);
-  background: #1d201b;
+  background: var(--muse-color-surface-raised);
 }
 
 .wall-art-fan {
-  background: #f8f7ef;
+  background: var(--muse-color-ink);
 }
 
 .wall-art-fan .art-chrome {
   inset: 8px;
-  border: 1px solid #c7c7bd;
+  border: 1px solid var(--muse-paper-line);
 }
 
 .wall-art-fan span {
@@ -577,7 +579,7 @@
   left: 50%;
   width: 56%;
   aspect-ratio: 2;
-  border: 1px solid #bfc0b7;
+  border: 1px solid var(--muse-paper-line-strong);
   border-bottom: 0;
   border-radius: 100% 100% 0 0 / 100% 100% 0 0;
   transform: translateX(-50%);
@@ -589,16 +591,16 @@
   left: 50%;
   width: 1px;
   height: 52%;
-  background: #435f99;
+  background: var(--muse-accent-violet);
   transform-origin: bottom;
 }
 
 .wall-art-fan i {
   box-shadow:
-    -78px 10px 0 #435f99,
-    -40px -6px 0 #435f99,
-    40px -6px 0 #435f99,
-    78px 10px 0 #435f99;
+    -78px 10px 0 var(--muse-accent-violet),
+    -40px -6px 0 var(--muse-accent-violet),
+    40px -6px 0 var(--muse-accent-violet),
+    78px 10px 0 var(--muse-accent-violet);
   transform: rotate(-35deg);
 }
 
@@ -608,8 +610,9 @@
 
 .wall-art-void {
   background:
-    radial-gradient(circle at 70% 28%, rgb(119 182 255 / 0.8), transparent 17%),
-    radial-gradient(ellipse at 70% 48%, rgb(42 103 154 / 0.8), transparent 25%), #03060b;
+    radial-gradient(circle at 70% 28%, rgb(var(--muse-color-violet-rgb) / 0.72), transparent 17%),
+    radial-gradient(ellipse at 70% 48%, rgb(var(--muse-color-acid-rgb) / 0.24), transparent 25%),
+    var(--muse-color-bg);
 }
 
 .wall-art-void span {
@@ -641,13 +644,13 @@
 }
 
 .wall-art-postal {
-  background: #e9e5d7;
+  background: var(--muse-paper-warm);
 }
 
 .wall-art-postal span {
   top: 18%;
   left: 18%;
-  color: #1b1814;
+  color: var(--muse-text-inverse);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(28px, 4vw, 54px);
   line-height: 0.92;
@@ -664,22 +667,22 @@
   width: 28%;
   height: 58%;
   border-radius: 4px;
-  background: #ffc332;
+  background: var(--muse-accent-acid);
   box-shadow:
-    14px -12px 0 #b74735,
-    74px 2px 0 #d6d4c8;
+    14px -12px 0 var(--muse-accent-tangerine),
+    74px 2px 0 var(--muse-paper-line);
   transform: rotate(-3deg);
 }
 
 .wall-art-phone {
-  background: #090d10;
+  background: var(--muse-color-bg);
 }
 
 .wall-art-phone::before {
   inset: 0;
   background:
     linear-gradient(to bottom, transparent 0 45%, rgb(var(--muse-color-black-rgb) / 0.72)),
-    radial-gradient(circle at 62% 12%, rgb(84 160 190 / 0.45), transparent 15%);
+    radial-gradient(circle at 62% 12%, rgb(var(--muse-color-violet-rgb) / 0.36), transparent 15%);
 }
 
 .wall-art-phone span {
@@ -688,7 +691,7 @@
   width: 66%;
   height: 18%;
   border-radius: 12px;
-  background: #10181d;
+  background: var(--muse-color-surface-raised);
 }
 
 .wall-art-phone i,
@@ -697,7 +700,7 @@
   width: 72%;
   height: 9%;
   border-radius: 10px;
-  background: #141b20;
+  background: var(--muse-color-glass);
 }
 
 .wall-art-phone i {
@@ -709,7 +712,7 @@
 }
 
 .wall-art-stack {
-  background: linear-gradient(145deg, var(--muse-border), transparent), #090909;
+  background: linear-gradient(145deg, var(--muse-border), transparent), var(--muse-color-surface);
 }
 
 .wall-art-stack span,
@@ -849,8 +852,13 @@
     justify-content: flex-end;
     gap: 7px;
     background:
-      linear-gradient(180deg, transparent 0 38%, rgb(0 0 0 / 0.16) 56%),
-      linear-gradient(0deg, rgb(0 0 0 / 0.84), rgb(0 0 0 / 0.38) 42%, transparent 72%);
+      linear-gradient(180deg, transparent 0 38%, rgb(var(--muse-color-black-rgb) / 0.16) 56%),
+      linear-gradient(
+        0deg,
+        rgb(var(--muse-color-black-rgb) / 0.84),
+        rgb(var(--muse-color-black-rgb) / 0.38) 42%,
+        transparent 72%
+      );
     opacity: 1;
     padding: 12px 10px 10px;
   }

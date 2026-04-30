@@ -1,62 +1,154 @@
+/*
+ * Theme: Atelier Ink
+ * Deep warm ink base with brass spotlight (honey) as the only primary action color.
+ * Legacy palette tokens (acid/tangerine/violet/forest) are kept as role slots but
+ * now map to citrine / coral / iris / sage to match the Atelier Ink direction.
+ */
 @theme {
-  --color-ink: #f5f5f0;
-  --color-soft: #9a9a92;
-  --color-dim: #5b5b55;
-  --color-grid: #20201d;
-  --color-acid: #d8ff4f;
-  --color-tangerine: #ff6a22;
-  --color-forest: #15805b;
-  --color-violet: #a82dff;
+  --color-ink: #ece6d6;
+  --color-soft: #a8a398;
+  --color-dim: #6b675f;
+  --color-grid: #1f1f24;
+  --color-honey: #f2b14a;
+  --color-citrine: #e8d26b;
+  --color-coral: #e8704f;
+  --color-sage: #7ab59a;
+  --color-iris: #9d8ae6;
+  --color-acid: var(--color-citrine);
+  --color-tangerine: var(--color-coral);
+  --color-forest: var(--color-sage);
+  --color-violet: var(--color-iris);
 }
 
 :root {
-  /* Color system: palette tokens feed semantic tokens, which feed component tokens. */
+  /* Palette tokens feed semantic tokens, which feed component tokens. */
   --muse-color-black: #000;
   --muse-color-black-rgb: 0 0 0;
-  --muse-color-bg: #020202;
-  --muse-color-surface: #0a0a0a;
-  --muse-color-surface-rgb: 10 10 10;
-  --muse-color-glass: #222;
-  --muse-color-glass-rgb: 34 34 34;
+  --muse-color-bg: #0c0b09;
+  --muse-color-bg-rgb: 12 11 9;
+  --muse-color-surface: #17161a;
+  --muse-color-surface-rgb: 23 22 26;
+  --muse-color-surface-raised: #1f1d22;
+  --muse-color-surface-raised-rgb: 31 29 34;
+  --muse-color-glass: #22212a;
+  --muse-color-glass-rgb: 34 33 42;
   --muse-color-ink: var(--color-ink);
-  --muse-color-ink-rgb: 245 245 240;
+  --muse-color-ink-rgb: 236 230 214;
+  --muse-color-white: #fff;
   --muse-color-white-rgb: 255 255 255;
-  --muse-color-acid: var(--color-acid);
-  --muse-color-acid-rgb: 216 255 79;
-  --muse-color-tangerine: var(--color-tangerine);
-  --muse-color-tangerine-rgb: 255 106 34;
-  --muse-color-forest: var(--color-forest);
-  --muse-color-forest-rgb: 21 128 91;
-  --muse-color-violet: var(--color-violet);
-  --muse-color-violet-rgb: 168 45 255;
-  --muse-color-scrollbar-track: #eee7dc;
-  --muse-color-scrollbar-thumb: #2f2f2d;
-  --muse-color-scrollbar-thumb-hover: #454540;
+
+  /* Signature tones (Atelier Ink) */
+  --muse-color-honey: var(--color-honey);
+  --muse-color-honey-rgb: 242 177 74;
+  --muse-color-citrine: var(--color-citrine);
+  --muse-color-citrine-rgb: 232 210 107;
+  --muse-color-coral: var(--color-coral);
+  --muse-color-coral-rgb: 232 112 79;
+  --muse-color-sage: var(--color-sage);
+  --muse-color-sage-rgb: 122 181 154;
+  --muse-color-iris: var(--color-iris);
+  --muse-color-iris-rgb: 157 138 230;
+
+  /* Legacy slot names still consumed by components; mapped to Atelier Ink tones. */
+  --muse-color-acid: var(--muse-color-citrine);
+  --muse-color-acid-rgb: var(--muse-color-citrine-rgb);
+  --muse-color-tangerine: var(--muse-color-coral);
+  --muse-color-tangerine-rgb: var(--muse-color-coral-rgb);
+  --muse-color-forest: var(--muse-color-sage);
+  --muse-color-forest-rgb: var(--muse-color-sage-rgb);
+  --muse-color-violet: var(--muse-color-iris);
+  --muse-color-violet-rgb: var(--muse-color-iris-rgb);
+
+  --muse-color-scrollbar-track: #0c0b09;
+  --muse-color-scrollbar-thumb: #2e2d36;
+  --muse-color-scrollbar-thumb-hover: #44424d;
+
   --muse-bg: var(--muse-color-bg);
-  --muse-page-bg: var(--muse-color-black);
-  --muse-panel: rgb(7 7 7 / 0.92);
+  --muse-page-bg: var(--muse-color-bg);
+  --muse-panel: rgb(var(--muse-color-surface-rgb) / 0.92);
   --muse-surface: rgb(var(--muse-color-surface-rgb) / 0.76);
-  --muse-surface-strong: rgb(var(--muse-color-surface-rgb) / 0.82);
+  --muse-surface-strong: rgb(var(--muse-color-surface-raised-rgb) / 0.86);
   --muse-border: rgb(var(--muse-color-white-rgb) / 0.08);
   --muse-border-soft: rgb(var(--muse-color-white-rgb) / 0.06);
   --muse-border-medium: rgb(var(--muse-color-white-rgb) / 0.12);
   --muse-border-strong: rgb(var(--muse-color-ink-rgb) / 0.34);
+
   --muse-text: rgb(var(--muse-color-ink-rgb) / 0.9);
-  --muse-text-strong: rgb(var(--muse-color-ink-rgb) / 0.94);
+  --muse-text-strong: rgb(var(--muse-color-ink-rgb) / 0.96);
   --muse-text-soft: rgb(var(--muse-color-ink-rgb) / 0.72);
   --muse-text-muted: rgb(var(--muse-color-ink-rgb) / 0.52);
   --muse-text-dim: rgb(var(--muse-color-ink-rgb) / 0.38);
   --muse-text-faint: rgb(var(--muse-color-ink-rgb) / 0.22);
-  --muse-text-inverse: #10100d;
+  --muse-text-inverse: #15140f;
   --muse-glass: rgb(var(--muse-color-glass-rgb) / 0.82);
-  --muse-shadow: 0 18px 70px rgb(var(--muse-color-black-rgb) / 0.48);
-  --muse-shadow-soft: 0 22px 58px rgb(var(--muse-color-black-rgb) / 0.32);
-  --muse-accent-acid: var(--muse-color-acid);
-  --muse-accent-acid-soft: rgb(var(--muse-color-acid-rgb) / 0.12);
-  --muse-accent-tangerine: var(--muse-color-tangerine);
-  --muse-accent-tangerine-soft: rgb(var(--muse-color-tangerine-rgb) / 0.12);
-  --muse-accent-forest: var(--muse-color-forest);
-  --muse-accent-forest-soft: rgb(var(--muse-color-forest-rgb) / 0.12);
+  --muse-shadow: 0 18px 70px rgb(var(--muse-color-black-rgb) / 0.52);
+  --muse-shadow-soft: 0 22px 58px rgb(var(--muse-color-black-rgb) / 0.34);
+
+  /* Semantic accents */
+  --muse-accent-primary: var(--muse-color-honey);
+  --muse-accent-primary-rgb: var(--muse-color-honey-rgb);
+  --muse-accent-primary-soft: rgb(var(--muse-color-honey-rgb) / 0.14);
+  --muse-accent-acid: var(--muse-color-citrine);
+  --muse-accent-acid-soft: rgb(var(--muse-color-citrine-rgb) / 0.14);
+  --muse-accent-tangerine: var(--muse-color-coral);
+  --muse-accent-tangerine-soft: rgb(var(--muse-color-coral-rgb) / 0.14);
+  --muse-accent-violet: var(--muse-color-iris);
+  --muse-accent-violet-soft: rgb(var(--muse-color-iris-rgb) / 0.14);
+  --muse-status-success: var(--muse-color-sage);
+  --muse-status-success-soft: rgb(var(--muse-color-sage-rgb) / 0.16);
+
+  --muse-focus-ring: 0 0 0 3px rgb(var(--muse-color-citrine-rgb) / 0.18);
+  --muse-glow-acid: 0 0 54px rgb(var(--muse-color-honey-rgb) / 0.16);
+
+  /* Paper mixes reused by gallery preview art */
+  --muse-paper-warm: color-mix(in srgb, var(--muse-color-ink) 82%, var(--muse-accent-tangerine));
+  --muse-paper-signal: color-mix(in srgb, var(--muse-color-ink) 78%, var(--muse-accent-primary));
+  --muse-paper-line: color-mix(in srgb, var(--muse-color-ink) 72%, var(--muse-color-black));
+  --muse-paper-line-strong: color-mix(in srgb, var(--muse-color-ink) 68%, var(--muse-color-black));
+  --muse-accent-tangerine-deep: color-mix(
+    in srgb,
+    var(--muse-accent-tangerine) 72%,
+    var(--muse-color-black)
+  );
+
+  /* Page gradients: only honey + iris, both under 0.12 alpha to stay calm. */
+  --muse-gradient-hero:
+    radial-gradient(circle at 18% 26%, rgb(var(--muse-color-honey-rgb) / 0.08), transparent 22rem),
+    radial-gradient(circle at 74% 18%, rgb(var(--muse-color-iris-rgb) / 0.1), transparent 24rem),
+    linear-gradient(rgb(var(--muse-color-ink-rgb) / 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--muse-color-ink-rgb) / 0.022) 1px, transparent 1px),
+    var(--muse-bg);
+  --muse-gradient-stage:
+    radial-gradient(circle at 16% 4%, rgb(var(--muse-color-honey-rgb) / 0.07), transparent 26rem),
+    radial-gradient(circle at 82% 0%, rgb(var(--muse-color-iris-rgb) / 0.09), transparent 24rem),
+    var(--muse-bg);
+  --muse-gradient-action: linear-gradient(
+    135deg,
+    var(--muse-accent-primary),
+    color-mix(in srgb, var(--muse-accent-primary) 72%, var(--muse-accent-tangerine))
+  );
+
+  --muse-gradient-card-ink: linear-gradient(
+    145deg,
+    var(--muse-color-surface),
+    var(--muse-color-bg)
+  );
+  --muse-gradient-card-violet: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--muse-accent-violet) 58%, var(--muse-color-surface)),
+    color-mix(in srgb, var(--muse-accent-violet) 28%, var(--muse-color-bg))
+  );
+  --muse-gradient-card-tangerine: linear-gradient(
+    145deg,
+    var(--muse-accent-tangerine),
+    var(--muse-accent-tangerine-deep)
+  );
+  --muse-gradient-card-paper: linear-gradient(
+    145deg,
+    var(--muse-color-ink),
+    var(--muse-paper-warm)
+  );
+
   --muse-radius-card: 10px;
   --muse-radius-control: 999px;
   --muse-page-pad: clamp(16px, 3vw, 42px);

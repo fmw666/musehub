@@ -1,6 +1,6 @@
 export type HomeOrbitCard = {
   label: string;
-  tone: "ink" | "forest" | "tangerine" | "paper";
+  tone: "ink" | "violet" | "tangerine" | "paper";
   rotation: string;
   x: string;
   y: string;
@@ -17,7 +17,7 @@ export const homeOrbitCards = [
   {
     label: "Remix",
     rotation: "8deg",
-    tone: "forest",
+    tone: "violet",
     x: "368px",
     y: "-214px",
   },
