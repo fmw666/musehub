@@ -85,5 +85,11 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /copy agent prompt/i })).toBeInTheDocument();
     const prompt = screen.getByLabelText(/agent upload prompt/i, { selector: "code" });
     expect(prompt.textContent).toContain("/upload/skill.md");
+
+    expect(screen.getByRole("button", { name: /^cursor$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^claude code$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^codex$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^gemini cli$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^copilot$/i })).toBeInTheDocument();
   });
 });

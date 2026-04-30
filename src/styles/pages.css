@@ -482,18 +482,195 @@
   transform: scale(1);
 }
 
+/*
+ * Agent picker section — faithful port of the HarnessKit Agent Cards showcase.
+ * Colors remapped onto MuseHub's dark Muse palette; structure, spacing, and
+ * keyframes match the original demo (see community-showcases/harnesskit-agent-cards/).
+ */
+
+.upload-agent-picker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  gap: 14px;
+  animation: upload-fade-in 900ms var(--muse-ease-emerge) both 420ms;
+}
+
+.upload-agent-picker-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 4px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.upload-agent-picker-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.55);
+}
+
+.upload-agent-picker-kicker::before,
+.upload-agent-picker-kicker::after {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  background: rgb(var(--muse-color-acid-rgb) / 0.55);
+}
+
+.upload-agent-picker-sub {
+  color: rgb(var(--muse-color-ink-rgb) / 0.3);
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+/* --- Muse-themed overrides for the ported HarnessKit card tokens --- */
+.upload-agent-picker {
+  /* Dark mode analogues to the showcase's oklch tokens, mapped to Muse rgbs. */
+  --hk-card-bg: rgb(var(--muse-color-black-rgb) / 0.32);
+  --hk-card-bg-hover: rgb(var(--muse-color-black-rgb) / 0.52);
+  --hk-card-border: rgb(var(--muse-color-white-rgb) / 0.08);
+  --hk-card-border-hover: rgb(var(--muse-color-white-rgb) / 0.16);
+  --hk-card-text: rgb(var(--muse-color-ink-rgb) / 0.92);
+  --hk-card-muted: rgb(var(--muse-color-ink-rgb) / 0.45);
+  --hk-card-shadow:
+    0 1px 3px rgb(var(--muse-color-black-rgb) / 0.35),
+    0 12px 28px rgb(var(--muse-color-black-rgb) / 0.32);
+  --hk-card-radius: 14px;
+}
+
+.hk-agent-card-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.hk-agent-card {
+  position: relative;
+  display: flex;
+  width: 110px;
+  min-height: 100px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--hk-card-border);
+  border-radius: var(--hk-card-radius);
+  background: var(--hk-card-bg);
+  color: var(--hk-card-text);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hk-agent-card:hover,
+.hk-agent-card:focus-visible {
+  border-color: var(--hk-card-border-hover);
+  background: var(--hk-card-bg-hover);
+  box-shadow: var(--hk-card-shadow);
+  transform: translateY(-2px) scale(1);
+}
+
+.hk-agent-card:focus-visible {
+  box-shadow:
+    var(--hk-card-shadow),
+    0 0 0 2px rgb(var(--muse-color-acid-rgb) / 0.45);
+}
+
+.hk-agent-card:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.hk-agent-card.is-clicked {
+  animation: hk-card-click 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hk-agent-card__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: visible;
+}
+
+.hk-agent-card__label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--hk-card-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hk-agent-card__count {
+  color: var(--hk-card-muted);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hk-agent-card--claude,
+.hk-agent-card--codex {
+  overflow: hidden;
+}
+
+.hk-agent-card--cursor,
+.hk-agent-card--gemini,
+.hk-agent-card--copilot {
+  overflow: visible;
+}
+
+@keyframes hk-card-click {
+  0% {
+    transform: translateY(-2px) scale(1);
+  }
+  42% {
+    transform: translateY(0) scale(0.965);
+  }
+  100% {
+    transform: translateY(-2px) scale(1);
+  }
+}
+
 .upload-stage-footer {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: clamp(16px, 3vw, 40px);
   width: min(1080px, 100%);
   margin: 0 auto;
   padding-top: clamp(12px, 3vh, 24px);
   border-top: 1px solid rgb(var(--muse-color-white-rgb) / 0.06);
-  animation: upload-fade-in 900ms var(--muse-ease-emerge) both 540ms;
+  animation: upload-fade-in 900ms var(--muse-ease-emerge) both 600ms;
 }
 
 .upload-stage-footer-left,
@@ -517,39 +694,6 @@
 
 .upload-stage-footer-value {
   color: rgb(var(--muse-color-ink-rgb) / 0.72);
-}
-
-.upload-agent-cloud {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.upload-agent-cloud-item {
-  position: relative;
-  padding: 4px 10px;
-  border: 1px solid rgb(var(--muse-color-white-rgb) / 0.08);
-  border-radius: 999px;
-  background: rgb(var(--muse-color-black-rgb) / 0.24);
-  color: rgb(var(--muse-color-ink-rgb) / 0.58);
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
-  transition:
-    color 220ms var(--muse-ease-emerge),
-    border-color 220ms var(--muse-ease-emerge),
-    transform 220ms var(--muse-ease-emerge);
-}
-
-.upload-agent-cloud-item:hover {
-  color: rgb(var(--muse-color-acid-rgb) / 0.9);
-  border-color: rgb(var(--muse-color-acid-rgb) / 0.28);
-  transform: translateY(-1px);
 }
 
 .planned-card {

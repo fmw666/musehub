@@ -1,16 +1,48 @@
+import { useCallback, useState } from "react";
 import { Chip } from "@heroui/react";
 
 import { ShowcaseUploadWorkbench } from "@/features/submit-showcase/ui/ShowcaseUploadWorkbench";
 import type { PageContract } from "@/shared/contracts/page";
+import { AgentMascot, type AgentName } from "@/shared/ui/agent-mascot";
 import { StageMeta } from "@/widgets/app-shell/ui/StageMeta";
 
 type UploadPageProps = {
   page: PageContract;
 };
 
-const runtimeAgents = ["cursor", "claude", "codex", "copilot", "continue", "aider"] as const;
+type AgentCardDef = {
+  name: AgentName;
+  label: string;
+  hint: string;
+};
+
+const AGENTS: readonly AgentCardDef[] = [
+  { name: "cursor", label: "Cursor", hint: "@/upload/skill.md" },
+  { name: "claude", label: "Claude Code", hint: "/read skill.md" },
+  { name: "codex", label: "Codex", hint: "codex exec" },
+  { name: "gemini", label: "Gemini CLI", hint: "gemini ingest" },
+  { name: "copilot", label: "Copilot", hint: "@workspace /new" },
+];
+
+const CLICK_DURATION: Record<AgentName, number> = {
+  claude: 4200,
+  codex: 700,
+  gemini: 700,
+  cursor: 750,
+  copilot: 1900,
+};
 
 export function UploadPage({ page }: UploadPageProps) {
+  const [hovered, setHovered] = useState<AgentName | null>(null);
+  const [clicked, setClicked] = useState<AgentName | null>(null);
+
+  const handleSelect = useCallback((agent: AgentCardDef) => {
+    setClicked(agent.name);
+    window.setTimeout(() => {
+      setClicked((current) => (current === agent.name ? null : current));
+    }, CLICK_DURATION[agent.name]);
+  }, []);
+
   return (
     <section className="upload-stage" aria-label="MuseHub upload workspace">
       <StageMeta page={page} />
@@ -42,25 +74,55 @@ export function UploadPage({ page }: UploadPageProps) {
           </span>
         </h1>
         <p className="upload-hero-lede">
-          这个页面不收集信息。复制 prompt,交给 Cursor、Claude Code 或任意编码 Agent —— 它会读
+          这个页面不收集信息。把上面的 prompt 交给任意一个 agent —— agent 会读
           skill、来问你要素、然后提交 PR。
         </p>
       </header>
 
       <ShowcaseUploadWorkbench />
 
+      <section className="upload-agent-picker" aria-label="Supported coding agents">
+        <header className="upload-agent-picker-head">
+          <span className="upload-agent-picker-kicker">pick your agent</span>
+          <span className="upload-agent-picker-sub">hover to wake · click to poke</span>
+        </header>
+        <div className="hk-agent-card-row" aria-label="Detected agents">
+          {AGENTS.map((agent) => {
+            const isHovered = hovered === agent.name;
+            const isClicked = clicked === agent.name;
+            return (
+              <button
+                key={agent.name}
+                type="button"
+                className={`hk-agent-card hk-agent-card--${agent.name}${isClicked ? " is-clicked" : ""}`}
+                onMouseEnter={() => setHovered(agent.name)}
+                onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(agent.name)}
+                onBlur={() => setHovered(null)}
+                onClick={() => handleSelect(agent)}
+                aria-label={agent.label}
+              >
+                <span className="hk-agent-card__icon" aria-hidden="true">
+                  <AgentMascot
+                    name={agent.name}
+                    size={42}
+                    animated={isHovered}
+                    clicked={isClicked}
+                  />
+                </span>
+                <span className="hk-agent-card__label">{agent.label}</span>
+                <span className="hk-agent-card__count">{agent.hint}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <footer className="upload-stage-footer" aria-hidden="true">
         <div className="upload-stage-footer-left">
           <span className="upload-stage-footer-label">runtime</span>
           <span className="upload-stage-footer-value">musehub://agent.upload.v1</span>
         </div>
-        <ul className="upload-agent-cloud" aria-label="Supported agents">
-          {runtimeAgents.map((name) => (
-            <li key={name} className="upload-agent-cloud-item">
-              {name}
-            </li>
-          ))}
-        </ul>
         <div className="upload-stage-footer-right">
           <span className="upload-stage-footer-label">mode</span>
           <span className="upload-stage-footer-value">hand-off</span>
