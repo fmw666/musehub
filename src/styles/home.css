@@ -1,0 +1,368 @@
+.home-stage {
+  position: relative;
+  display: grid;
+  contain: layout paint style;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  padding: var(--muse-page-pad);
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 26%, rgb(var(--muse-color-acid-rgb) / 0.055), transparent 20rem),
+    radial-gradient(circle at 50% 45%, var(--muse-accent-tangerine-soft), transparent 24rem),
+    radial-gradient(circle at 72% 18%, var(--muse-accent-forest-soft), transparent 22rem),
+    linear-gradient(rgb(var(--muse-color-ink-rgb) / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--muse-color-ink-rgb) / 0.028) 1px, transparent 1px),
+    var(--muse-bg);
+  background-size:
+    auto,
+    auto,
+    auto,
+    44px 44px,
+    44px 44px,
+    auto;
+  color: var(--muse-text);
+  isolation: isolate;
+}
+
+.home-stage::before {
+  position: absolute;
+  inset: clamp(28px, 10vw, 128px);
+  z-index: -1;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.045);
+  border-radius: 42px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgb(var(--muse-color-ink-rgb) / 0.028),
+    transparent 58%
+  );
+  box-shadow: inset 0 0 120px rgb(var(--muse-color-ink-rgb) / 0.025);
+  content: "";
+  transform: rotate(-2deg);
+}
+
+.home-stage::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0 48%,
+      rgb(var(--muse-color-ink-rgb) / 0.045) 49% 51%,
+      transparent 52%
+    ),
+    linear-gradient(
+      transparent 0 48%,
+      rgb(var(--muse-color-ink-rgb) / 0.035) 49% 51%,
+      transparent 52%
+    );
+  background-size: 140px 140px;
+  content: "";
+  mask-image: radial-gradient(ellipse at center, black 0 44%, transparent 72%);
+  opacity: 0.7;
+  transform: rotate(-2deg) scale(1.12);
+}
+
+.home-hero {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  width: min(760px, calc(100vw - 96px));
+  justify-items: center;
+  place-items: center;
+  text-align: center;
+}
+
+.home-kicker,
+.home-copy,
+.home-path {
+  margin: 0;
+  color: var(--muse-text-muted);
+}
+
+.home-kicker {
+  margin-bottom: 8px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-hero h1 {
+  margin: 0;
+  color: rgb(var(--muse-color-tangerine-rgb) / 0.98);
+  font-size: clamp(74px, 14vw, 168px);
+  font-weight: 780;
+  letter-spacing: -0.12em;
+  line-height: 0.86;
+  text-shadow: 0 26px 72px rgb(var(--muse-color-tangerine-rgb) / 0.18);
+}
+
+.home-copy {
+  width: min(520px, 100%);
+  margin-top: 22px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.home-note {
+  width: min(620px, 100%);
+  margin-top: 18px;
+  border: 1px solid rgb(var(--muse-color-white-rgb) / 0.1);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgb(var(--muse-color-white-rgb) / 0.08), transparent 54%),
+    rgb(var(--muse-color-black-rgb) / 0.24);
+  box-shadow: 0 24px 70px rgb(var(--muse-color-black-rgb) / 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.home-note-content {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  text-align: left;
+}
+
+.home-note-content span {
+  color: rgb(var(--muse-color-tangerine-rgb) / 0.86);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.home-note-content p {
+  margin: 0;
+  color: rgb(var(--muse-color-ink-rgb) / 0.68);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.home-note-content a {
+  color: rgb(var(--muse-color-ink-rgb) / 0.9);
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.home-note-content a:hover {
+  color: rgb(var(--muse-color-tangerine-rgb) / 0.92);
+}
+
+.home-cta {
+  height: 40px;
+  min-width: 148px;
+  margin-top: 24px;
+  border-color: rgb(var(--muse-color-tangerine-rgb) / 0.52);
+  border-radius: var(--muse-radius-control);
+  color: rgb(var(--muse-color-ink-rgb) / 0.88);
+  font-size: 12px;
+}
+
+.home-cta:hover {
+  border-color: rgb(var(--muse-color-tangerine-rgb) / 0.84);
+  background: var(--muse-accent-tangerine-soft);
+}
+
+.home-path {
+  margin-top: 10px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  opacity: 0.58;
+}
+
+.home-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.home-orbit::before {
+  position: absolute;
+  width: 760px;
+  height: 760px;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.08);
+  border-radius: 999px;
+  content: "";
+  opacity: 0.72;
+  transform: translate3d(-50%, -50%, 0) rotate(-7deg);
+}
+
+.home-orbit-slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  transform: translate3d(var(--home-card-x), var(--home-card-y), 0);
+  transform-origin: 0 0;
+}
+
+.home-orbit-card {
+  position: absolute;
+  top: -36px;
+  left: -56px;
+  display: grid;
+  width: 112px;
+  height: 72px;
+  place-items: center;
+  color: var(--muse-color-ink);
+  backface-visibility: hidden;
+  transform: rotate(var(--home-card-rotation));
+  transform-origin: 50% 50%;
+}
+
+.home-orbit-card-surface {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 1px solid var(--muse-border-medium);
+  border-radius: 14px;
+  box-shadow: var(--muse-shadow-soft);
+  opacity: 0.92;
+  animation: home-card-breathe 5.6s ease-in-out infinite;
+  transform: translate3d(0, -3px, 0) scale(0.985);
+  transform-origin: 50% 56%;
+  will-change: filter, opacity, transform;
+}
+
+.home-orbit-slot:nth-child(2n) .home-orbit-card-surface {
+  animation-delay: -1.4s;
+  animation-duration: 6.2s;
+}
+
+.home-orbit-slot:nth-child(3n) .home-orbit-card-surface {
+  animation-delay: -2.6s;
+  animation-duration: 6.8s;
+}
+
+.home-orbit-slot:nth-child(5n) .home-orbit-card-surface {
+  animation-delay: -3.8s;
+  animation-duration: 6.4s;
+}
+
+.home-orbit-card span {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  color: var(--muse-text-muted);
+  font-size: 8px;
+  letter-spacing: -0.02em;
+}
+
+.home-orbit-card i,
+.home-orbit-card b {
+  position: absolute;
+  display: block;
+  content: "";
+}
+
+.home-orbit-card i {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 56% 48%, var(--muse-color-ink) 0 16%, transparent 17%),
+    conic-gradient(
+      from 40deg,
+      var(--muse-accent-tangerine) 0 32%,
+      var(--muse-accent-forest) 0 68%,
+      var(--muse-color-ink) 0
+    );
+}
+
+.home-orbit-card b {
+  width: 46px;
+  height: 2px;
+  border-radius: var(--muse-radius-control);
+  background: currentcolor;
+  opacity: 0.7;
+  transform: rotate(-38deg);
+}
+
+.home-orbit-card-ink {
+  color: var(--muse-color-ink);
+}
+
+.home-orbit-card-forest {
+  color: var(--muse-color-ink);
+}
+
+.home-orbit-card-tangerine {
+  color: var(--muse-text-inverse);
+}
+
+.home-orbit-card-paper {
+  color: var(--muse-text-inverse);
+}
+
+.home-orbit-card-ink .home-orbit-card-surface {
+  background: linear-gradient(145deg, #0a0c0b, #020302);
+}
+
+.home-orbit-card-forest .home-orbit-card-surface {
+  background: linear-gradient(145deg, var(--muse-accent-forest), #0d513d);
+}
+
+.home-orbit-card-tangerine .home-orbit-card-surface {
+  background: linear-gradient(145deg, var(--muse-accent-tangerine), #cc4516);
+}
+
+.home-orbit-card-paper .home-orbit-card-surface {
+  background: linear-gradient(145deg, var(--muse-color-ink), #d9d4c5);
+}
+
+.dissolve-transition-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  contain: layout paint style;
+  pointer-events: none;
+}
+
+.dissolve-transition-layer::before {
+  position: absolute;
+  inset: 18%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgb(var(--muse-color-tangerine-rgb) / 0.2), transparent 54%),
+    radial-gradient(circle, rgb(var(--muse-color-ink-rgb) / 0.1), transparent 64%);
+  content: "";
+  opacity: 0;
+  transform: scale(0.74);
+  animation: dissolve-bloom var(--dissolve-duration, var(--motion-home-dissolve))
+    var(--muse-ease-emerge) both;
+  will-change: opacity, transform;
+}
+
+.home-stage.is-dissolving {
+  animation: home-dissolve var(--dissolve-duration, var(--motion-home-dissolve))
+    var(--muse-ease-dissolve) both;
+  will-change: opacity, transform;
+}
+
+.home-stage.is-dissolving::after {
+  animation: home-grid-release var(--dissolve-duration, var(--motion-home-dissolve)) ease both;
+}
+
+.home-stage.is-dissolving .home-hero {
+  animation: home-hero-release var(--dissolve-duration, var(--motion-home-dissolve)) ease both;
+  will-change: opacity, transform;
+}
+
+.home-stage.is-dissolving .home-orbit-slot {
+  animation: home-card-drift var(--dissolve-duration, var(--motion-home-dissolve)) ease both;
+  will-change: opacity, transform;
+}
+
+.home-stage.is-dissolving .home-orbit-card,
+.home-stage.is-dissolving .home-orbit-card-surface {
+  animation: none;
+}

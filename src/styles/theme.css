@@ -1,0 +1,77 @@
+@theme {
+  --color-ink: #f5f5f0;
+  --color-soft: #9a9a92;
+  --color-dim: #5b5b55;
+  --color-grid: #20201d;
+  --color-acid: #d8ff4f;
+  --color-tangerine: #ff6a22;
+  --color-forest: #15805b;
+  --color-violet: #a82dff;
+}
+
+:root {
+  /* Color system: palette tokens feed semantic tokens, which feed component tokens. */
+  --muse-color-black: #000;
+  --muse-color-black-rgb: 0 0 0;
+  --muse-color-bg: #020202;
+  --muse-color-surface: #0a0a0a;
+  --muse-color-surface-rgb: 10 10 10;
+  --muse-color-glass: #222;
+  --muse-color-glass-rgb: 34 34 34;
+  --muse-color-ink: var(--color-ink);
+  --muse-color-ink-rgb: 245 245 240;
+  --muse-color-white-rgb: 255 255 255;
+  --muse-color-acid: var(--color-acid);
+  --muse-color-acid-rgb: 216 255 79;
+  --muse-color-tangerine: var(--color-tangerine);
+  --muse-color-tangerine-rgb: 255 106 34;
+  --muse-color-forest: var(--color-forest);
+  --muse-color-forest-rgb: 21 128 91;
+  --muse-color-violet: var(--color-violet);
+  --muse-color-violet-rgb: 168 45 255;
+  --muse-color-scrollbar-track: #eee7dc;
+  --muse-color-scrollbar-thumb: #2f2f2d;
+  --muse-color-scrollbar-thumb-hover: #454540;
+  --muse-bg: var(--muse-color-bg);
+  --muse-page-bg: var(--muse-color-black);
+  --muse-panel: rgb(7 7 7 / 0.92);
+  --muse-surface: rgb(var(--muse-color-surface-rgb) / 0.76);
+  --muse-surface-strong: rgb(var(--muse-color-surface-rgb) / 0.82);
+  --muse-border: rgb(var(--muse-color-white-rgb) / 0.08);
+  --muse-border-soft: rgb(var(--muse-color-white-rgb) / 0.06);
+  --muse-border-medium: rgb(var(--muse-color-white-rgb) / 0.12);
+  --muse-border-strong: rgb(var(--muse-color-ink-rgb) / 0.34);
+  --muse-text: rgb(var(--muse-color-ink-rgb) / 0.9);
+  --muse-text-strong: rgb(var(--muse-color-ink-rgb) / 0.94);
+  --muse-text-soft: rgb(var(--muse-color-ink-rgb) / 0.72);
+  --muse-text-muted: rgb(var(--muse-color-ink-rgb) / 0.52);
+  --muse-text-dim: rgb(var(--muse-color-ink-rgb) / 0.38);
+  --muse-text-faint: rgb(var(--muse-color-ink-rgb) / 0.22);
+  --muse-text-inverse: #10100d;
+  --muse-glass: rgb(var(--muse-color-glass-rgb) / 0.82);
+  --muse-shadow: 0 18px 70px rgb(var(--muse-color-black-rgb) / 0.48);
+  --muse-shadow-soft: 0 22px 58px rgb(var(--muse-color-black-rgb) / 0.32);
+  --muse-accent-acid: var(--muse-color-acid);
+  --muse-accent-acid-soft: rgb(var(--muse-color-acid-rgb) / 0.12);
+  --muse-accent-tangerine: var(--muse-color-tangerine);
+  --muse-accent-tangerine-soft: rgb(var(--muse-color-tangerine-rgb) / 0.12);
+  --muse-accent-forest: var(--muse-color-forest);
+  --muse-accent-forest-soft: rgb(var(--muse-color-forest-rgb) / 0.12);
+  --muse-radius-card: 10px;
+  --muse-radius-control: 999px;
+  --muse-page-pad: clamp(16px, 3vw, 42px);
+  --muse-scrollbar-track: var(--muse-color-scrollbar-track);
+  --muse-scrollbar-thumb: var(--muse-color-scrollbar-thumb);
+  --muse-scrollbar-thumb-hover: var(--muse-color-scrollbar-thumb-hover);
+  --muse-ease-emerge: cubic-bezier(0.16, 1, 0.3, 1);
+  --muse-ease-dissolve: cubic-bezier(0.65, 0, 0.35, 1);
+  --motion-page-transition: 640ms;
+  --motion-page-wash: 780ms;
+  --motion-home-dissolve: 1120ms;
+  --motion-community-reveal: 980ms;
+  --motion-rail-reveal: 920ms;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,142 @@
+.side-rail {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid var(--muse-border-soft);
+  background: var(--muse-page-bg);
+  overflow: visible;
+  padding: 14px 0 16px;
+}
+
+.home-shell .side-rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 40px;
+  border-right: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.home-shell .rail-brand,
+.home-shell .rail-user {
+  pointer-events: auto;
+}
+
+.is-rail-revealing .side-rail {
+  animation: rail-reveal var(--motion-rail-reveal) var(--muse-ease-emerge) 440ms both;
+  will-change: opacity, transform;
+}
+
+.rail-brand {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  display: flex;
+  align-items: center;
+  width: 32px;
+  min-width: 0;
+  height: 32px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.5);
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1;
+  padding: 0;
+}
+
+.rail-icon-group {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 14px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.rail-icon {
+  display: grid;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muse-text-muted);
+  font: inherit;
+}
+
+.rail-icon:hover,
+.rail-icon.is-active {
+  background: transparent;
+  color: rgb(var(--muse-color-ink-rgb) / 0.86);
+}
+
+.brand-spark,
+.rail-glyph {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.brand-spark {
+  width: 20px;
+  height: 20px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.88);
+  fill: currentcolor;
+}
+
+.rail-glyph {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.15;
+}
+
+.rail-user {
+  position: absolute;
+  bottom: 13px;
+  left: 6px;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  border-radius: var(--muse-radius-control);
+  padding: 0;
+}
+
+.rail-avatar {
+  display: block;
+  width: 27px;
+  height: 27px;
+  overflow: visible;
+}
+
+.rail-avatar-kite,
+.rail-avatar-spine,
+.rail-avatar-tail {
+  fill: none;
+  stroke: rgb(var(--muse-color-ink-rgb) / 0.58);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rail-avatar-kite {
+  stroke: var(--muse-text-soft);
+  stroke-width: 1.45;
+}
+
+.rail-avatar-spine {
+  stroke-width: 1.25;
+}
+
+.rail-avatar-tail {
+  stroke: rgb(var(--muse-color-ink-rgb) / 0.42);
+  stroke-width: 1.2;
+}
+
+.rail-avatar-node {
+  fill: var(--muse-color-violet);
+  filter: drop-shadow(0 0 3px rgb(var(--muse-color-violet-rgb) / 0.9));
+}

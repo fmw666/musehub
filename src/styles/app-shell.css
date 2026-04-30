@@ -1,0 +1,52 @@
+.community-shell {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.home-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.page-transition-frame {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  animation: page-frame-enter var(--motion-page-transition) var(--muse-ease-emerge) both;
+  will-change: opacity, filter, transform;
+}
+
+.page-transition-frame > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-transition-frame::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      rgb(var(--muse-color-tangerine-rgb) / 0.16),
+      transparent 26rem
+    ),
+    linear-gradient(
+      112deg,
+      transparent 0 26%,
+      rgb(var(--muse-color-ink-rgb) / 0.12) 42%,
+      transparent 58% 100%
+    );
+  content: "";
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transform: translate3d(0, 18px, 0) scale(0.98);
+  animation: page-transition-wash var(--motion-page-wash) var(--muse-ease-emerge) both;
+  will-change: opacity, transform;
+}
