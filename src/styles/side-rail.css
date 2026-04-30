@@ -99,11 +99,29 @@
   position: absolute;
   bottom: 13px;
   left: 6px;
+  display: grid;
+  place-items: center;
   width: 30px;
   min-width: 30px;
   height: 30px;
   border-radius: var(--muse-radius-control);
   padding: 0;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 140ms var(--muse-ease-emerge);
+}
+
+.rail-user:hover,
+.rail-user[data-hovered="true"],
+.rail-user[data-pressed="true"] {
+  background: rgb(var(--muse-color-ink-rgb) / 0.06);
+}
+
+.rail-user:focus-visible,
+.rail-user[data-focus-visible="true"] {
+  outline: none;
+  box-shadow: var(--muse-focus-ring);
 }
 
 .rail-avatar {
@@ -139,4 +157,228 @@
 .rail-avatar-node {
   fill: var(--muse-color-violet);
   filter: drop-shadow(0 0 3px rgb(var(--muse-color-violet-rgb) / 0.9));
+}
+
+/* ----------------------------------------------------------------------- */
+/* Rail user menu (popover that opens from the bottom-left avatar)         */
+/*                                                                         */
+/* HeroUI v3 popover renders as `.popover` with `bg-overlay` +             */
+/* `box-shadow: var(--shadow-overlay)` and `.popover__dialog` with p-4.    */
+/* Instead of fighting those with !important, we override the HeroUI       */
+/* overlay variables locally so the popover paints with MuseHub tokens,    */
+/* and zero out the inner dialog padding so our own 14px frame shows.      */
+/* ----------------------------------------------------------------------- */
+
+.rail-user-menu.popover {
+  --overlay: var(--muse-color-surface);
+  --overlay-foreground: var(--muse-text);
+  --foreground: var(--muse-text);
+  --border: var(--muse-border);
+  --separator: var(--muse-border-soft);
+  --shadow-overlay: var(--muse-shadow);
+
+  width: 260px;
+  border-radius: 14px;
+  border: 1px solid var(--muse-border);
+  color: var(--muse-text);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+}
+
+.rail-user-menu .popover__dialog {
+  padding: 0;
+}
+
+.rail-user-menu-body {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 12px 10px;
+}
+
+.rail-user-menu-header {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 4px 10px;
+}
+
+.rail-user-menu-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgb(var(--muse-color-ink-rgb) / 0.06);
+  border: 1px solid var(--muse-border-soft);
+}
+
+.rail-user-menu-avatar .rail-avatar {
+  width: 22px;
+  height: 22px;
+}
+
+.rail-user-menu-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rail-user-menu-topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rail-user-menu-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muse-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-user-menu-plan {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--muse-accent-violet);
+  background: var(--muse-accent-violet-soft);
+  border: 1px solid rgb(var(--muse-color-violet-rgb) / 0.28);
+}
+
+.rail-user-menu-email {
+  font-size: 11.5px;
+  color: var(--muse-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-user-menu-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 4px 12px;
+}
+
+.rail-user-menu-usage-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muse-accent-violet);
+}
+
+.rail-user-menu-usage-track {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgb(var(--muse-color-ink-rgb) / 0.08);
+  overflow: hidden;
+}
+
+.rail-user-menu-usage-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--muse-color-violet-rgb) / 0.9),
+    rgb(var(--muse-color-honey-rgb) / 0.7)
+  );
+  transition: width 420ms var(--muse-ease-emerge);
+}
+
+.rail-user-menu-usage-fill--quality {
+  opacity: 0.45;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--muse-color-honey-rgb) / 0.7),
+    rgb(var(--muse-color-coral-rgb) / 0.6)
+  );
+}
+
+.rail-user-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rail-user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muse-text-soft);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 140ms var(--muse-ease-emerge),
+    color 140ms var(--muse-ease-emerge);
+}
+
+.rail-user-menu-item:hover,
+.rail-user-menu-item:focus-visible {
+  background: rgb(var(--muse-color-ink-rgb) / 0.05);
+  color: var(--muse-text-strong);
+  outline: none;
+}
+
+.rail-user-menu-item:focus-visible {
+  box-shadow: var(--muse-focus-ring);
+}
+
+.rail-user-menu-item.is-muted {
+  color: var(--muse-text-muted);
+}
+
+.rail-user-menu-item.is-muted:hover,
+.rail-user-menu-item.is-muted:focus-visible {
+  color: var(--muse-accent-tangerine);
+  background: rgb(var(--muse-color-coral-rgb) / 0.06);
+}
+
+.rail-user-menu-item-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: currentcolor;
+}
+
+.rail-user-menu-item-icon > svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.7;
+}
+
+.rail-user-menu-item-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-user-menu-divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--muse-border-soft);
 }
