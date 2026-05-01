@@ -5,6 +5,12 @@ import { ShowcaseUploadWorkbench } from "@/features/submit-showcase/ui/ShowcaseU
 import { AgentMascot, type AgentName } from "@/shared/ui/agent-mascot";
 import { BlurFade, TypingText } from "@/shared/ui/motion";
 
+// Co-located upload-page styles — previously lived in src/styles/pages.css and
+// were eagerly imported by styles/index.css, adding ~29KB of rules to the main
+// CSS bundle even when the lazy UploadPage route was never visited. Importing
+// here lets Vite bind the stylesheet to this chunk so it rides the lazy load.
+import "./upload-page.css";
+
 type AgentCardDef = {
   name: AgentName;
   label: string;
