@@ -16,55 +16,45 @@
 }
 
 @media (max-width: 900px) {
+  /*
+   * Keep the rail vertical on mobile (users wanted nav + account on the left,
+   * not on top). The rail stays sticky in its grid column; we only widen it
+   * slightly (48px) so icons can grow to touch-target friendly sizes, and we
+   * pad the bottom with env(safe-area-inset-bottom) so the avatar stays clear
+   * of the iOS home indicator.
+   */
   .community-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: 48px minmax(0, 1fr);
+    grid-template-columns: 48px minmax(0, 1fr);
   }
 
   .side-rail {
-    z-index: 20;
-    height: 48px;
-    flex-direction: row;
-    border-right: 0;
-    border-bottom: 1px solid var(--muse-border);
-    background: rgb(var(--muse-color-black-rgb) / 0.86);
-    padding: 0 12px;
-    backdrop-filter: blur(18px);
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 
   .home-shell .side-rail {
-    position: sticky;
-    inset: auto;
-    width: auto;
-    border-bottom: 1px solid var(--muse-border);
-    background: rgb(var(--muse-color-black-rgb) / 0.72);
-    pointer-events: auto;
+    width: 48px;
   }
 
   .rail-brand {
-    position: static;
-    transform: none;
-  }
-
-  .rail-icon-group {
-    position: static;
-    display: flex;
-    gap: 4px;
-    margin-left: auto;
-    transform: none;
+    top: 12px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
   }
 
   .rail-icon {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-    margin-right: 2px;
-    margin-bottom: 0;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .rail-icon-group {
+    gap: 10px;
   }
 
   .rail-user {
-    position: static;
-    margin-left: 2px;
+    bottom: calc(13px + env(safe-area-inset-bottom));
+    left: 9px;
   }
 
   .community-stage {
@@ -73,11 +63,11 @@
 
   .home-stage {
     min-height: 0;
-    padding: 64px 16px 26px;
+    padding: 24px 16px 26px;
   }
 
   .home-hero {
-    width: min(540px, calc(100vw - 32px));
+    width: min(540px, calc(100vw - 32px - 48px));
   }
 
   .home-path {
@@ -105,11 +95,11 @@
 
   .planned-stage {
     min-height: 0;
-    padding: 64px 16px 24px;
+    padding: 24px 16px;
   }
 
   .upload-stage {
-    padding: 78px 16px 32px;
+    padding: 28px 16px 32px;
     gap: 24px;
   }
 
@@ -141,8 +131,8 @@
   }
 
   .floating-composer {
-    bottom: 12px;
-    width: calc(100vw - 24px);
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: min(520px, calc(100vw - 24px - 48px));
   }
 }
 
