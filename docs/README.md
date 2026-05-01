@@ -8,6 +8,8 @@ This directory is the project knowledge base. Keep docs short, current, and usef
 - `standards.md`: component, directory, file, code, test, and documentation standards.
 - `guard.md`: structural guard pattern for defending against cross-file type-resolution false positives.
 - `adr/`: architectural decision records.
+  - `0001-project-architecture-and-guardrails.md`: layered React architecture and HeroUI v3 mandate.
+  - `0002-animate-ui-motion-only.md`: Animate UI scope limited to motion effects and animated icons.
 
 ## Documentation Rules
 

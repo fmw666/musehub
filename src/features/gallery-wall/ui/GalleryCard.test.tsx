@@ -75,12 +75,26 @@ describe("GalleryCard", () => {
       ),
     );
     expect(writeText).toHaveBeenCalledWith(
-      expect.stringContaining(
-        "JS URL: http://localhost:3000/community-showcases/sample/script.js",
-      ),
+      expect.stringContaining("JS URL: http://localhost:3000/community-showcases/sample/script.js"),
     );
     expect(writeText).toHaveBeenCalledWith(
       expect.stringContaining("current project architecture, technology stack"),
     );
+  });
+
+  it("switches the copy prompt button to the success label after copying", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(<GalleryCard item={baseItem} priority={0} />);
+
+    await user.click(screen.getByRole("button", { name: /copy prompt/i }));
+
+    await screen.findByRole("button", { name: /prompt copied/i });
   });
 });

@@ -3,6 +3,7 @@ import { Chip } from "@heroui/react";
 
 import { ShowcaseUploadWorkbench } from "@/features/submit-showcase/ui/ShowcaseUploadWorkbench";
 import { AgentMascot, type AgentName } from "@/shared/ui/agent-mascot";
+import { BlurFade, TypingText } from "@/shared/ui/motion";
 
 type AgentCardDef = {
   name: AgentName;
@@ -47,28 +48,40 @@ export function UploadPage() {
       </div>
 
       <header className="upload-hero">
-        <div className="upload-hero-topline">
-          <Chip className="upload-hero-chip" variant="bordered" size="sm">
-            /upload
-          </Chip>
-          <span className="upload-hero-meta" aria-hidden="true">
-            <span className="upload-hero-meta-dot" />
-            awaiting your agent
-          </span>
-        </div>
-        <h1 className="upload-hero-headline">
-          <span className="upload-hero-line">Hand it</span>
-          <span className="upload-hero-line">
-            to <em className="upload-hero-accent">your agent</em>
-            <span className="upload-hero-period" aria-hidden="true">
-              .
+        <BlurFade delay={0.05}>
+          <div className="upload-hero-topline">
+            <Chip className="upload-hero-chip" variant="bordered" size="sm">
+              /upload
+            </Chip>
+            <span className="upload-hero-meta" aria-hidden="true">
+              <span className="upload-hero-meta-dot" />
+              <TypingText
+                text={["awaiting your agent", "ready for hand-off", "listening for skill calls"]}
+                typingSpeedMs={55}
+                deletingSpeedMs={25}
+                pauseMs={1800}
+                showCursor
+              />
             </span>
-          </span>
-        </h1>
-        <p className="upload-hero-lede">
-          这个页面不收集信息。把上面的 prompt 交给任意一个 agent —— agent 会读
-          skill、来问你要素、然后提交 PR。
-        </p>
+          </div>
+        </BlurFade>
+        <BlurFade delay={0.15}>
+          <h1 className="upload-hero-headline">
+            <span className="upload-hero-line">Hand it</span>
+            <span className="upload-hero-line">
+              to <em className="upload-hero-accent">your agent</em>
+              <span className="upload-hero-period" aria-hidden="true">
+                .
+              </span>
+            </span>
+          </h1>
+        </BlurFade>
+        <BlurFade delay={0.3}>
+          <p className="upload-hero-lede">
+            这个页面不收集信息。把上面的 prompt 交给任意一个 agent —— agent 会读
+            skill、来问你要素、然后提交 PR。
+          </p>
+        </BlurFade>
       </header>
 
       <ShowcaseUploadWorkbench />
@@ -79,46 +92,51 @@ export function UploadPage() {
           <span className="upload-agent-picker-sub">hover to wake · click to poke</span>
         </header>
         <div className="hk-agent-card-row" aria-label="Detected agents">
-          {AGENTS.map((agent) => {
+          {AGENTS.map((agent, index) => {
             const isHovered = hovered === agent.name;
             const isClicked = clicked === agent.name;
             return (
-              <button
-                key={agent.name}
-                type="button"
-                className={`hk-agent-card hk-agent-card--${agent.name}${isClicked ? " is-clicked" : ""}`}
-                onMouseEnter={() => setHovered(agent.name)}
-                onMouseLeave={() => setHovered(null)}
-                onFocus={() => setHovered(agent.name)}
-                onBlur={() => setHovered(null)}
-                onClick={() => handleSelect(agent)}
-                aria-label={agent.label}
-              >
-                <span className="hk-agent-card__icon" aria-hidden="true">
-                  <AgentMascot
-                    name={agent.name}
-                    size={42}
-                    animated={isHovered}
-                    clicked={isClicked}
-                  />
-                </span>
-                <span className="hk-agent-card__label">{agent.label}</span>
-                <span className="hk-agent-card__count">{agent.hint}</span>
-              </button>
+              <BlurFade key={agent.name} delay={0.45 + index * 0.07} offsetY={6}>
+                <button
+                  type="button"
+                  className={`hk-agent-card hk-agent-card--${agent.name}${isClicked ? " is-clicked" : ""}`}
+                  onMouseEnter={() => setHovered(agent.name)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(agent.name)}
+                  onBlur={() => setHovered(null)}
+                  onClick={() => handleSelect(agent)}
+                  aria-label={agent.label}
+                >
+                  <span className="hk-agent-card__icon" aria-hidden="true">
+                    <AgentMascot
+                      name={agent.name}
+                      size={42}
+                      animated={isHovered}
+                      clicked={isClicked}
+                    />
+                  </span>
+                  <span className="hk-agent-card__label">{agent.label}</span>
+                  <span className="hk-agent-card__count">{agent.hint}</span>
+                </button>
+              </BlurFade>
             );
           })}
         </div>
       </section>
 
       <footer className="upload-stage-footer" aria-hidden="true">
-        <div className="upload-stage-footer-left">
-          <span className="upload-stage-footer-label">runtime</span>
-          <span className="upload-stage-footer-value">musehub://agent.upload.v1</span>
-        </div>
-        <div className="upload-stage-footer-right">
-          <span className="upload-stage-footer-label">mode</span>
-          <span className="upload-stage-footer-value">hand-off</span>
-        </div>
+        <BlurFade delay={0.9} duration={0.5} offsetY={4}>
+          <div className="upload-stage-footer-left">
+            <span className="upload-stage-footer-label">runtime</span>
+            <span className="upload-stage-footer-value">musehub://agent.upload.v1</span>
+          </div>
+        </BlurFade>
+        <BlurFade delay={1.0} duration={0.5} offsetY={4}>
+          <div className="upload-stage-footer-right">
+            <span className="upload-stage-footer-label">mode</span>
+            <span className="upload-stage-footer-value">hand-off</span>
+          </div>
+        </BlurFade>
       </footer>
     </section>
   );

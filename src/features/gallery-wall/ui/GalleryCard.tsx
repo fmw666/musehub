@@ -1,9 +1,10 @@
-import { Bookmark, Copy, Download, ExternalLink, Heart, Link } from "lucide-react";
+import { Bookmark, Check, Copy, Download, ExternalLink, Heart, Link } from "lucide-react";
 import { Button, Card, Chip } from "@heroui/react";
 import { type CSSProperties, useMemo, useState } from "react";
 
 import { createShowcaseCopyPrompt } from "@/entities/showcase/model/copy-prompt";
 import type { ShowcaseItem } from "@/entities/showcase/model/types";
+import { Counter, PressPulse } from "@/shared/ui/motion";
 import { WallArtwork } from "./WallArtwork";
 
 type GalleryCardProps = {
@@ -92,11 +93,19 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
         <div className="asset-social" aria-label={`${item.title} saves and likes`}>
           <span>
             <Bookmark aria-hidden="true" size={14} />
-            {item.favorites ?? "Save"}
+            {typeof item.favorites === "number" ? (
+              <Counter value={item.favorites} aria-label={`${item.favorites} saves`} />
+            ) : (
+              "Save"
+            )}
           </span>
           <span>
             <Heart aria-hidden="true" size={14} />
-            {item.likes ?? "Like"}
+            {typeof item.likes === "number" ? (
+              <Counter value={item.likes} aria-label={`${item.likes} likes`} />
+            ) : (
+              "Like"
+            )}
           </span>
         </div>
 
@@ -116,16 +125,24 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
           >
             Open in new window
           </Button>
-          <Button
-            className="asset-mask-control"
-            isDisabled={!copyablePrompt}
-            size="sm"
-            startContent={<Copy aria-hidden="true" size={14} />}
-            variant="flat"
-            onPress={copyPrompt}
-          >
-            {hasCopiedPrompt ? "Prompt copied" : "Copy prompt"}
-          </Button>
+          <PressPulse triggerKey={hasCopiedPrompt} overlayClassName="gallery-prompt-pulse">
+            <Button
+              className="asset-mask-control"
+              isDisabled={!copyablePrompt}
+              size="sm"
+              startContent={
+                hasCopiedPrompt ? (
+                  <Check aria-hidden="true" size={14} />
+                ) : (
+                  <Copy aria-hidden="true" size={14} />
+                )
+              }
+              variant="flat"
+              onPress={copyPrompt}
+            >
+              {hasCopiedPrompt ? "Prompt copied" : "Copy prompt"}
+            </Button>
+          </PressPulse>
           <Button
             className="asset-mask-control"
             isDisabled={!item.zipPath}

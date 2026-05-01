@@ -10,6 +10,10 @@
  *      (theme.css or a feature sheet).
  *   3. No inline cubic-bezier(...) in feature CSS; use --muse-ease-*.
  *   4. @keyframes names must be unique across CSS under src/styles.
+ *   5. Animate UI is motion-only (see ADR 0002 and
+ *      `.cursor/rules/heroui-v3-components.mdc`):
+ *      - `motion` / `motion/react` may only be imported from
+ *        `src/shared/ui/motion/**` or `src/shared/ui/icons/animated/**`.
  *
  * Usage:
  *   npm run guard:design
@@ -32,6 +36,9 @@ const CUBIC_RE = /\bcubic-bezier\(/g;
 const VAR_REF_RE = /var\(\s*(--(?:muse|action|hk|upload)-[a-z0-9-]+)/gi;
 const VAR_DECL_RE = /(--(?:muse|action|hk|upload)-[a-z0-9-]+)\s*:/gi;
 const KEYFRAMES_RE = /@keyframes\s+([a-zA-Z0-9_-]+)\s*\{/g;
+// Matches `from "motion"` or `from "motion/react"` (and single-quote variants),
+// plus `import("motion...")` and `require("motion...")` just in case.
+const MOTION_IMPORT_RE = /(?:from\s+|import\s*\(\s*|require\s*\(\s*)['"]motion(?:\/[^'"]+)?['"]/g;
 
 // Hardcoded color values that are allowed anywhere (kept intentionally tiny).
 const COLOR_ALLOWLIST = new Set(["#000", "#fff", "#111", "#15140f", "transparent", "currentcolor"]);
@@ -82,6 +89,20 @@ function rel(file) {
 // --- 0. collect files ---------------------------------------------------
 const allFiles = walk(srcRoot).filter((f) => !shouldIgnore(f));
 const cssFiles = allFiles.filter((f) => f.endsWith(".css"));
+const tsFiles = allFiles.filter((f) => /\.(?:ts|tsx|mts|cts)$/.test(f));
+
+// Paths that may legitimately import Animate UI / motion effects.
+// See ADR 0002.
+const MOTION_ALLOWED_PATH_FRAGMENTS = [
+  path.join("src", "shared", "ui", "motion"),
+  path.join("src", "shared", "ui", "icons", "animated"),
+  // Test helpers that stub motion hooks for reduced-motion branch coverage.
+  path.join("src", "test"),
+];
+
+function isMotionAllowedPath(file) {
+  return MOTION_ALLOWED_PATH_FRAGMENTS.some((frag) => file.includes(frag));
+}
 
 const offences = [];
 
@@ -169,7 +190,20 @@ for (const file of cssFiles) {
   }
 }
 
-// --- 3. report ----------------------------------------------------------
+// --- 3. scan TS/TSX for out-of-scope motion imports ---------------------
+for (const file of tsFiles) {
+  if (isMotionAllowedPath(file)) continue;
+  const src = readFileSync(file, "utf8");
+  for (const m of src.matchAll(MOTION_IMPORT_RE)) {
+    report(
+      "motion-outside-scope",
+      file,
+      `${m[0].trim()} — motion imports are allowed only in src/shared/ui/motion/** or src/shared/ui/icons/animated/** (see ADR 0002).`,
+    );
+  }
+}
+
+// --- 4. report ----------------------------------------------------------
 const quiet = process.argv.includes("--quiet");
 
 if (offences.length === 0) {
@@ -203,7 +237,8 @@ process.stdout.write(
     "  - Map raw hex/rgb to a --muse-color-*-rgb palette token and consume via rgb(var(--muse-color-X-rgb) / 0.NN).\n" +
     "  - Replace cubic-bezier(...) with var(--muse-ease-emerge) or var(--muse-ease-dissolve).\n" +
     "  - Declare missing tokens in src/styles/theme.css or scope component tokens with --feature-* in the feature sheet.\n" +
-    "  - Rename duplicate @keyframes using a feature prefix (e.g. upload-*, community-*).\n\n",
+    "  - Rename duplicate @keyframes using a feature prefix (e.g. upload-*, community-*).\n" +
+    "  - Move `motion` / `motion/react` imports into src/shared/ui/motion/** or src/shared/ui/icons/animated/** (see ADR 0002); consumers should use the motion atoms exported from there.\n\n",
 );
 
 process.exit(1);

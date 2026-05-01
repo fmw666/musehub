@@ -1,6 +1,8 @@
 import { Button, Chip } from "@heroui/react";
 import { RotateCcw, Sparkles } from "lucide-react";
 
+import { BlurFade } from "@/shared/ui/motion";
+
 type GalleryEmptyStateProps = {
   query: string;
   selectedTags: readonly string[];
@@ -25,16 +27,18 @@ export function GalleryEmptyState({
       <div className="gallery-empty-orbit" aria-hidden="true">
         <Sparkles size={18} />
       </div>
-      <div className="gallery-empty-copy">
-        <Chip className="stage-chip gallery-empty-chip" variant="bordered">
-          No matches
-        </Chip>
-        <h2>No showcase found for this search</h2>
-        <p>
-          Try a broader title search, remove a tag, or jump to one of the live community labels
-          below.
-        </p>
-      </div>
+      <BlurFade delay={0.08}>
+        <div className="gallery-empty-copy">
+          <Chip className="stage-chip gallery-empty-chip" variant="bordered">
+            No matches
+          </Chip>
+          <h2>No showcase found for this search</h2>
+          <p>
+            Try a broader title search, remove a tag, or jump to one of the live community labels
+            below.
+          </p>
+        </div>
+      </BlurFade>
       {hasFilters ? (
         <div className="gallery-empty-query" aria-label="Active empty search filters">
           {trimmedQuery.length > 0 ? <span>Search: {trimmedQuery}</span> : null}

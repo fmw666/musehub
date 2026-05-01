@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { Button, Card } from "@heroui/react";
 
 import { homeOrbitCards, type HomeOrbitCard } from "@/pages/home/model/orbit-cards";
+import { BlurFade } from "@/shared/ui/motion";
 
 type HomePageProps = {
   communityPath: string;
@@ -54,23 +55,31 @@ export function HomePage({
       aria-label={`${title} home`}
     >
       <div className="home-orbit" aria-hidden="true">
-        {homeOrbitCards.map((card) => (
+        {homeOrbitCards.map((card, index) => (
           <div className="home-orbit-slot" key={card.label} style={getOrbitCardStyle(card)}>
-            <div className={`home-orbit-card home-orbit-card-${card.tone}`}>
-              <div className="home-orbit-card-surface">
-                <span>{card.label}</span>
-                <i />
-                <b />
+            <BlurFade delay={0.1 + index * 0.08} offsetY={4} blur={4}>
+              <div className={`home-orbit-card home-orbit-card-${card.tone}`}>
+                <div className="home-orbit-card-surface">
+                  <span>{card.label}</span>
+                  <i />
+                  <b />
+                </div>
               </div>
-            </div>
+            </BlurFade>
           </div>
         ))}
       </div>
 
       <div className="home-hero">
-        <p className="home-kicker">Collect. Remix. Ship.</p>
-        <h1>{title}</h1>
-        <p className="home-copy">{description}</p>
+        <BlurFade delay={0.05}>
+          <p className="home-kicker">Collect. Remix. Ship.</p>
+        </BlurFade>
+        <BlurFade delay={0.15}>
+          <h1>{title}</h1>
+        </BlurFade>
+        <BlurFade delay={0.3}>
+          <p className="home-copy">{description}</p>
+        </BlurFade>
         <Card className="home-note">
           <Card.Content className="home-note-content">
             <span>{founderNote.eyebrow}</span>

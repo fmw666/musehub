@@ -58,6 +58,7 @@
 }
 
 .rail-icon {
+  position: relative;
   display: grid;
   width: 32px;
   min-width: 32px;
@@ -74,6 +75,21 @@
 .rail-icon.is-active {
   background: transparent;
   color: rgb(var(--muse-color-ink-rgb) / 0.86);
+}
+
+.rail-icon-highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 8px;
+  background: rgb(var(--muse-color-ink-rgb) / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(var(--muse-color-ink-rgb) / 0.16);
+  pointer-events: none;
+}
+
+.rail-icon > .rail-glyph {
+  position: relative;
+  z-index: 1;
 }
 
 .brand-spark,

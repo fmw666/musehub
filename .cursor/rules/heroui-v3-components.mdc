@@ -20,3 +20,31 @@ Example:
 ```tsx
 import { Button, Card, Input } from "@heroui/react";
 ```
+
+## Animate UI Exception (Motion-Only)
+
+Per ADR 0002, [Animate UI](https://animate-ui.com/) is allowed as a motion
+layer only, never as a component library.
+
+- Animate UI source may live only in `src/shared/ui/motion/**` (motion effect
+  atoms) or `src/shared/ui/icons/animated/**` (animated Lucide icons).
+- Do not port Animate UI's Button, Card, Input, Dialog, Tabs, Tooltip,
+  Popover, Accordion, Dropdown, Select, Checkbox, Switch, Badge, Avatar,
+  Skeleton, Spinner, or any other component-category asset. HeroUI v3
+  covers all of these.
+- Do not port Animate UI's Radix / Base UI / Headless UI primitive wrappers.
+  Use HeroUI primitives backed by React Aria instead.
+- Motion atoms must wrap HeroUI components, not replace them. Example: put
+  a `BlurFade` around a HeroUI `Card`; do not swap the `Card` for a
+  shadcn-style card.
+- The only animation runtime dependency is `motion`. Do not import
+  `motion/react` outside `src/shared/ui/motion/**` or
+  `src/shared/ui/icons/animated/**`.
+- Motion atoms must honor `prefers-reduced-motion: reduce` and render a
+  static fallback when motion is reduced.
+- Colors and easings inside motion atoms must consume `--muse-*` tokens and
+  `--muse-ease-*` curves (see `muse-design-system.mdc`). Do not inline shadcn
+  CSS variables.
+- Each ported file needs a short top-of-file header declaring its Animate UI
+  upstream source (component name and commit hash or version), to keep diffs
+  reviewable.

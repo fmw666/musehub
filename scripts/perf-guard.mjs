@@ -40,21 +40,47 @@ if (shouldBuild) {
 // - `main-js` / `main-css`: first-paint critical path (non-lazy).
 // - `lazy-js` / `lazy-css`: any lazy-loaded page chunk. Each chunk is checked
 //   against this per-chunk ceiling.
+// - `vendor-js`: any auto-split vendor chunk (e.g. createLucideIcon). Each
+//   such chunk is checked against this ceiling individually. This is a
+//   regression canary — if a new large third-party dep starts getting its
+//   own auto-split chunk, we want to notice before it silently grows past
+//   existing peers.
 // - `total-js` / `total-css`: overall production payload ceiling.
 //
 // Thresholds are gzip kilobytes. Update deliberately with a commit that
 // explains the new cost.
+//
+// Currently (as of the May 2026 green build):
+//   main-js       = 79.00 KB     (budget 95)
+//   createLucide  = 70.86 KB     (budget 80, vendor-js peer)
+//   Community pg  = 10.42 KB     (budget 40, lazy-js)
+//   Upload pg     =  6.19 KB     (budget 40, lazy-js)
+//   total-js      = 166.71 KB    (budget 170, ~2% headroom)
+//   main-css      =  44.85 KB    (budget 55)
+//   total-css     =  50.79 KB    (budget 60)
+//
+// Motion runtime note: `motion` is bundled inline with application code in
+// the main-js chunk; an attempt to split it out via manualChunks (vite 8 /
+// rolldown) was reverted because explicit manualChunks disables rolldown's
+// automatic de-duplication, resulting in a net +5KB gzip regression across
+// the payload. See docs/adr/0002-animate-ui-motion-only.md.
 const BUDGETS = {
-  "main-js": 95, // main entry js (currently ~77 KB gzip)
-  "main-css": 55, // main entry css (currently ~45 KB gzip)
-  "lazy-js": 40, // biggest lazy page js chunk (currently ~29 KB)
-  "lazy-css": 8, // biggest lazy page css chunk (currently ~4 KB)
-  "total-js": 170, // sum of all JS (currently ~126 KB)
-  "total-css": 60, // sum of all CSS (currently ~51 KB)
+  "main-js": 95, // main entry js
+  "main-css": 55, // main entry css
+  "lazy-js": 40, // biggest lazy page js chunk
+  "lazy-css": 8, // biggest lazy page css chunk
+  "vendor-js": 80, // biggest auto-split third-party chunk (createLucideIcon today)
+  "total-js": 170, // sum of all JS
+  "total-css": 60, // sum of all CSS
 };
 
 const MAIN_HINTS = /(^|\/)index-[A-Za-z0-9_-]+\.(js|css)$/;
 const LAZY_PAGE_HINT = /(Page|Route)-[A-Za-z0-9_-]+\.(js|css)$/;
+// Heuristic: vendor chunks are ones that aren't main, aren't page chunks,
+// aren't the tiny utility helpers rolldown emits (copy, rolldown-runtime),
+// and are large enough to matter. We check "large enough" later by gzip
+// size against the vendor-js ceiling.
+const TINY_HELPER_HINT = /^(copy|rolldown-runtime)-/;
 
 const results = { js: [], css: [] };
 
@@ -69,7 +95,14 @@ for (const file of readdirSync(distDir)) {
   const gzipBytes = gzipSync(raw).length;
   const gzipKB = +(gzipBytes / 1024).toFixed(2);
 
-  results[ext].push({ file, gzipKB, isMain: MAIN_HINTS.test(file), isLazyPage: LAZY_PAGE_HINT.test(file) });
+  const isMain = MAIN_HINTS.test(file);
+  const isLazyPage = LAZY_PAGE_HINT.test(file);
+  const isTinyHelper = TINY_HELPER_HINT.test(file);
+  // Everything that isn't main, page, or a tiny helper, and is JS, is a
+  // third-party vendor chunk from rolldown's automatic splitting.
+  const isVendor = ext === "js" && !isMain && !isLazyPage && !isTinyHelper;
+
+  results[ext].push({ file, gzipKB, isMain, isLazyPage, isVendor, isTinyHelper });
 }
 
 const violations = [];
@@ -79,10 +112,12 @@ for (const kind of ["js", "css"]) {
   const items = results[kind].sort((a, b) => b.gzipKB - a.gzipKB);
   const main = items.find((item) => item.isMain);
   const lazy = items.filter((item) => item.isLazyPage);
+  const vendors = items.filter((item) => item.isVendor);
   const total = items.reduce((sum, item) => sum + item.gzipKB, 0);
 
   const mainBudget = BUDGETS[`main-${kind}`];
   const lazyBudget = BUDGETS[`lazy-${kind}`];
+  const vendorBudget = BUDGETS[`vendor-${kind}`];
   const totalBudget = BUDGETS[`total-${kind}`];
 
   headline.push(
@@ -95,6 +130,15 @@ for (const kind of ["js", "css"]) {
   for (const chunk of lazy) {
     if (chunk.gzipKB > lazyBudget) {
       violations.push(`lazy-${kind} ${chunk.file} is ${chunk.gzipKB}KB > budget ${lazyBudget}KB`);
+    }
+  }
+  if (vendorBudget !== undefined) {
+    for (const chunk of vendors) {
+      if (chunk.gzipKB > vendorBudget) {
+        violations.push(
+          `vendor-${kind} ${chunk.file} is ${chunk.gzipKB}KB > budget ${vendorBudget}KB`,
+        );
+      }
     }
   }
   if (total > totalBudget) {
@@ -110,10 +154,25 @@ for (const kind of ["js", "css"]) {
   if (!items.length) continue;
   console.log(`  ${kind} chunks:`);
   for (const item of items) {
-    const tag = item.isMain ? "main" : item.isLazyPage ? "page" : "chunk";
-    console.log(`    ${tag.padEnd(5)} ${item.gzipKB.toString().padStart(7)} KB  ${item.file}`);
+    const tag = item.isMain
+      ? "main"
+      : item.isLazyPage
+        ? "page"
+        : item.isVendor
+          ? "vendor"
+          : item.isTinyHelper
+            ? "helper"
+            : "chunk";
+    console.log(`    ${tag.padEnd(6)} ${item.gzipKB.toString().padStart(7)} KB  ${item.file}`);
   }
 }
+
+// Motion runtime observability: rolldown inlines `motion` into main-js, so
+// it has no dedicated chunk. Experimentally splitting it via manualChunks
+// costs ~5KB gzip because rolldown's automatic de-duplication stops when
+// explicit manualChunks is set. We therefore do not try to measure motion
+// in-bundle from this script; main-js staying under its budget is the
+// proxy. See docs/adr/0002-animate-ui-motion-only.md for details.
 
 if (violations.length) {
   console.error("\n[perf-guard] budget exceeded:");

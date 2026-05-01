@@ -182,6 +182,23 @@
   }
 }
 
+.typing-text-caret {
+  display: inline-block;
+  width: 0.48em;
+  height: 1em;
+  margin-left: 0.14em;
+  vertical-align: -0.12em;
+  background: rgb(var(--muse-color-ink-rgb) / 0.6);
+  animation: upload-caret-blink 1.1s steps(2, end) infinite;
+}
+
+.gallery-prompt-pulse {
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 2px rgb(var(--muse-color-acid-rgb) / 0.55),
+    0 0 18px 4px rgb(var(--muse-color-acid-rgb) / 0.35);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

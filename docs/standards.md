@@ -8,6 +8,7 @@
 - Manage global color decisions through `src/styles/index.css` tokens: base palette tokens feed semantic tokens, and semantic tokens feed component-specific tokens.
 - Prefer typed config and data-driven rendering over hard-coded repeated UI.
 - Do not add another UI component library unless explicitly approved.
+- Animate UI is allowed as a motion-only layer under `src/shared/ui/motion/**` and `src/shared/ui/icons/animated/**`, never as a component library. See `docs/adr/0002-animate-ui-motion-only.md` and `.cursor/rules/heroui-v3-components.mdc`.
 
 ## Directory Standards
 

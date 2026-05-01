@@ -36,6 +36,28 @@ Do not add boilerplate file headers to every source file. Add a short top-of-fil
 
 HeroUI v3 is mandatory for component primitives. Import from `@heroui/react`. Keep behavior, accessibility, forms, overlays, menus, cards, and controls on HeroUI components. Use Tailwind CSS v4 and local CSS for layout and art direction.
 
+### Motion Layer (Animate UI)
+
+[Animate UI](https://animate-ui.com/) is allowed as a **motion layer only**, never as a component library (see `docs/adr/0002-animate-ui-motion-only.md`).
+
+- Ported motion effects live under `src/shared/ui/motion/**`. Animated icons live under `src/shared/ui/icons/animated/**`.
+- Motion atoms must wrap HeroUI components, not replace them. Do not port Animate UI's Button, Card, Input, Dialog, Tabs, Tooltip, Popover, Accordion, Dropdown, Select, Checkbox, Switch, Badge, Avatar, Skeleton, Spinner, or any other component-category asset. HeroUI covers all of these.
+- The only animation runtime dependency is `motion`. Do not import it outside the two paths above; `npm run guard:design` enforces this.
+- Motion atoms must honor `prefers-reduced-motion: reduce` and consume `--muse-*` tokens / `--muse-ease-*` easings.
+- Each ported file needs a short top-of-file header declaring its Animate UI upstream source.
+
+Current motion atoms exported from `src/shared/ui/motion/`:
+
+- `BlurFade` — staggered entrance fade + slight translate + blur release for hero copy and section blocks.
+- `Counter` — animated number tween for statistics and counts.
+- `MotionHighlight` — measurement-driven sliding indicator that tracks a caller-supplied rect (used by the side rail's active indicator).
+- `TypingText` — typewriter-style text that supports single strings or looping across an array, with a blinking caret.
+- `PressPulse` — one-shot scale + opacity pulse overlay triggered by a `triggerKey` change (used for copy-success feedback).
+
+When adding another atom, follow the checklist in `docs/adr/0002-animate-ui-motion-only.md` under "Adding a new atom".
+
+Run `npm run guard:motion` (or `node scripts/motion-report.mjs`) to see the live atom → consumers map straight from source instead of trusting the list above. The same script enforces three ADR 0002 discipline rules (upstream attribution header, `useReducedMotion` / `prefers-reduced-motion` opt-in, adjacent unit test) and exits non-zero on violation. **It is part of `npm run ci`** (between `guard:design` and `test`) — there is no way to land a new atom that skips these checks. For reduced-motion branch testing, use `mockReducedMotion(true)` from `@/test/reduced-motion`; see `src/shared/ui/motion/TypingText.test.tsx` and `PressPulse.test.tsx` for examples.
+
 ## Routing Prep
 
 Routes are declared in `src/app/routing/route-paths.ts`. Page metadata lives in `src/pages/*/contract.ts` and is collected by `src/app/routing/page-registry.ts`. Do not add a router library until real navigation is implemented.

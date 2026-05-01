@@ -1,6 +1,7 @@
 import { Input, Modal, Switch } from "@heroui/react";
 import { useState } from "react";
 
+import { BlurFade } from "@/shared/ui/motion";
 import type { UserProfile } from "./RailUserMenu";
 
 type AccountSettingsModalProps = {
@@ -26,80 +27,86 @@ export function AccountSettingsModal({ isOpen, onOpenChange, profile }: AccountS
             </Modal.Header>
 
             <Modal.Body className="account-settings-body">
-              <section className="account-settings-preview" aria-label="Profile picture preview">
-                <AvatarPreview mode={avatarMode} />
-                <div className="account-settings-preview-actions">
-                  <button
-                    className="account-settings-pill"
-                    type="button"
-                    onClick={() => setAvatarMode("image")}
-                  >
-                    Edit picture
-                  </button>
-                  <button
-                    className={`account-settings-pill${avatarMode === "image" ? " is-active" : ""}`}
-                    type="button"
-                    onClick={() => setAvatarMode("image")}
-                  >
-                    Use image
-                  </button>
-                  <button
-                    className={`account-settings-pill${
-                      avatarMode === "default" ? " is-active" : ""
-                    }`}
-                    type="button"
-                    onClick={() => setAvatarMode("default")}
-                  >
-                    Use default
-                  </button>
-                </div>
-              </section>
-
-              <section className="account-settings-fields">
-                <FieldRow label="Display name">
-                  <Input
-                    className="account-settings-input"
-                    value={displayName}
-                    onChange={(event) => setDisplayName(event.target.value)}
-                    aria-label="Display name"
-                  />
-                </FieldRow>
-
-                <FieldRow label="Username">
-                  <Input
-                    className="account-settings-input"
-                    value={username}
-                    onChange={(event) => setUsername(event.target.value)}
-                    aria-label="Username"
-                  />
-                </FieldRow>
-
-                <FieldRow label="Email">
-                  <span className="account-settings-value">{profile.email}</span>
-                </FieldRow>
-
-                <div className="account-settings-toggle">
-                  <div className="account-settings-toggle-text">
-                    <div className="account-settings-toggle-title">
-                      <span>Keep designs private</span>
-                      <span className="account-settings-tag-pro">Pro</span>
-                    </div>
-                    <p className="account-settings-toggle-hint">
-                      Your designs will not be visible in search or on the Community page.
-                    </p>
+              <BlurFade delay={0.15} duration={0.4} offsetY={4} blur={3}>
+                <section className="account-settings-preview" aria-label="Profile picture preview">
+                  <AvatarPreview mode={avatarMode} />
+                  <div className="account-settings-preview-actions">
+                    <button
+                      className="account-settings-pill"
+                      type="button"
+                      onClick={() => setAvatarMode("image")}
+                    >
+                      Edit picture
+                    </button>
+                    <button
+                      className={`account-settings-pill${avatarMode === "image" ? " is-active" : ""}`}
+                      type="button"
+                      onClick={() => setAvatarMode("image")}
+                    >
+                      Use image
+                    </button>
+                    <button
+                      className={`account-settings-pill${
+                        avatarMode === "default" ? " is-active" : ""
+                      }`}
+                      type="button"
+                      onClick={() => setAvatarMode("default")}
+                    >
+                      Use default
+                    </button>
                   </div>
-                  <Switch
-                    className="account-settings-switch"
-                    isSelected={isPrivate}
-                    onChange={setIsPrivate}
-                    aria-label="Toggle keep designs private"
-                  >
-                    <Switch.Control>
-                      <Switch.Thumb />
-                    </Switch.Control>
-                  </Switch>
-                </div>
-              </section>
+                </section>
+              </BlurFade>
+
+              <BlurFade delay={0.24} duration={0.4} offsetY={4} blur={3}>
+                <section className="account-settings-fields">
+                  <FieldRow label="Display name">
+                    <Input
+                      className="account-settings-input"
+                      value={displayName}
+                      onChange={(event) => setDisplayName(event.target.value)}
+                      aria-label="Display name"
+                    />
+                  </FieldRow>
+
+                  <FieldRow label="Username">
+                    <Input
+                      className="account-settings-input"
+                      value={username}
+                      onChange={(event) => setUsername(event.target.value)}
+                      aria-label="Username"
+                    />
+                  </FieldRow>
+
+                  <FieldRow label="Email">
+                    <span className="account-settings-value">{profile.email}</span>
+                  </FieldRow>
+
+                  <BlurFade delay={0.33} duration={0.4} offsetY={4} blur={3}>
+                    <div className="account-settings-toggle">
+                      <div className="account-settings-toggle-text">
+                        <div className="account-settings-toggle-title">
+                          <span>Keep designs private</span>
+                          <span className="account-settings-tag-pro">Pro</span>
+                        </div>
+                        <p className="account-settings-toggle-hint">
+                          Your designs will not be visible in search or on the Community page.
+                        </p>
+                      </div>
+                      <Switch
+                        className="account-settings-switch"
+                        isSelected={isPrivate}
+                        onChange={setIsPrivate}
+                        aria-label="Toggle keep designs private"
+                      >
+                        <Switch.Control>
+                          <Switch.Thumb />
+                        </Switch.Control>
+                      </Switch>
+                    </div>
+                  </BlurFade>
+                </section>
+              </BlurFade>
             </Modal.Body>
           </Modal.Dialog>
         </Modal.Container>

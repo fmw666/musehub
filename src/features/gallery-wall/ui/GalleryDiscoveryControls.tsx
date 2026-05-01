@@ -2,6 +2,8 @@ import { Button, Chip, SearchField } from "@heroui/react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { FormEvent } from "react";
 
+import { Counter } from "@/shared/ui/motion";
+
 type GalleryDiscoveryControlsProps = {
   filteredCount: number;
   totalCount: number;
@@ -44,7 +46,12 @@ export function GalleryDiscoveryControls({
       <div className="gallery-discovery-panel">
         <div className="gallery-discovery-summary">
           <span>
-            {filteredCount} of {totalCount} showcases
+            <Counter
+              value={filteredCount}
+              aria-label={`${filteredCount} showcases`}
+              startFromZero
+            />{" "}
+            of {totalCount} showcases
           </span>
           {selectedTags.length > 0 ? (
             <div className="gallery-selected-tags" aria-label="Selected tags">
