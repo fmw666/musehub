@@ -777,26 +777,34 @@
 }
 
 @keyframes gallery-view-old {
+  /*
+   * Previously animated `filter: blur(0 -> 8px)`. During filtering the user
+   * typically rattles through many tags, so this animation runs at a high
+   * cadence - blur is the most expensive animatable property, and on
+   * gallery-sized subtrees it was the single biggest source of jank during
+   * tag toggling. Switch to opacity + a small translateY: cheap, GPU
+   * compositor-only, and preserves the "slide away" read.
+   */
   from {
     opacity: 1;
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
 
   to {
     opacity: 0;
-    filter: blur(8px);
+    transform: translate3d(0, -6px, 0);
   }
 }
 
 @keyframes gallery-view-new {
   from {
     opacity: 0;
-    filter: blur(8px);
+    transform: translate3d(0, 6px, 0);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 

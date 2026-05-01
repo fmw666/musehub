@@ -40,22 +40,27 @@
 }
 
 @keyframes home-card-breathe {
+  /*
+   * Dropped `filter: saturate()/brightness()`: animating filter is per-frame
+   * paint cost for the whole element's pixels. With multiple home cards
+   * breathing infinitely in parallel this was the top CPU hit on the home
+   * route. Use opacity + transform only (compositor-only). The subtle
+   * brightness shimmer is replaced by a slightly larger opacity swing so
+   * the "breathing" read survives.
+   */
   0%,
   100% {
-    filter: saturate(0.96) brightness(0.96);
-    opacity: 0.82;
+    opacity: 0.78;
     transform: translate3d(0, -4px, 0) scale(0.985);
   }
 
   48% {
-    filter: saturate(1.06) brightness(1.03);
-    opacity: 0.96;
+    opacity: 0.98;
     transform: translate3d(0, 5px, 0) scale(1.015);
   }
 
   72% {
-    filter: saturate(1) brightness(1);
-    opacity: 0.9;
+    opacity: 0.88;
     transform: translate3d(0, 1px, 0) scale(1);
   }
 }
@@ -92,21 +97,27 @@
 }
 
 @keyframes page-frame-enter {
+  /*
+   * Previously animated `filter: blur(12px)` alongside transform+opacity.
+   * `filter: blur()` forces a full paint + layer rasterize every frame on
+   * the transitioning subtree, which is by far the most expensive prop in
+   * our motion inventory - on mid-range laptops it dropped route-change
+   * frame rate to ~30fps. Transform + opacity are compositor-only (GPU),
+   * so dropping the blur keeps the perceived motion (slight rise + fade)
+   * at native 60/120fps without changing the visual intent.
+   */
   0% {
     opacity: 0.52;
-    filter: blur(12px) saturate(0.92);
     transform: translate3d(0, 14px, 0) scale(0.992);
   }
 
   58% {
     opacity: 1;
-    filter: blur(0) saturate(1.02);
     transform: translate3d(0, -1px, 0) scale(1.001);
   }
 
   100% {
     opacity: 1;
-    filter: none;
     transform: translate3d(0, 0, 0) scale(1);
   }
 }
