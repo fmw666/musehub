@@ -131,8 +131,13 @@
   }
 
   .floating-composer {
+    /* Dodge the 48px left rail: anchor to the content column instead of the
+     * viewport center so the composer never sits underneath the nav. */
+    right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom));
-    width: min(520px, calc(100vw - 24px - 48px));
+    left: calc(48px + 12px);
+    width: auto;
+    transform: none;
   }
 }
 
