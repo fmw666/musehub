@@ -107,6 +107,15 @@
     justify-items: start;
   }
 
+  .upload-hero-headline {
+    /* The desktop min (48px) overflows the rail-adjusted content column on
+     * phones: the second line "to your agent" rendered ~336px wide against
+     * a stage inner width of ~310px at 390px viewport. Drop the min to 36px
+     * so it fits, and cap the max lower too — 92px was disproportionate
+     * once the rail took a fixed column on tablet/phone widths. */
+    font-size: clamp(36px, 8vw, 64px);
+  }
+
   .upload-atmos-signature {
     font-size: clamp(200px, 70vw, 360px);
     top: 28vh;
