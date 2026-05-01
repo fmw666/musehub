@@ -34,75 +34,10 @@
   animation-delay: 250ms;
 }
 
-.is-community-entering .floating-composer {
-  animation: community-composer-reveal 820ms var(--muse-ease-emerge) 360ms both;
-  will-change: opacity, transform;
-}
-
-.stage-chip,
-.meta-chip {
+.stage-chip {
   height: 18px;
   border-color: rgb(var(--muse-color-white-rgb) / 0.1);
   background: rgb(var(--muse-color-black-rgb) / 0.22);
   color: rgb(var(--muse-color-ink-rgb) / 0.5);
   font-size: 10px;
-}
-
-.meta-chip {
-  max-width: 48%;
-  overflow: hidden;
-  font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 9px;
-  text-transform: uppercase;
-}
-
-.floating-composer {
-  position: fixed;
-  right: 50%;
-  bottom: 22px;
-  z-index: 25;
-  width: min(520px, calc(100vw - 92px));
-  transform: translateX(50%);
-  border: 1px solid var(--muse-border-medium);
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgb(var(--muse-color-white-rgb) / 0.055), transparent 70%),
-    var(--muse-glass);
-  padding: 9px;
-  backdrop-filter: blur(18px);
-  box-shadow: var(--muse-shadow);
-}
-
-.composer-input {
-  min-height: 36px;
-  border: 0;
-  border-radius: 9px;
-  background: rgb(var(--muse-color-black-rgb) / 0.24);
-  box-shadow: none;
-}
-
-.composer-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  color: rgb(var(--muse-color-ink-rgb) / 0.5);
-  font-size: 10px;
-}
-
-.composer-tools kbd {
-  border: 1px solid var(--muse-border);
-  border-radius: var(--muse-radius-control);
-  padding: 4px 8px;
-  font-weight: 500;
-}
-
-.composer-run {
-  height: 24px;
-  margin-left: auto;
-  border-radius: var(--muse-radius-control);
-  background: var(--muse-gradient-action);
-  color: var(--muse-text-inverse);
-  font-size: 11px;
-  box-shadow: 0 12px 28px rgb(var(--muse-color-honey-rgb) / 0.2);
 }

@@ -16,6 +16,12 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  # Opt actions still declaring node20 in action.yml (e.g. actions/setup-node@v4
+  # as of 2026-04) onto the node24 runtime ahead of GitHub's 2026-06-02
+  # default flip. actions/checkout@v5 already ships a node24 bundle natively
+  # so the flag is only relevant for the remaining node20-declared actions.
+  # See https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   deploy:
@@ -33,7 +39,7 @@ jobs:
 
       - name: Checkout
         if: env.skip != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
         if: env.skip != 'true'

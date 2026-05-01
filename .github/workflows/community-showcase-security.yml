@@ -8,6 +8,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Opt actions still declaring node20 in action.yml (e.g. actions/setup-node@v4
+  # as of 2026-04) onto the node24 runtime ahead of GitHub's 2026-06-02 flip.
+  # actions/checkout@v5 already ships a node24 bundle natively.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   checks:
     name: Validate, test, and build
@@ -16,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
         uses: actions/setup-node@v4
