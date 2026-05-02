@@ -142,21 +142,24 @@ function MenuItem({ icon, label, tone = "default", onSelect }: MenuItemProps) {
 }
 
 /*
- * "Atelier Mark" — a small tilted portrait frame with an inner brushstroke
- * and a honey-colored signature seal in the lower-right corner.
+ * "Atelier Mark" — the user-region instance of the shared rail glyph
+ * grammar (shell + interior stroke + honey ink seal). A small tilted
+ * picture frame holds a single calligraphic curve, with the seal pressed
+ * into the lower-right corner like a painter's signature stamp.
  *
- * Intentionally NOT a head-and-shoulders pictogram. The frame + signed
- * seal metaphor reads as "your personal corner / your signed work" while
- * staying in the Atelier Ink visual language (the only saturated accent
- * is the honey signature dot, matching --muse-accent-primary).
+ * Intentionally NOT a head-and-shoulders user pictogram. The "framed
+ * signed work" metaphor reads as "your corner / your signed piece"
+ * while sharing the exact `.rail-glyph-shell / -stroke / -accent`
+ * styling used by the four navigation glyphs, so the side-rail icon
+ * family looks like one cohesive set.
  */
 function UserAvatarGlyph() {
   return (
-    <svg className="rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
-      <g className="rail-avatar-mark" transform="rotate(-5 12 12)">
-        <rect className="rail-avatar-frame" x="5" y="5" width="14" height="14" rx="2.6" ry="2.6" />
-        <path className="rail-avatar-stroke" d="M8 14.2C10.4 11.2 13.2 11.4 16 14" />
-        <circle className="rail-avatar-seal" cx="16.4" cy="16.6" r="1.35" />
+    <svg className="rail-glyph rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
+      <g className="rail-glyph-mark">
+        <rect className="rail-glyph-shell" x="5" y="5" width="14" height="14" rx="2.4" ry="2.4" />
+        <path className="rail-glyph-stroke" d="M7.6 14.4C10 11.4 13 11.6 15.6 13.6" />
+        <circle className="rail-glyph-accent" cx="16.4" cy="16.6" r="1.25" />
       </g>
     </svg>
   );
