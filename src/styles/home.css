@@ -335,24 +335,6 @@
   pointer-events: none;
 }
 
-/*
- * The home->sub-page dissolve layer draws the home-page snapshot on top
- * during the transition. Without this clip it would also cover the side-rail
- * column on the destination (sub) page, and since the rail has already
- * flipped from `position: fixed` + transparent (home) to `position: sticky`
- * + opaque (sub), the brand icon (top-left) and user chip (bottom-left)
- * end up briefly occluded by the dissolving home snapshot — reading as a
- * flicker even though nothing moved. Clip the rail column out of the
- * dissolve layer so the rail chrome + its brand/user icons are never
- * covered and stay visually anchored end-to-end.
- *
- * Desktop rail = 40px (see app-shell.css community-shell grid). Mobile
- * widens to 48px; the responsive.css override extends this clip to match.
- */
-.dissolve-transition-layer.home-transition-layer {
-  clip-path: inset(0 0 0 40px);
-}
-
 .dissolve-transition-layer::before {
   position: absolute;
   inset: 18%;

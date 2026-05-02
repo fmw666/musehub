@@ -6,25 +6,42 @@
   height: 100dvh;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid var(--muse-border-soft);
-  background: var(--muse-page-bg);
+  /*
+   * The rail chrome (opaque background + right border) is drawn on a
+   * pseudo-element so we can animate it independently of the rail's
+   * children (brand logo, user chip, nav icons). Those children must stay
+   * rock-steady across the home->sub transition; animating the parent's
+   * own background/opacity would drag them along.
+   */
+  background: transparent;
   overflow: visible;
   padding: 14px 0 16px;
+  isolation: isolate;
+}
+
+.side-rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--muse-page-bg);
+  border-right: 1px solid var(--muse-border-soft);
+  pointer-events: none;
 }
 
 .home-shell .side-rail {
   position: fixed;
   inset: 0 auto 0 0;
   width: 40px;
-  /*
-   * Keep border-right present but transparent on home, so when we animate
-   * the rail chrome into view on home->sub transitions we can cross-fade
-   * border-right-color without ever touching border-right-width (width
-   * changes trigger layout; color-only transitions are paint-only).
-   */
-  border-right-color: transparent;
-  background: transparent;
   pointer-events: none;
+}
+
+.home-shell .side-rail::before {
+  /*
+   * On the home route the rail is a decorative overlay — no chrome at all.
+   * The pseudo-element is hidden so the hero content behind shows through.
+   */
+  opacity: 0;
 }
 
 .home-shell .rail-brand,
@@ -35,46 +52,46 @@
 /*
  * Home → sub-page reveal.
  *
- * Brand logo (top-left) and user chip (bottom-left) already exist on the
- * home route — they must stay visually anchored across the transition, not
- * animate. The only element that genuinely mounts for the first time when
- * entering a sub-page is `.rail-icon-group` (SideRail renders it only when
- * showPrimaryNavigation=true). Fade it in *in place* using opacity only —
- * `.rail-icon-group` uses `transform: translate(-50%, -50%)` to self-center,
- * so we must NOT touch `transform` here (would break the centering).
+ * Three independent motion tracks, all scoped to children/pseudo-elements
+ * so the anchor elements (brand top-left, user chip bottom-left) never
+ * animate and never flicker:
  *
- * Rail *chrome* (background + right border) must also ease in, not hard-cut.
- * DissolveTransition covers most of the viewport with the home snapshot
- * during the transition, but its clip-path exposes the rail column from
- * frame 0 — so without a chrome animation the rail's opaque background
- * and border would pop in the instant the route flips to a sub-page,
- * which reads as a jarring grey bar slicing up the still-visible home
- * snapshot. We delay the chrome fade so the rail quietly materializes as
- * the home snapshot nears full dissolve.
+ *   1. `.side-rail::before` — the rail "shell" (background + border).
+ *      Slides in from x:-8px + fades opacity 0 → 1, delayed so it
+ *      materializes as the home snapshot nears full dissolve. Raising
+ *      the rail's z-index above DissolveTransition (z:40) during the
+ *      transition means the shell actually animates *on top of* the
+ *      dissolving home snapshot instead of being hidden beneath it.
  *
- * Only color/background are animated (not border-width/opacity): keeps
- * it paint-only (no reflow) and leaves brand + user icons untouched so
- * they never flicker.
+ *   2. `.rail-icon-group` — the centered nav pills. Pure opacity fade
+ *      (no transform — see comment inside .rail-icon-group, which uses
+ *      translate(-50%, -50%) for self-centering).
+ *
+ *   3. Brand + user chip — not animated. They exist on both home and
+ *      sub pages as fixed overlays; keeping them steady tells the user
+ *      "these are anchors, not new content".
  */
-.is-rail-revealing .rail-icon-group {
-  /*
-   * 360ms delay + 620ms duration = 980ms (finishes 140ms before
-   * homeDissolveDurationMs = 1120ms, so the icons are fully settled
-   * before .is-rail-revealing is removed — no final-frame snap).
-   */
-  animation: rail-icons-fade-in 620ms var(--muse-ease-emerge) 360ms both;
-  will-change: opacity;
+.is-rail-revealing .side-rail {
+  z-index: 50;
 }
 
-.is-rail-revealing .side-rail {
+.is-rail-revealing .side-rail::before {
   /*
-   * 620ms delay + 500ms duration = 1120ms total, matching
-   * homeDissolveDurationMs in App.tsx so the chrome fade ends in the
-   * same frame that .is-rail-revealing is removed (clearTransition
-   * fires on dissolve end). Prevents a final-state snap.
+   * 520ms delay + 600ms duration = 1120ms total, matches
+   * homeDissolveDurationMs. Animation ends the same frame
+   * `.is-rail-revealing` is removed → no snap.
    */
-  animation: rail-chrome-settle 500ms var(--muse-ease-emerge) 620ms both;
-  will-change: background-color, border-right-color;
+  animation: rail-shell-slide-in 600ms var(--muse-ease-emerge) 520ms both;
+  will-change: opacity, transform;
+}
+
+.is-rail-revealing .rail-icon-group {
+  /*
+   * Starts slightly after the shell has begun to appear (700ms), finishes
+   * at 1120ms exactly.
+   */
+  animation: rail-icons-fade-in 420ms var(--muse-ease-emerge) 700ms both;
+  will-change: opacity;
 }
 
 .rail-brand {

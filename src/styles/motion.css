@@ -181,22 +181,20 @@
 }
 
 /*
- * Side-rail chrome (background + right border) fades from transparent to
- * its sub-page values on home->sub transitions. Delayed (see side-rail.css
- * animation-delay) so it lands after the home snapshot has mostly
- * dissolved, then eases in — preventing the 40/48px rail column from
- * hard-cutting to an opaque grey bar against the still-visible home
- * snapshot. Only paint properties animated; width/position unchanged.
+ * Rail "shell" (background + right border) slide-in on home->sub-page
+ * transitions. Runs on .side-rail::before so brand + user + nav icons
+ * (which live on the rail itself, not the pseudo-element) are unaffected.
+ * Transform + opacity only → GPU-composited, paint-only, no reflow.
  */
-@keyframes rail-chrome-settle {
+@keyframes rail-shell-slide-in {
   0% {
-    background-color: transparent;
-    border-right-color: transparent;
+    opacity: 0;
+    transform: translate3d(-8px, 0, 0);
   }
 
   100% {
-    background-color: var(--muse-page-bg);
-    border-right-color: var(--muse-border-soft);
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 

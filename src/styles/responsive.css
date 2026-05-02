@@ -27,13 +27,6 @@
     grid-template-columns: 48px minmax(0, 1fr);
   }
 
-  /* Mobile rail widens to 48px (vs 40px desktop); keep the dissolve-layer
-   * clip in sync so the brand + user icons on the sub-page rail remain
-   * fully uncovered during the home->sub transition on mobile. */
-  .dissolve-transition-layer.home-transition-layer {
-    clip-path: inset(0 0 0 48px);
-  }
-
   .side-rail {
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
