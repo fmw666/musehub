@@ -31,6 +31,37 @@
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 
+  /*
+   * Rail/stage seam softening on mobile.
+   *
+   * On desktop the 1px right border + flat #0c0b09 rail reads as a calm
+   * gutter because the rail is only ~3% of the viewport. On mobile the
+   * same chrome (rail = 48px ≈ 12% of a 393px viewport) sits next to a
+   * stage whose top is washed in honey/iris (`--muse-gradient-stage`),
+   * making the seam pop as a hard cold-warm boundary.
+   *
+   * Two changes erase that seam without touching the desktop look:
+   *   - drop the hard `border-right` so there is no abrupt 1px cold line;
+   *   - wash the rail's top with the same honey tint as the stage's
+   *     top-left radial (`rgb(--muse-color-honey-rgb / 0.07)` at 16%/4%
+   *     of the viewport), but expressed as a vertical linear-gradient so
+   *     it works on iOS Safari (which silently downgrades
+   *     `background-attachment: fixed` to `scroll` and would break a
+   *     viewport-anchored radial). The values were tuned to match what
+   *     the stage actually paints at x≈48px, y≈0..360px.
+   */
+  .side-rail::before {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(var(--muse-color-honey-rgb) / 0.06) 0,
+        rgb(var(--muse-color-honey-rgb) / 0.02) 220px,
+        transparent 360px
+      ),
+      var(--muse-bg);
+    border-right: 0;
+  }
+
   .home-shell .side-rail {
     width: 48px;
   }
