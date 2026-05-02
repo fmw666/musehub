@@ -244,9 +244,27 @@
   width: min(780px, 100%);
   margin: 0 auto;
   gap: 16px;
-  animation: upload-slide-up 720ms var(--muse-ease-emerge) both 320ms;
 }
 
+/*
+ * Prompt card entrance is choreographed in three beats so the block stops
+ * "popping in" as a single rectangle:
+ *
+ *   beat 0 (520ms in)  the card chassis fades + lifts (transform/opacity only,
+ *                      no per-frame filter so the whole card rides the GPU
+ *                      compositor).
+ *   beat 1 (640ms in)  the rail bar swipes down on the left edge, the heading
+ *                      eyebrow + counter fade, and the prompt code block
+ *                      curtain-wipes from left to right with a honey scan
+ *                      beam tracking the edge — reads as the agent typing
+ *                      the prompt onto the surface.
+ *   beat 2 (960ms in)  action row staggers up beneath.
+ *
+ * Each beat uses transform + opacity + clip-path only. clip-path is
+ * compositor-friendly on modern Chromium / WebKit (it composites into the
+ * existing layer instead of forcing a paint), and we never animate the more
+ * expensive `filter: blur()` here.
+ */
 .upload-card {
   position: relative;
   overflow: hidden;
@@ -270,6 +288,19 @@
     transform 320ms var(--muse-ease-emerge),
     box-shadow 320ms var(--muse-ease-emerge),
     border-color 320ms var(--muse-ease-emerge);
+  animation: upload-card-emerge 640ms var(--muse-ease-emerge) both 240ms;
+  will-change: transform, opacity;
+}
+
+@keyframes upload-card-emerge {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
 
 .upload-card:hover {
@@ -308,8 +339,36 @@
   );
   background-size: 100% 220%;
   background-position: 0 0;
-  animation: upload-rail-flow 4.8s ease-in-out infinite;
+  /*
+   * Two stacked animations:
+   *  - first, a one-shot vertical wipe-in (top to bottom) on entry, so the
+   *    rail draws itself into existence before the prompt curtain-reveals
+   *    next to it. Uses `transform: scaleY()` from a top origin which is
+   *    compositor-only.
+   *  - then the long-running flow animation is restored.
+   * The flow animation re-engages after the wipe completes thanks to the
+   * delays and the fact that scaleY from origin: top doesn't fight with
+   * background-position.
+   */
+  transform-origin: top;
+  animation:
+    upload-rail-wipe 520ms var(--muse-ease-emerge) both 420ms,
+    upload-rail-flow 4.8s ease-in-out 940ms infinite;
   pointer-events: none;
+}
+
+@keyframes upload-rail-wipe {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 @keyframes upload-rail-flow {
@@ -329,6 +388,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  animation: upload-piece-rise 480ms var(--muse-ease-emerge) both 480ms;
+}
+
+/*
+ * Per-piece rise. Used by the heading row, prompt block (combined with the
+ * curtain wipe), and action row. Transform + opacity only.
+ */
+@keyframes upload-piece-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .upload-card-eyebrow {
@@ -374,6 +449,67 @@
   line-height: 1.7;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  /*
+   * Curtain reveal. The block itself fades + lifts (rise), and a synced
+   * `clip-path` inset wipes left → right exposing the text. A honey scan
+   * beam (pseudo-element) tracks the right edge of the curtain so the
+   * agent-typing read is unmistakable. clip-path interpolates without a
+   * paint flash and stays on the GPU once the layer is promoted by the
+   * transform animation.
+   */
+  clip-path: inset(0 0 0 0);
+  animation:
+    upload-piece-rise 480ms var(--muse-ease-emerge) both 600ms,
+    upload-prompt-curtain 820ms var(--muse-ease-emerge) both 600ms;
+  will-change: transform, clip-path, opacity;
+}
+
+.upload-prompt-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--muse-color-honey-rgb) / 0.04) 28%,
+    rgb(var(--muse-color-honey-rgb) / 0.32) 50%,
+    rgb(var(--muse-color-acid-rgb) / 0.18) 56%,
+    transparent 64%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0 0;
+  opacity: 0;
+  animation: upload-prompt-scan 820ms var(--muse-ease-emerge) both 600ms;
+  mix-blend-mode: screen;
+}
+
+@keyframes upload-prompt-curtain {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes upload-prompt-scan {
+  0% {
+    opacity: 0;
+    background-position: -100% 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: 120% 0;
+  }
 }
 
 .upload-prompt-caret {
@@ -406,6 +542,19 @@
   gap: 10px;
   align-items: center;
   padding-top: 2px;
+}
+
+/*
+ * Stagger each action button in last (after the prompt curtain reveals).
+ * Animate only the buttons themselves so the flex container's layout never
+ * shifts mid-animation (which would force a layout pass on every frame).
+ */
+.upload-actions > .upload-action {
+  animation: upload-piece-rise 440ms var(--muse-ease-emerge) both 980ms;
+}
+
+.upload-actions > .upload-action:nth-child(2) {
+  animation-delay: 1080ms;
 }
 
 /*
@@ -934,7 +1083,149 @@
   overflow: hidden;
 }
 
+/*
+ * The body hosts a crossfade `stage` that stacks the skeleton, code, and
+ * error layers in the same grid cell. Only one is opaque at a time. The
+ * stage uses CSS Grid with one cell so the modal body doesn't visibly
+ * resize when the skill content swaps in. min-height keeps it from
+ * collapsing when only the skeleton is mounted.
+ */
+.upload-skill-modal-stage {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stage";
+  grid-template-rows: minmax(280px, auto);
+  width: 100%;
+}
+
+.upload-skill-modal-stage > * {
+  grid-area: stage;
+  min-width: 0;
+  min-height: 0;
+}
+
+.upload-skill-modal-skeleton,
+.upload-skill-modal-code,
+.upload-skill-modal-state {
+  transition:
+    opacity 320ms var(--muse-ease-emerge),
+    transform 360ms var(--muse-ease-emerge);
+}
+
+.upload-skill-modal-stage[data-stage="loading"] .upload-skill-modal-skeleton {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+.upload-skill-modal-stage[data-stage="ready"] .upload-skill-modal-skeleton,
+.upload-skill-modal-stage[data-stage="error"] .upload-skill-modal-skeleton {
+  opacity: 0;
+  transform: translate3d(0, -4px, 0);
+  pointer-events: none;
+}
+
+.upload-skill-modal-stage[data-stage="ready"] .upload-skill-modal-code {
+  opacity: 1;
+}
+
+.upload-skill-modal-stage[data-stage="error"] .upload-skill-modal-state {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.upload-skill-modal-stage[data-stage="loading"] .upload-skill-modal-state {
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+}
+
+/* ---- skeleton ---- */
+
+.upload-skill-modal-skeleton {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid rgb(var(--muse-color-ink-rgb) / 0.08);
+  border-radius: 12px;
+  background: rgb(var(--muse-color-black-rgb) / 0.5);
+  isolation: isolate;
+}
+
+.upload-skill-modal-skeleton-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: rgb(var(--muse-color-ink-rgb) / 0.5);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.upload-skill-modal-skeleton-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--muse-color-acid-rgb) / 0.85);
+  box-shadow: 0 0 0 3px rgb(var(--muse-color-acid-rgb) / 0.16);
+  animation: upload-dot-pulse 2.4s ease-in-out infinite;
+}
+
+.upload-skill-modal-skeleton-lines {
+  display: grid;
+  gap: 8px;
+}
+
+.upload-skill-modal-skeleton-line {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--muse-color-ink-rgb) / 0.06) 0%,
+    rgb(var(--muse-color-ink-rgb) / 0.14) 35%,
+    rgb(var(--muse-color-honey-rgb) / 0.18) 50%,
+    rgb(var(--muse-color-ink-rgb) / 0.14) 65%,
+    rgb(var(--muse-color-ink-rgb) / 0.06) 100%
+  );
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  /*
+   * Each line shimmers on a continuous loop. The animation-delay is set
+   * inline per element (see the React component) so the lines feel like
+   * a sweeping wave, not a flash. background-position is GPU-friendly on
+   * modern engines (paints into the existing layer, no reflow).
+   */
+  animation: upload-skill-shimmer 1600ms ease-in-out infinite;
+  will-change: background-position;
+}
+
+.upload-skill-modal-skeleton-gap {
+  display: block;
+  height: 6px;
+}
+
+@keyframes upload-skill-shimmer {
+  0% {
+    background-position: 100% 0;
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: -100% 0;
+    opacity: 0.7;
+  }
+}
+
+/* ---- code curtain ---- */
+
 .upload-skill-modal-code {
+  position: relative;
   margin: 0;
   max-height: min(60vh, 520px);
   padding: 16px 18px;
@@ -952,9 +1243,79 @@
   scrollbar-color: var(--muse-scrollbar-thumb) transparent;
 }
 
+/*
+ * Curtain reveal: fires once when the <pre> mounts (after the fetch
+ * resolves) by using a keyframes animation instead of a transition.
+ * Transitions only fire on style *changes* after first paint, so they
+ * would skip if the element is mounted with the destination styles
+ * already applied. Keyframes animate from the 0% frame on every mount,
+ * which is exactly the agent-printing-it-onto-the-surface read we want.
+ *
+ * `clip-path` is interpolated by the compositor on modern engines, so
+ * combined with the GPU-friendly transform/opacity transitions on the
+ * stage layers above, the swap costs at most one paint per layer (not
+ * per frame).
+ */
+.upload-skill-modal-code[data-revealing="true"] {
+  animation: upload-skill-code-reveal 720ms var(--muse-ease-emerge) both;
+  will-change: clip-path;
+}
+
+@keyframes upload-skill-code-reveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 .upload-skill-modal-code:focus-visible {
   outline: none;
   border-color: rgb(var(--muse-color-honey-rgb) / 0.5);
+}
+
+.upload-skill-modal-code-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--muse-color-honey-rgb) / 0.04) 30%,
+    rgb(var(--muse-color-honey-rgb) / 0.32) 50%,
+    rgb(var(--muse-color-acid-rgb) / 0.18) 56%,
+    transparent 64%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  background-position: -100% 0;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+
+.upload-skill-modal-code[data-revealing="true"] .upload-skill-modal-code-curtain {
+  animation: upload-skill-scan 720ms var(--muse-ease-emerge) 60ms both;
+}
+
+@keyframes upload-skill-scan {
+  0% {
+    opacity: 0;
+    background-position: -100% 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: 120% 0;
+  }
 }
 
 .upload-skill-modal-code::-webkit-scrollbar {
@@ -975,6 +1336,7 @@
   align-items: center;
   gap: 10px;
   padding: 32px 20px;
+  opacity: 0;
   color: rgb(var(--muse-color-ink-rgb) / 0.6);
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 12px;
