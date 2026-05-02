@@ -7,7 +7,17 @@
   overflow: hidden;
 }
 
-.home-shell {
+/*
+ * Double-class selector (specificity 0-2-0) so this rule survives the mobile
+ * `@media (max-width: 900px)` override in responsive.css that widens
+ * `.community-shell` to `48px minmax(0, 1fr)`. On the home route the side rail
+ * is `position: fixed` (see side-rail.css), so it does NOT occupy a grid
+ * column; if the shell still declared a two-column layout, the page-transition
+ * frame would land in the narrow 40-48px rail column and squash the entire
+ * home stage down to ~48px wide (bug report 2026-05-02: "mobile home is all
+ * crammed into the left nav, the right side is black").
+ */
+.community-shell.home-shell {
   grid-template-columns: minmax(0, 1fr);
 }
 
