@@ -1218,3 +1218,115 @@
 .upload-stage-footer-value {
   color: rgb(var(--muse-color-ink-rgb) / 0.72);
 }
+
+/* ------------------------------------------------------------------ */
+/* Mobile overrides                                                   */
+/*                                                                    */
+/* These previously lived in src/styles/responsive.css. Moved here on */
+/* 2026-05-02 because upload-page.css is lazy-imported by             */
+/* UploadPage.tsx and lands in the cascade *after* responsive.css, so */
+/* the desktop @ 0-1-0 rules in this file silently won every @media   */
+/* tie. Symptom: at 393–470px viewports the side rail still occupied  */
+/* a 48px grid column (see styles/responsive.css `.community-shell`   */
+/* override) but the stage padding stayed at the desktop              */
+/* `clamp(72px, 14vh, 160px) clamp(20px, 5vw, 56px)`, so the on-      */
+/* screen left gutter (rail + stage padding) ballooned to ~68px while */
+/* the right gutter stayed ~20px, shoving every block — and the       */
+/* italic period in "to your agent." in particular — toward the right */
+/* viewport edge. Bug report 2026-05-02: "移动端右侧有布局展示问题".  */
+/* Keeping the overrides here ensures correct cascade order regardless */
+/* of when the upload chunk loads.                                    */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  .upload-stage {
+    /*
+     * Asymmetric padding to compensate for the 48px side-rail grid
+     * column on the left. Without this the visual gutter is ~64px
+     * left vs ~16px right, which made the page read as right-shoved
+     * (bug report). 22px right + 6px left brings the perceived
+     * left/right whitespace closer to balanced (rail + 6 ≈ 54px on
+     * the left; 22px on the right) without altering the rail width
+     * or any desktop layout.
+     */
+    padding: 28px 22px 32px 6px;
+    gap: 24px;
+  }
+
+  .upload-hero {
+    justify-items: start;
+    /*
+     * Hero is a `display: grid`; without min-width:0 / width:100% the
+     * inner BlurFade grid items resolve to max-content and refuse to
+     * shrink below their intrinsic line width, which let the italic
+     * "to your agent." headline punch past the stage padding on
+     * narrow viewports even after the padding fix above. These two
+     * declarations let the column width actually constrain the
+     * headline so the clamp() font-size step (and overflow-wrap on
+     * the headline) can do their job.
+     */
+    min-width: 0;
+    width: 100%;
+  }
+
+  .upload-hero-headline {
+    /*
+     * Desktop min (48px) overflows the rail-adjusted content column
+     * on phones. 36–56px keeps the second line ("to your agent.")
+     * inside the column on viewports from ~360px up through ~900px.
+     * max-width / overflow-wrap are defence-in-depth so a future
+     * type change can't silently re-introduce horizontal overflow.
+     */
+    font-size: clamp(36px, 7.4vw, 56px);
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .upload-atmos-signature {
+    font-size: clamp(200px, 70vw, 360px);
+    top: 28vh;
+    -webkit-text-stroke-width: 0.8px;
+  }
+
+  .upload-atmos-grid {
+    background-size: 42px 42px;
+  }
+
+  .upload-stage-footer {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .upload-stage-footer-left,
+  .upload-stage-footer-right {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .hk-agent-card-row {
+    justify-content: center;
+  }
+
+  /*
+   * Each agent card is wrapped in a BlurFade <div> with no class, so the
+   * flex-item is the wrapper, not the card. Sizing the card directly
+   * (`width: calc(50% - 6px)`) used to compute against the wrapper's
+   * intrinsic max-content (~110px) instead of the row, which collapsed
+   * the card to ~65px wide and clipped the label to "Cur…". Size the
+   * wrapper instead so each row holds two even cells, then let the card
+   * fill the wrapper.
+   */
+  .hk-agent-card-row > * {
+    flex: 0 0 calc(50% - 6px);
+    min-width: 0;
+  }
+
+  .hk-agent-card {
+    width: 100%;
+    min-width: 0;
+  }
+}
