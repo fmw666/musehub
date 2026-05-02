@@ -114,46 +114,16 @@
     padding: 24px 16px;
   }
 
-  .upload-stage {
-    padding: 28px 16px 32px;
-    gap: 24px;
-  }
-
-  .upload-hero {
-    justify-items: start;
-  }
-
-  .upload-hero-headline {
-    /* The desktop min (48px) overflows the rail-adjusted content column on
-     * phones: the second line "to your agent" rendered ~336px wide against
-     * a stage inner width of ~310px at 390px viewport. Drop the min to 36px
-     * so it fits, and cap the max lower too — 92px was disproportionate
-     * once the rail took a fixed column on tablet/phone widths. */
-    font-size: clamp(36px, 8vw, 64px);
-  }
-
-  .upload-atmos-signature {
-    font-size: clamp(200px, 70vw, 360px);
-    top: 28vh;
-    -webkit-text-stroke-width: 0.8px;
-  }
-
-  .upload-atmos-grid {
-    background-size: 42px 42px;
-  }
-
-  .upload-stage-footer {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 12px;
-    text-align: center;
-  }
-
-  .upload-stage-footer-left,
-  .upload-stage-footer-right {
-    justify-items: center;
-    text-align: center;
-  }
+  /*
+   * Note: all `.upload-*` and `.hk-agent-card*` mobile overrides used to live
+   * here, but `upload-page.css` is lazy-imported by UploadPage.tsx and lands
+   * in the cascade *after* this file, so its desktop rules silently won every
+   * @media tie at equal specificity (e.g. desktop `.upload-stage { padding:
+   * clamp(...) }` shadowed the mobile padding override here). All upload-*
+   * mobile rules now live in `src/pages/upload/ui/upload-page.css` next to
+   * their desktop counterparts to keep the cascade order well-defined
+   * regardless of when the upload chunk loads.
+   */
 }
 
 @media (max-width: 560px) {
@@ -161,15 +131,6 @@
   .home-stage::after,
   .home-orbit {
     opacity: 0.38;
-  }
-
-  .hk-agent-card-row {
-    justify-content: center;
-  }
-
-  .hk-agent-card {
-    width: calc(50% - 6px);
-    min-width: 0;
   }
 
   .home-hero h1 {
