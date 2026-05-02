@@ -26,9 +26,31 @@
   pointer-events: auto;
 }
 
-.is-rail-revealing .side-rail {
+/*
+ * Rail nav-icon entrance animation on home→sub-page transition.
+ *
+ * Previously scoped to `.side-rail` (the whole rail), which made the brand
+ * spark and user chip also fly in — visually jarring because those two
+ * elements *already exist* on the home route (as fixed overlays) and should
+ * read as anchors that stay put. The centered `.rail-icon-group` is the only
+ * piece that genuinely appears for the first time when entering a sub-page
+ * (SideRail renders it only when showPrimaryNavigation is true), so the
+ * reveal animation now targets just that group. Brand + user chip stay
+ * exactly where they were on the home screen.
+ */
+.is-rail-revealing .rail-icon-group {
   animation: rail-reveal var(--motion-rail-reveal) var(--muse-ease-emerge) 440ms both;
   will-change: opacity, transform;
+}
+
+/*
+ * The rail itself flips from `position: fixed` + transparent background (home)
+ * to `position: sticky` + opaque background + right border (sub-pages). Fade
+ * the chrome in so the switch is not instantaneous. Only opacity-like props
+ * (background + border color) are animated — layout stays stable.
+ */
+.is-rail-revealing .side-rail {
+  animation: rail-chrome-fade var(--motion-rail-reveal) var(--muse-ease-emerge) 440ms both;
 }
 
 .rail-brand {

@@ -181,6 +181,26 @@
   }
 }
 
+/*
+ * Accompanies .rail-icon-group reveal when transitioning home → sub-page.
+ * The rail chrome (opaque background + right border) only exists on
+ * sub-pages; without a fade it pops in abruptly the moment `home-shell`
+ * is removed. We animate only the background and border color (no layout
+ * properties) so this is GPU-cheap and cannot shift anything.
+ */
+@keyframes rail-chrome-fade {
+  0%,
+  26% {
+    background: transparent;
+    border-right-color: transparent;
+  }
+
+  100% {
+    background: var(--muse-page-bg);
+    border-right-color: var(--muse-border-soft);
+  }
+}
+
 .typing-text-caret {
   display: inline-block;
   width: 0.48em;
