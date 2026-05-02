@@ -142,24 +142,29 @@ function MenuItem({ icon, label, tone = "default", onSelect }: MenuItemProps) {
 }
 
 /*
- * "Atelier Mark" — the user-region instance of the shared rail glyph
- * grammar (shell + interior stroke + honey ink seal). A small tilted
- * picture frame holds a single calligraphic curve, with the seal pressed
- * into the lower-right corner like a painter's signature stamp.
+ * "Atelier Medallion" — the user-region instance of the shared rail
+ * glyph grammar (shell + interior stroke + honey ink seal).
  *
- * Intentionally NOT a head-and-shoulders user pictogram. The "framed
- * signed work" metaphor reads as "your corner / your signed piece"
- * while sharing the exact `.rail-glyph-shell / -stroke / -accent`
- * styling used by the four navigation glyphs, so the side-rail icon
- * family looks like one cohesive set.
+ *   - Shell:  a clean circular medallion (echoes the compass disc, so
+ *             the user mark sits inside the same icon family).
+ *   - Stroke: a soft "horizon + hill" curve — a personal landscape,
+ *             one continuous brushstroke painted across the medallion.
+ *   - Accent: a honey signature seal centered just below the horizon
+ *             line, reading as "this piece is signed by you".
+ *
+ * This is intentionally NOT a head-and-shoulders user pictogram. A
+ * round signed medallion is unambiguously "your account / your corner"
+ * while staying in the Atelier Ink visual language and sharing the
+ * exact `.rail-glyph-shell / -stroke / -accent` classes used by the
+ * four navigation glyphs.
  */
 function UserAvatarGlyph() {
   return (
     <svg className="rail-glyph rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
       <g className="rail-glyph-mark">
-        <rect className="rail-glyph-shell" x="5" y="5" width="14" height="14" rx="2.4" ry="2.4" />
-        <path className="rail-glyph-stroke" d="M7.6 14.4C10 11.4 13 11.6 15.6 13.6" />
-        <circle className="rail-glyph-accent" cx="16.4" cy="16.6" r="1.25" />
+        <circle className="rail-glyph-shell" cx="12" cy="12" r="8.2" />
+        <path className="rail-glyph-stroke" d="M5 13.4c2.5-3.4 5-3.4 7-1.4s4.5 2 7-1.4" />
+        <circle className="rail-glyph-accent" cx="14.6" cy="15.4" r="1.3" />
       </g>
     </svg>
   );
