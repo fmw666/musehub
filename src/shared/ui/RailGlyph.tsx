@@ -1,26 +1,23 @@
 /*
  * Atelier Ink rail glyph set.
  *
- * The four navigation icons + the user `Atelier Medallion` (rendered
- * separately in RailUserMenu) share one visual grammar so the side rail
- * reads as a coherent set rather than five unrelated pictograms.
+ * Design language: pure linework. No fills, no dots, no decorations —
+ * each icon is composed of strokes only, with one calligraphic flourish
+ * carrying the "art". The four navigation icons + the user medallion
+ * (rendered separately in RailUserMenu) all share this grammar:
  *
- * Each glyph is composed from exactly three semantic parts:
+ *   .rail-glyph-shell  — the recognizable structural line(s); the
+ *                        outline that names the icon (a circle, a
+ *                        sheet of paper, a ribbon, a folder).
+ *   .rail-glyph-stroke — one expressive line played against the
+ *                        shell — a needle, a brushstroke, a fold,
+ *                        a horizon. This is the line that lights up
+ *                        to honey on hover / active.
  *
- *   .rail-glyph-shell  — the recognizable outer pictogram (closed,
- *                        crisp, no broken outlines).
- *   .rail-glyph-stroke — one supporting interior line: a needle, a
- *                        brushstroke, a seam, a fold, a ridge.
- *   .rail-glyph-accent — a small honey "ink ember" pinned at a
- *                        meaningful point on the glyph (the compass
- *                        pivot, the page corner-fold, the favorite's
- *                        heart, the folder's label, the artist's
- *                        signature). The ember glows softly even at
- *                        rest and fully ignites on hover / active.
- *
- * The marks are upright (no rotation) — the rail is navigation and must
- * read as stable. All shared color, stroke weight, and motion behavior
- * live in side-rail.css under the `.rail-glyph-*` selectors.
+ * The marks sit upright (no rotation). Stroke weights are uniform so
+ * the rail reads as one cohesive line drawing. All shared color and
+ * motion behavior live in side-rail.css under the `.rail-glyph-*`
+ * selectors.
  */
 
 import type { SVGProps } from "react";
@@ -50,51 +47,47 @@ export function RailGlyph({ name }: RailGlyphProps) {
 function glyphContent(name: RailGlyphName) {
   switch (name) {
     case "compass":
-      // Mariner's disc, a slim diamond needle, and the pivot pin as the
-      // ember. The cardinal tick marks at N/S/E/W give the disc the
-      // engraved-instrument feel without crowding it.
+      // A clean disc with a slim diamond needle inscribed inside —
+      // four straight lines drawn as one continuous stroke. The
+      // diamond itself is the calligraphic flourish that lights up.
       return (
         <>
-          <circle className="rail-glyph-shell" cx="12" cy="12" r="8.4" />
-          <path className="rail-glyph-stroke" d="M12 5.6 13.6 12 12 18.4 10.4 12 Z" />
-          <path className="rail-glyph-tick" d="M12 3.2v1.4M12 19.4v1.4M3.2 12h1.4M19.4 12h1.4" />
-          <circle className="rail-glyph-accent" cx="12" cy="12" r="1.3" />
+          <circle className="rail-glyph-shell" cx="12" cy="12" r="8.2" />
+          <path className="rail-glyph-stroke" d="M12 5 13.4 12 12 19 10.6 12 Z" />
         </>
       );
     case "compose":
-      // A sheet of paper with a folded top-right corner (structural —
-      // part of the shell) crossed by a single calligraphic brushstroke
-      // rising diagonally. The ember sits inside the corner fold like
-      // wet ink just laid.
+      // A page corner (two L-strokes — the right edge + the dog-eared
+      // fold) crossed by a single long diagonal brushstroke that runs
+      // off the page to the upper-right. The brushstroke is the art.
       return (
         <>
+          <path className="rail-glyph-shell" d="M5.6 18.4V5.6a1.4 1.4 0 0 1 1.4-1.4h7" />
+          <path className="rail-glyph-shell" d="M14 4v3.4a1.4 1.4 0 0 0 1.4 1.4h3.4" />
           <path
             className="rail-glyph-shell"
-            d="M5.6 5.4a1.4 1.4 0 0 1 1.4-1.4h6.6a1.4 1.4 0 0 1 .99.41l3.4 3.4a1.4 1.4 0 0 1 .41.99v9.8A1.4 1.4 0 0 1 17 20H7a1.4 1.4 0 0 1-1.4-1.4Z"
+            d="M18.4 9v9.4a1.4 1.4 0 0 1-1.4 1.4H7a1.4 1.4 0 0 1-1.4-1.4"
           />
-          <path className="rail-glyph-shell" d="M14 4v3a1.4 1.4 0 0 0 1.4 1.4h3" />
-          <path className="rail-glyph-stroke" d="M8.4 17c1.7-1.4 3.6-3.3 5.6-6" />
-          <circle className="rail-glyph-accent" cx="16.4" cy="6.4" r="1.25" />
+          <path className="rail-glyph-stroke" d="M8.4 16.6c2-1.4 5-4.4 9.6-9.4" />
         </>
       );
     case "bookmark":
-      // Notched ribbon with a crisp V-bottom. Two stacked title bands
-      // give the ribbon weight and rhythm, and the ember sits as a
-      // wax-seal pressed into the heart of the ribbon below them.
+      // A single continuous ribbon line — sides + a crisp V-notch at
+      // the bottom. One slim horizontal title-line crosses the top
+      // third as the calligraphic counterpoint.
       return (
         <>
           <path
             className="rail-glyph-shell"
             d="M7.4 4.6a1 1 0 0 1 1-1h7.2a1 1 0 0 1 1 1V20l-4.6-3-4.6 3Z"
           />
-          <path className="rail-glyph-stroke" d="M9.4 7.8h5.2M9.4 10.2h5.2" />
-          <circle className="rail-glyph-accent" cx="12" cy="13.4" r="1.3" />
+          <path className="rail-glyph-stroke" d="M9.6 9.4h4.8" />
         </>
       );
     case "folder":
-      // A folder with a raised tab. A single horizontal seam shows the
-      // tab meeting the body, and a centered ember rests on that seam
-      // like a label pressed onto the spine of your archive.
+      // A folder reduced to two lines: the body outline + a single
+      // seam where the raised tab meets the body. The seam is the
+      // accent line — it draws the eye to the join.
       return (
         <>
           <path
@@ -102,7 +95,6 @@ function glyphContent(name: RailGlyphName) {
             d="M3.6 7.6A1.8 1.8 0 0 1 5.4 5.8h3.8a1.8 1.8 0 0 1 1.43.7l1.07 1.4h6.7a1.8 1.8 0 0 1 1.8 1.8V18a2 2 0 0 1-2 2H5.6a2 2 0 0 1-2-2Z"
           />
           <path className="rail-glyph-stroke" d="M3.6 11.4h16.8" />
-          <circle className="rail-glyph-accent" cx="12" cy="11.4" r="1.3" />
         </>
       );
     default: {

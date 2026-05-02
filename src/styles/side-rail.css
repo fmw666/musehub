@@ -175,118 +175,71 @@
 }
 
 /* ----------------------------------------------------------------------- */
-/* Atelier Ink rail glyph grammar                                          */
+/* Atelier Ink rail glyph grammar — pure linework                          */
 /*                                                                         */
 /* All five rail icons (compass / compose / bookmark / folder / user)      */
-/* share this exact stroke + ink-seal vocabulary so the rail reads as      */
-/* one cohesive icon family. See RailGlyph.tsx and RailUserMenu.tsx for    */
-/* the path-level definitions.                                             */
+/* are line drawings only: a structural `.rail-glyph-shell` and one        */
+/* expressive `.rail-glyph-stroke`. No fills, no dots, no decorations —    */
+/* the art is carried entirely by the calligraphic line itself.            */
 /*                                                                         */
-/* The marks are rendered upright (no rotation) — the rail is navigation   */
-/* and must read as stable. The "art" comes from precise geometry, the     */
-/* paired stroke + ink seal, and a subtle hover/active reveal that paints  */
-/* the seal honey, not from playful tilting.                               */
+/* On hover / active, the shell brightens half a step and the calligraphic */
+/* stroke is repainted in honey (--muse-color-honey) with a soft glow. The */
+/* result is "an upright line drawing whose flourish lights up when        */
+/* selected" — minimal, line-led, and unmistakably your active route.     */
 /* ----------------------------------------------------------------------- */
 .rail-glyph-mark {
   transform-box: fill-box;
   transform-origin: center;
-  transition: transform 220ms var(--muse-ease-emerge);
 }
 
 .rail-glyph-shell,
-.rail-glyph-stroke,
-.rail-glyph-tick {
+.rail-glyph-stroke {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   transition:
-    stroke 200ms var(--muse-ease-emerge),
-    stroke-width 200ms var(--muse-ease-emerge),
-    opacity 200ms var(--muse-ease-emerge);
+    stroke 220ms var(--muse-ease-emerge),
+    stroke-width 220ms var(--muse-ease-emerge),
+    filter 240ms var(--muse-ease-emerge);
 }
 
 .rail-glyph-shell {
   stroke: var(--muse-text-soft);
-  stroke-width: 1.5;
+  stroke-width: 1.4;
 }
 
 .rail-glyph-stroke {
-  stroke: rgb(var(--muse-color-ink-rgb) / 0.5);
-  stroke-width: 1.3;
+  stroke: var(--muse-text-soft);
+  stroke-width: 1.4;
 }
 
-.rail-glyph-tick {
-  stroke: rgb(var(--muse-color-ink-rgb) / 0.36);
-  stroke-width: 1.2;
-}
-
-/*
- * Even at rest the seal is the visual focal point of the mark — a
- * dim honey ember. Hover/active fully ignites it. Without this,
- * inactive icons look like flat outline pictograms; the ember is what
- * gives the rail its "Atelier Ink" character.
- */
-.rail-glyph-accent {
-  fill: rgb(var(--muse-color-honey-rgb) / 0.6);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    fill 200ms var(--muse-ease-emerge),
-    filter 240ms var(--muse-ease-emerge),
-    transform 220ms var(--muse-ease-emerge);
-}
-
-/*
- * Hover / active reveal: the shell brightens, the supporting stroke
- * deepens, and the seal lights up to honey with a soft drop-shadow.
- * A 1.05 scale on the seal alone gives a tactile "click" feel without
- * disturbing the upright pictogram.
- */
 .rail-icon:hover .rail-glyph-shell,
 .rail-icon.is-active .rail-glyph-shell,
 .rail-user:hover .rail-glyph-shell,
 .rail-user[data-hovered="true"] .rail-glyph-shell {
   stroke: var(--muse-text-strong);
-  stroke-width: 1.6;
 }
 
 .rail-icon:hover .rail-glyph-stroke,
 .rail-icon.is-active .rail-glyph-stroke,
 .rail-user:hover .rail-glyph-stroke,
 .rail-user[data-hovered="true"] .rail-glyph-stroke {
-  stroke: var(--muse-text);
-  stroke-width: 1.4;
-}
-
-.rail-icon:hover .rail-glyph-tick,
-.rail-icon.is-active .rail-glyph-tick,
-.rail-user:hover .rail-glyph-tick,
-.rail-user[data-hovered="true"] .rail-glyph-tick {
-  stroke: var(--muse-text-soft);
-}
-
-.rail-icon:hover .rail-glyph-accent,
-.rail-icon.is-active .rail-glyph-accent,
-.rail-user:hover .rail-glyph-accent,
-.rail-user[data-hovered="true"] .rail-glyph-accent {
-  fill: var(--muse-color-honey);
-  filter: drop-shadow(0 0 4px rgb(var(--muse-color-honey-rgb) / 0.7));
-  transform: scale(1.08);
+  stroke: var(--muse-color-honey);
+  stroke-width: 1.55;
+  filter: drop-shadow(0 0 4px rgb(var(--muse-color-honey-rgb) / 0.55));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rail-glyph-mark,
   .rail-glyph-shell,
-  .rail-glyph-stroke,
-  .rail-glyph-accent {
+  .rail-glyph-stroke {
     transition: none;
   }
-  .rail-icon:hover .rail-glyph-accent,
-  .rail-icon.is-active .rail-glyph-accent,
-  .rail-user:hover .rail-glyph-accent,
-  .rail-user[data-hovered="true"] .rail-glyph-accent {
-    transform: none;
+  .rail-icon:hover .rail-glyph-stroke,
+  .rail-icon.is-active .rail-glyph-stroke,
+  .rail-user:hover .rail-glyph-stroke,
+  .rail-user[data-hovered="true"] .rail-glyph-stroke {
+    filter: none;
   }
 }
 

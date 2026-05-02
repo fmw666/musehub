@@ -142,29 +142,26 @@ function MenuItem({ icon, label, tone = "default", onSelect }: MenuItemProps) {
 }
 
 /*
- * "Atelier Medallion" — the user-region instance of the shared rail
- * glyph grammar (shell + interior stroke + honey ink seal).
+ * "Atelier Medallion" — pure linework, matching the four navigation
+ * glyphs (shell + one calligraphic stroke, no fills, no dots):
  *
- *   - Shell:  a clean circular medallion (echoes the compass disc, so
- *             the user mark sits inside the same icon family).
- *   - Stroke: a soft "horizon + hill" curve — a personal landscape,
- *             one continuous brushstroke painted across the medallion.
- *   - Accent: a honey signature seal centered just below the horizon
- *             line, reading as "this piece is signed by you".
+ *   - Shell:  a clean circular medallion that echoes the compass disc
+ *             at the other end of the rail, closing the icon family
+ *             into a loop.
+ *   - Stroke: one continuous "horizon + hill" curve inscribed across
+ *             the medallion. That curve lights up to honey on hover
+ *             / active.
  *
- * This is intentionally NOT a head-and-shoulders user pictogram. A
- * round signed medallion is unambiguously "your account / your corner"
- * while staying in the Atelier Ink visual language and sharing the
- * exact `.rail-glyph-shell / -stroke / -accent` classes used by the
- * four navigation glyphs.
+ * Intentionally NOT a head-and-shoulders user pictogram. A circular
+ * inscribed medallion reads as "your account / your corner" while
+ * staying in the Atelier Ink linework language.
  */
 function UserAvatarGlyph() {
   return (
     <svg className="rail-glyph rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
       <g className="rail-glyph-mark">
         <circle className="rail-glyph-shell" cx="12" cy="12" r="8.2" />
-        <path className="rail-glyph-stroke" d="M5 13.4c2.5-3.4 5-3.4 7-1.4s4.5 2 7-1.4" />
-        <circle className="rail-glyph-accent" cx="14.6" cy="15.4" r="1.3" />
+        <path className="rail-glyph-stroke" d="M5.4 13.4c2.4-3 4.6-3 6.6-1s4.2 2 6.6-1" />
       </g>
     </svg>
   );
