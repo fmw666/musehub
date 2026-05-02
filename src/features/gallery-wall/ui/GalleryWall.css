@@ -846,11 +846,25 @@
   }
 
   .gallery-discovery {
-    /* Dodge the 48px left rail: anchor to the content column instead of the
-     * viewport center so the discovery bar never sits underneath the nav. */
+    /*
+     * The containing block for this `position: fixed` element is the
+     * `.page-transition-frame` (which has `will-change: transform`,
+     * promoting it to a containing block for fixed descendants per CSS
+     * Positioned Layout spec). The frame itself starts 48px from the
+     * viewport left because the community-shell grid reserves a 48px
+     * column for the side rail.
+     *
+     * Previously `left: calc(48px + 12px)` double-counted that rail:
+     * the frame was already offset by 48px, and then we added another
+     * 48px of left padding, leaving ~108px of visual whitespace on the
+     * left of the search bar on iPhone 14 Pro (user reported the bar
+     * "doesn't fill mobile width").
+     *
+     * Only a 12px gutter is needed here — the rail offset is automatic.
+     */
     right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom));
-    left: calc(48px + 12px);
+    left: 12px;
     width: auto;
     transform: none;
   }
