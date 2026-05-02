@@ -1,6 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
-import { FileText, LogOut, MessageSquare, Settings } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, type SVGProps, useState } from "react";
 
 import { AccountSettingsModal } from "./AccountSettingsModal";
 
@@ -89,16 +88,16 @@ export function RailUserMenu({ profile = defaultProfile }: RailUserMenuProps) {
             <ul className="rail-user-menu-list" role="menu">
               <li role="none">
                 <MenuItem
-                  icon={<Settings aria-hidden="true" />}
+                  icon={<SettingsGlyph aria-hidden="true" />}
                   label="Account Settings"
                   onSelect={handleOpenSettings}
                 />
               </li>
               <li role="none">
-                <MenuItem icon={<MessageSquare aria-hidden="true" />} label="Give feedback" />
+                <MenuItem icon={<MessageSquareGlyph aria-hidden="true" />} label="Give feedback" />
               </li>
               <li role="none">
-                <MenuItem icon={<FileText aria-hidden="true" />} label="Terms and Privacy" />
+                <MenuItem icon={<FileTextGlyph aria-hidden="true" />} label="Terms and Privacy" />
               </li>
             </ul>
 
@@ -106,7 +105,7 @@ export function RailUserMenu({ profile = defaultProfile }: RailUserMenuProps) {
 
             <ul className="rail-user-menu-list" role="menu">
               <li role="none">
-                <MenuItem icon={<LogOut aria-hidden="true" />} label="Log out" tone="muted" />
+                <MenuItem icon={<LogOutGlyph aria-hidden="true" />} label="Log out" tone="muted" />
               </li>
             </ul>
           </div>
@@ -160,4 +159,61 @@ function clampPercent(left: number, total: number) {
   if (total <= 0) return 0;
   const pct = (left / total) * 100;
   return Math.max(0, Math.min(100, Math.round(pct)));
+}
+
+/*
+ * Inlined Lucide v1.14.0 icon data (ISC license) so the rail user menu —
+ * which sits on every route — doesn't pull the full Lucide icon runtime
+ * into the main bundle. Path + attribute defaults match lucide-react's
+ * createLucideIcon output so there is no visual change.
+ */
+const glyphDefaults: SVGProps<SVGSVGElement> = {
+  xmlns: "http://www.w3.org/2000/svg",
+  viewBox: "0 0 24 24",
+  width: 15,
+  height: 15,
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.7,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+};
+
+function SettingsGlyph(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...glyphDefaults} {...props}>
+      <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function MessageSquareGlyph(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...glyphDefaults} {...props}>
+      <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function FileTextGlyph(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...glyphDefaults} {...props}>
+      <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+      <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+      <path d="M10 9H8" />
+      <path d="M16 13H8" />
+      <path d="M16 17H8" />
+    </svg>
+  );
+}
+
+function LogOutGlyph(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...glyphDefaults} {...props}>
+      <path d="m16 17 5-5-5-5" />
+      <path d="M21 12H9" />
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    </svg>
+  );
 }

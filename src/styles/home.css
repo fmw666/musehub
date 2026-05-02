@@ -238,7 +238,15 @@
   animation: home-card-breathe 5.6s ease-in-out infinite;
   transform: translate3d(0, -3px, 0) scale(0.985);
   transform-origin: 50% 56%;
-  will-change: filter, opacity, transform;
+  /*
+   * Only transform + opacity are actually animated (see home-card-breathe
+   * in motion.css — `filter` was dropped earlier for paint-cost reasons).
+   * Keeping `filter` in will-change forces the browser to reserve an extra
+   * rasterize layer per card for a filter that is never applied; with
+   * several orbit cards running infinite animations in parallel this adds
+   * up to meaningful compositor memory on low-end GPUs.
+   */
+  will-change: opacity, transform;
 }
 
 .home-orbit-slot:nth-child(2n) .home-orbit-card-surface {

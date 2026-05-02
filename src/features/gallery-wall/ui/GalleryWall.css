@@ -738,15 +738,23 @@
   top: 64%;
 }
 
+/*
+ * Previously animated `filter: blur(6px -> 0)` alongside opacity. Filter
+ * animations force per-frame paint of the element's full pixel buffer +
+ * layer rasterize; on the empty state card (which has its own backdrop-
+ * filter blur + large radial glow children) this pushed the entrance
+ * past 16ms budgets on mid-range laptops. Transform-y substitutes the
+ * sharpen feel at compositor cost only (GPU, paint-free).
+ */
 @keyframes gallery-empty-reveal {
   from {
     opacity: 0;
-    filter: blur(6px);
+    transform: translate3d(0, 6px, 0);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 

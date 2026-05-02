@@ -31,7 +31,13 @@ export function BlurFade({
   delay = 0,
   duration = 0.6,
   offsetY = 8,
-  blur = 6,
+  // Reduced default from 6px to 4px: filter: blur is per-frame paint cost
+  // (not compositor), and with ~7 BlurFade instances staggered across the
+  // home + upload intros the cumulative rasterize budget was visible on
+  // low-end hardware. 4px preserves the soft sharpen-in read without the
+  // extra paint pressure. Callers that want a stronger blur can still opt
+  // in per-instance.
+  blur = 4,
 }: BlurFadeProps) {
   const reduced = useReducedMotion();
 

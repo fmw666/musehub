@@ -1,6 +1,6 @@
 import { Bookmark, Check, Copy, Download, ExternalLink, Heart, Link } from "lucide-react";
 import { Button, Card, Chip } from "@heroui/react";
-import { type CSSProperties, useMemo, useState } from "react";
+import { type CSSProperties, memo, useMemo, useState } from "react";
 
 import { createShowcaseCopyPrompt } from "@/entities/showcase/model/copy-prompt";
 import type { ShowcaseItem } from "@/entities/showcase/model/types";
@@ -17,7 +17,7 @@ type PreviewCardStyle = CSSProperties & {
   "--asset-preview-width"?: string;
 };
 
-export function GalleryCard({ item, priority }: GalleryCardProps) {
+function GalleryCardInner({ item, priority }: GalleryCardProps) {
   const [hasCopiedPrompt, setHasCopiedPrompt] = useState(false);
   const copyablePrompt = useMemo(
     () => createShowcaseCopyPrompt(item, window.location.origin),
@@ -169,3 +169,12 @@ export function GalleryCard({ item, priority }: GalleryCardProps) {
     </Card>
   );
 }
+
+/*
+ * Memoized so GalleryWall's filter/search state updates don't re-render
+ * every card. Props are an immutable `item` (stable showcase object from
+ * the items array, reference-equal across filter changes when the card
+ * is still in the filtered view) plus a primitive `priority` number — the
+ * default shallow-equality check is sufficient.
+ */
+export const GalleryCard = memo(GalleryCardInner);
