@@ -64,29 +64,26 @@
   .home-stage {
     min-height: 0;
     /*
-     * The home side-rail is `position: fixed` (see side-rail.css: `.home-shell
-     * .side-rail`), so it does not reserve a grid column the way the community
-     * shell does. Centering the hero with only 16px left padding let the fixed
-     * rail (40px wide + brand icon at left: 6px, so ~46px total) overlap the
-     * "MuseHub" headline on narrow viewports. Reserve 48px on the left so the
-     * centered hero never collides with the rail.
+     * The home page is intentionally a full-bleed "curtain" — the side rail
+     * on the home route is a decorative overlay (brand logo top-left + user
+     * chip bottom-left, both with `position: fixed`, transparent background,
+     * and `pointer-events: none` on the rail itself). The content stage must
+     * span the full viewport so the hero reads as centered on the *page*
+     * (not centered in a content column offset from the rail). Symmetric
+     * 16px left/right padding keeps the visual rhythm of the desktop stage
+     * on mobile without carving out a rail column.
      */
-    padding: 24px 16px 26px 48px;
+    padding: 24px 16px 26px;
   }
 
   .home-hero {
     /*
-     * Previously `min(540px, calc(100vw - 32px - 48px))`. The `- 48` was
-     * copy-pasted from the community-shell math (where the rail occupies a
-     * grid column), but on the home route the rail is fixed and does not
-     * reserve layout space. Subtracting it here made the hero ~48px narrower
-     * than needed, which combined with the 21vw h1 clamp at ≤560px caused
-     * "MuseHub" to render wider than its container and get visually clipped.
-     *
-     * New calc matches the home-stage left/right padding (48 + 16 = 64) so
-     * the hero fills the available inline space without overshooting.
+     * Hero spans the full content width of the stage (stage padding is 16px
+     * each side, so 100vw - 32px). The earlier `- 48` was a mistake copied
+     * from the community-shell math; on home the rail is `position: fixed`
+     * and reserves no layout space.
      */
-    width: min(540px, calc(100vw - 64px));
+    width: min(540px, calc(100vw - 32px));
   }
 
   .home-path {
