@@ -87,11 +87,91 @@
 
 .is-rail-revealing .rail-icon-group {
   /*
-   * Starts slightly after the shell has begun to appear (700ms), finishes
-   * at 1120ms exactly.
+   * Parent group fade: opacity only (the group is centered with
+   * translate(-50%, -50%), so animating its transform would knock the
+   * whole stack off-center). Starts as the shell finishes its slide-in
+   * (560ms) and finishes by ~1080ms — just under the 1120ms transition
+   * window, so .is-rail-revealing is still on the element when the
+   * children's nth-child animations end and they don't snap.
    */
-  animation: rail-icons-fade-in 420ms var(--muse-ease-emerge) 700ms both;
+  animation: rail-icons-fade-in 520ms var(--muse-ease-dissolve) 560ms both;
   will-change: opacity;
+}
+
+/*
+ * Per-icon stagger.
+ *
+ * Each .rail-icon also rises ~5px and scales 0.88 → 1 in turn so the four
+ * navigation glyphs cascade in instead of materializing as a flat column.
+ * Animating transform here is safe because individual icons aren't
+ * centered with a transform — only the parent group is. The nth-child
+ * delays sit inside the parent fade window: parent opacity ramps 560 →
+ * 1080ms, children animate 600 → 1080ms, so the cascade always lands
+ * before .is-rail-revealing is removed and there's no snap-back.
+ *
+ * Compositor-friendly: transform + opacity only, no filter/blur, no
+ * geometry-changing properties. will-change is scoped tight so the
+ * compositor only holds layers during the ~1s reveal window.
+ */
+.is-rail-revealing .rail-icon {
+  animation: rail-icon-rise 360ms var(--muse-ease-emerge) both 540ms;
+  will-change: transform, opacity;
+}
+
+/*
+ * Use :nth-of-type instead of :nth-child so the cascade is robust to the
+ * sibling order. MotionHighlight conditionally renders as a sibling div
+ * inside .rail-icon-group once the active rect has been measured, which
+ * would shift :nth-child indexes by one between first paint and the
+ * post-measurement frame and visibly jitter the cascade. The four
+ * navigation icons are the only <button> elements in the group, so
+ * :nth-of-type(N) maps cleanly to button position 1..4 forever.
+ */
+.is-rail-revealing .rail-icon:nth-of-type(2) {
+  animation-delay: 600ms;
+}
+.is-rail-revealing .rail-icon:nth-of-type(3) {
+  animation-delay: 660ms;
+}
+.is-rail-revealing .rail-icon:nth-of-type(4) {
+  animation-delay: 720ms;
+}
+
+@keyframes rail-icon-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0) scale(0.88);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/*
+ * The active highlight pill (MotionHighlight) snaps to its measured rect
+ * via a motion spring once the icons mount. Without a soft entrance it
+ * pops in at full opacity while the icons themselves are still rising,
+ * which read as the pill leading the icons in instead of following them.
+ * Bloom in opacity-only at the tail of the cascade. The spring still
+ * owns x/y/width/height; the rect's been measured by the time we fade
+ * in, so this never animates layout.
+ */
+.is-rail-revealing .rail-icon-highlight {
+  animation: rail-highlight-bloom 320ms var(--muse-ease-dissolve) 820ms both;
+  will-change: opacity;
+}
+
+@keyframes rail-highlight-bloom {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .rail-brand {

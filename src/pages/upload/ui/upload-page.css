@@ -458,12 +458,42 @@
    * transform animation.
    */
   clip-path: inset(0 0 0 0);
+  /*
+   * Curtain wipe uses --muse-ease-dissolve (gentler in/out) instead of
+   * the snappier --muse-ease-emerge so the right edge eases into rest
+   * without a noticeable deceleration tick. Length bumped slightly so the
+   * scan beam can bloom + fade fully inside it without running off-screen.
+   */
   animation:
     upload-piece-rise 480ms var(--muse-ease-emerge) both 600ms,
-    upload-prompt-curtain 820ms var(--muse-ease-emerge) both 600ms;
+    upload-prompt-curtain 920ms var(--muse-ease-dissolve) both 600ms;
   will-change: transform, clip-path, opacity;
 }
 
+/*
+ * Scan beam.
+ *
+ * Earlier version used a sharp asymmetric honey + acid gradient with
+ * mix-blend-mode: screen. On dark surfaces that produced a hard metallic
+ * edge that read as a slice rather than a sheen. The refined version:
+ *
+ *   - One symmetric soft honey gradient (0 → 0.06 → 0.18 → 0.28 → 0.18 →
+ *     0.06 → 0). No acid hard edge. The peak is at 50% so the band lights
+ *     up uniformly as it passes.
+ *   - Angle nudged to 102deg so the beam reads as a thin diagonal sheen,
+ *     not a vertical guillotine.
+ *   - Background-size 260% 220% so the band has more pixels to slide
+ *     across — slower perceived velocity at the same animation length.
+ *   - Opacity bloom envelope is wider (0 → 0.55 → 1 → 0.55 → 0) so the
+ *     beam appears to swell into the surface and dissolve out of it,
+ *     instead of clipping on / off at the edges.
+ *   - Dropped mix-blend-mode: screen. Screen on a near-black panel
+ *     promotes the beam to almost pure honey and looks plastic; plain
+ *     alpha compositing keeps the warmth subtle.
+ *   - Easing switched to --muse-ease-dissolve so the velocity profile
+ *     matches the curtain rather than fighting it.
+ *   - Slight will-change to keep the layer GPU-promoted for the 1s window.
+ */
 .upload-prompt-preview::before {
   content: "";
   position: absolute;
@@ -471,19 +501,20 @@
   border-radius: inherit;
   pointer-events: none;
   background: linear-gradient(
-    90deg,
+    102deg,
     transparent 0%,
-    rgb(var(--muse-color-honey-rgb) / 0.04) 28%,
-    rgb(var(--muse-color-honey-rgb) / 0.32) 50%,
-    rgb(var(--muse-color-acid-rgb) / 0.18) 56%,
-    transparent 64%,
+    rgb(var(--muse-color-honey-rgb) / 0.06) 38%,
+    rgb(var(--muse-color-honey-rgb) / 0.18) 46%,
+    rgb(var(--muse-color-honey-rgb) / 0.28) 50%,
+    rgb(var(--muse-color-honey-rgb) / 0.18) 54%,
+    rgb(var(--muse-color-honey-rgb) / 0.06) 62%,
     transparent 100%
   );
-  background-size: 220% 100%;
-  background-position: 0 0;
+  background-size: 260% 220%;
+  background-position: -130% 0;
   opacity: 0;
-  animation: upload-prompt-scan 820ms var(--muse-ease-emerge) both 600ms;
-  mix-blend-mode: screen;
+  animation: upload-prompt-scan 1080ms var(--muse-ease-dissolve) both 540ms;
+  will-change: background-position, opacity;
 }
 
 @keyframes upload-prompt-curtain {
@@ -498,17 +529,20 @@
 @keyframes upload-prompt-scan {
   0% {
     opacity: 0;
-    background-position: -100% 0;
+    background-position: -130% 0;
   }
-  18% {
+  16% {
+    opacity: 0.55;
+  }
+  46% {
     opacity: 1;
   }
-  86% {
-    opacity: 1;
+  78% {
+    opacity: 0.55;
   }
   100% {
     opacity: 0;
-    background-position: 120% 0;
+    background-position: 130% 0;
   }
 }
 
@@ -1257,7 +1291,7 @@
  * per frame).
  */
 .upload-skill-modal-code[data-revealing="true"] {
-  animation: upload-skill-code-reveal 720ms var(--muse-ease-emerge) both;
+  animation: upload-skill-code-reveal 880ms var(--muse-ease-dissolve) both;
   will-change: clip-path;
 }
 
@@ -1275,6 +1309,12 @@
   border-color: rgb(var(--muse-color-honey-rgb) / 0.5);
 }
 
+/*
+ * Skill modal scan beam — same silken treatment as the prompt scan above:
+ * symmetric soft honey only, slight diagonal angle, opacity bloom envelope,
+ * dissolve easing. See the long comment on `.upload-prompt-preview::before`
+ * for the rationale.
+ */
 .upload-skill-modal-code-curtain {
   position: absolute;
   top: 0;
@@ -1283,38 +1323,42 @@
   width: 100%;
   pointer-events: none;
   background: linear-gradient(
-    90deg,
+    102deg,
     transparent 0%,
-    rgb(var(--muse-color-honey-rgb) / 0.04) 30%,
-    rgb(var(--muse-color-honey-rgb) / 0.32) 50%,
-    rgb(var(--muse-color-acid-rgb) / 0.18) 56%,
-    transparent 64%,
+    rgb(var(--muse-color-honey-rgb) / 0.06) 38%,
+    rgb(var(--muse-color-honey-rgb) / 0.18) 46%,
+    rgb(var(--muse-color-honey-rgb) / 0.28) 50%,
+    rgb(var(--muse-color-honey-rgb) / 0.18) 54%,
+    rgb(var(--muse-color-honey-rgb) / 0.06) 62%,
     transparent 100%
   );
-  background-size: 220% 100%;
-  background-position: -100% 0;
+  background-size: 260% 220%;
+  background-position: -130% 0;
   opacity: 0;
-  mix-blend-mode: screen;
+  will-change: background-position, opacity;
 }
 
 .upload-skill-modal-code[data-revealing="true"] .upload-skill-modal-code-curtain {
-  animation: upload-skill-scan 720ms var(--muse-ease-emerge) 60ms both;
+  animation: upload-skill-scan 980ms var(--muse-ease-dissolve) 40ms both;
 }
 
 @keyframes upload-skill-scan {
   0% {
     opacity: 0;
-    background-position: -100% 0;
+    background-position: -130% 0;
   }
-  18% {
+  16% {
+    opacity: 0.55;
+  }
+  46% {
     opacity: 1;
   }
-  86% {
-    opacity: 1;
+  78% {
+    opacity: 0.55;
   }
   100% {
     opacity: 0;
-    background-position: 120% 0;
+    background-position: 130% 0;
   }
 }
 
