@@ -20,6 +20,14 @@ type SkillState =
   | { status: "ready"; content: string }
   | { status: "error"; message: string };
 
+// Skeleton line widths (in % of body width). Tuned to look like a fragment of
+// markdown — title, paragraph wrap, a code block, more paragraph — without
+// pretending to be the real content. Stable so we don't repaint on every
+// render. We render a fixed shape (~12 lines) which fills the modal body
+// height comfortably; the real skill.md is ~115 lines so the skeleton reads
+// as "this is the top of the file" rather than "the whole thing".
+const SKILL_SKELETON_LINES: readonly number[] = [62, 92, 84, 0, 38, 96, 88, 100, 72, 0, 56, 80];
+
 export function ShowcaseUploadWorkbench() {
   const [copied, setCopied] = useState(false);
   const [skill, setSkill] = useState<SkillState>({ status: "idle" });
@@ -68,29 +76,65 @@ export function ShowcaseUploadWorkbench() {
       });
   }, [modalState, skill.status]);
 
+  // Crossfade stage: the modal body always renders the skeleton + code +
+  // error layers stacked, and toggles which layer is "active" via a single
+  // data attribute. CSS handles the opacity / clip-path transitions, so we
+  // don't introduce any extra motion.div instances and the work the GPU does
+  // on swap is one composite per layer. The skeleton stays mounted so its
+  // shimmer keeps running smoothly until the moment the code curtains in.
+  const stage = skill.status === "ready" ? "ready" : skill.status === "error" ? "error" : "loading";
+
   const skillBody = useMemo(() => {
-    if (skill.status === "ready") {
-      return (
-        <pre className="upload-skill-modal-code" tabIndex={0}>
-          {skill.content}
-        </pre>
-      );
-    }
-    if (skill.status === "error") {
-      return (
-        <div className="upload-skill-modal-state" role="alert">
-          <span className="upload-skill-modal-state-label">failed</span>
-          <span className="upload-skill-modal-state-hint">{skill.message}</span>
-        </div>
-      );
-    }
     return (
-      <div className="upload-skill-modal-state" aria-live="polite">
-        <span className="upload-skill-modal-state-label">loading</span>
-        <span className="upload-skill-modal-state-hint">fetching skill.md…</span>
+      <div className="upload-skill-modal-stage" data-stage={stage} aria-live="polite">
+        <div
+          className="upload-skill-modal-skeleton"
+          aria-hidden={stage === "loading" ? undefined : true}
+        >
+          <span className="upload-skill-modal-skeleton-status">
+            <span className="upload-skill-modal-skeleton-status-dot" aria-hidden="true" />
+            <span>fetching skill.md…</span>
+          </span>
+          <div className="upload-skill-modal-skeleton-lines">
+            {SKILL_SKELETON_LINES.map((width, index) =>
+              width === 0 ? (
+                <span
+                  key={`gap-${index}`}
+                  className="upload-skill-modal-skeleton-gap"
+                  aria-hidden="true"
+                />
+              ) : (
+                <span
+                  key={`line-${index}`}
+                  className="upload-skill-modal-skeleton-line"
+                  style={{ width: `${width}%`, animationDelay: `${index * 90}ms` }}
+                  aria-hidden="true"
+                />
+              ),
+            )}
+          </div>
+        </div>
+
+        {skill.status === "ready" ? (
+          <pre
+            className="upload-skill-modal-code"
+            tabIndex={0}
+            data-revealing={stage === "ready" ? "true" : "false"}
+          >
+            {skill.content}
+            <span className="upload-skill-modal-code-curtain" aria-hidden="true" />
+          </pre>
+        ) : null}
+
+        {skill.status === "error" ? (
+          <div className="upload-skill-modal-state" role="alert">
+            <span className="upload-skill-modal-state-label">failed</span>
+            <span className="upload-skill-modal-state-hint">{skill.message}</span>
+          </div>
+        ) : null}
       </div>
     );
-  }, [skill]);
+  }, [skill, stage]);
 
   return (
     <div className="upload-workbench">
