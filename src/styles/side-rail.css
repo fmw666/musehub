@@ -16,7 +16,13 @@
   position: fixed;
   inset: 0 auto 0 0;
   width: 40px;
-  border-right: 0;
+  /*
+   * Keep border-right present but transparent on home, so when we animate
+   * the rail chrome into view on home->sub transitions we can cross-fade
+   * border-right-color without ever touching border-right-width (width
+   * changes trigger layout; color-only transitions are paint-only).
+   */
+  border-right-color: transparent;
   background: transparent;
   pointer-events: none;
 }
@@ -37,13 +43,38 @@
  * `.rail-icon-group` uses `transform: translate(-50%, -50%)` to self-center,
  * so we must NOT touch `transform` here (would break the centering).
  *
- * The rail chrome itself (background, border) is intentionally not animated:
- * DissolveTransition already cross-fades the home snapshot over it during
- * the same window, which handles the visual "materialization" naturally.
+ * Rail *chrome* (background + right border) must also ease in, not hard-cut.
+ * DissolveTransition covers most of the viewport with the home snapshot
+ * during the transition, but its clip-path exposes the rail column from
+ * frame 0 — so without a chrome animation the rail's opaque background
+ * and border would pop in the instant the route flips to a sub-page,
+ * which reads as a jarring grey bar slicing up the still-visible home
+ * snapshot. We delay the chrome fade so the rail quietly materializes as
+ * the home snapshot nears full dissolve.
+ *
+ * Only color/background are animated (not border-width/opacity): keeps
+ * it paint-only (no reflow) and leaves brand + user icons untouched so
+ * they never flicker.
  */
 .is-rail-revealing .rail-icon-group {
-  animation: rail-icons-fade-in var(--motion-rail-reveal) var(--muse-ease-emerge) 360ms both;
+  /*
+   * 360ms delay + 620ms duration = 980ms (finishes 140ms before
+   * homeDissolveDurationMs = 1120ms, so the icons are fully settled
+   * before .is-rail-revealing is removed — no final-frame snap).
+   */
+  animation: rail-icons-fade-in 620ms var(--muse-ease-emerge) 360ms both;
   will-change: opacity;
+}
+
+.is-rail-revealing .side-rail {
+  /*
+   * 620ms delay + 500ms duration = 1120ms total, matching
+   * homeDissolveDurationMs in App.tsx so the chrome fade ends in the
+   * same frame that .is-rail-revealing is removed (clearTransition
+   * fires on dissolve end). Prevents a final-state snap.
+   */
+  animation: rail-chrome-settle 500ms var(--muse-ease-emerge) 620ms both;
+  will-change: background-color, border-right-color;
 }
 
 .rail-brand {
