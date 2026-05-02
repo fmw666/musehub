@@ -205,37 +205,61 @@
 
 .rail-avatar {
   display: block;
-  width: 27px;
-  height: 27px;
+  width: 26px;
+  height: 26px;
   overflow: visible;
 }
 
-.rail-avatar-kite,
-.rail-avatar-spine,
-.rail-avatar-tail {
+.rail-avatar-mark {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 220ms var(--muse-ease-emerge),
+    filter 220ms var(--muse-ease-emerge);
+}
+
+.rail-avatar-frame,
+.rail-avatar-stroke {
   fill: none;
-  stroke: rgb(var(--muse-color-ink-rgb) / 0.58);
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.rail-avatar-kite {
+.rail-avatar-frame {
   stroke: var(--muse-text-soft);
-  stroke-width: 1.45;
+  stroke-width: 1.35;
 }
 
-.rail-avatar-spine {
+.rail-avatar-stroke {
+  stroke: rgb(var(--muse-color-ink-rgb) / 0.5);
   stroke-width: 1.25;
 }
 
-.rail-avatar-tail {
-  stroke: rgb(var(--muse-color-ink-rgb) / 0.42);
-  stroke-width: 1.2;
+.rail-avatar-seal {
+  fill: var(--muse-accent-primary, var(--muse-color-honey));
+  filter: drop-shadow(0 0 3px rgb(var(--muse-color-honey-rgb) / 0.85));
 }
 
-.rail-avatar-node {
-  fill: var(--muse-color-violet);
-  filter: drop-shadow(0 0 3px rgb(var(--muse-color-violet-rgb) / 0.9));
+.rail-user:hover .rail-avatar-mark,
+.rail-user[data-hovered="true"] .rail-avatar-mark,
+.rail-user[data-pressed="true"] .rail-avatar-mark {
+  transform: rotate(0deg) scale(1.04);
+}
+
+.rail-user:hover .rail-avatar-frame,
+.rail-user[data-hovered="true"] .rail-avatar-frame {
+  stroke: var(--muse-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-avatar-mark {
+    transition: none;
+  }
+  .rail-user:hover .rail-avatar-mark,
+  .rail-user[data-hovered="true"] .rail-avatar-mark,
+  .rail-user[data-pressed="true"] .rail-avatar-mark {
+    transform: none;
+  }
 }
 
 /* ----------------------------------------------------------------------- */

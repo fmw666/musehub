@@ -141,16 +141,23 @@ function MenuItem({ icon, label, tone = "default", onSelect }: MenuItemProps) {
   );
 }
 
+/*
+ * "Atelier Mark" — a small tilted portrait frame with an inner brushstroke
+ * and a honey-colored signature seal in the lower-right corner.
+ *
+ * Intentionally NOT a head-and-shoulders pictogram. The frame + signed
+ * seal metaphor reads as "your personal corner / your signed work" while
+ * staying in the Atelier Ink visual language (the only saturated accent
+ * is the honey signature dot, matching --muse-accent-primary).
+ */
 function UserAvatarGlyph() {
   return (
     <svg className="rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        className="rail-avatar-kite"
-        d="M15.8 3.8 20 8.4l-7.5 3.2-3.2 7.5-4.6-4.2 4.5-6.6 6.6-4.5Z"
-      />
-      <path className="rail-avatar-spine" d="M20 8.4 9.3 19.1" />
-      <path className="rail-avatar-tail" d="M9.3 19.1c-1.6-.1-2.5.4-3 1.5" />
-      <circle className="rail-avatar-node" cx="20" cy="8.4" r="1.35" />
+      <g className="rail-avatar-mark" transform="rotate(-5 12 12)">
+        <rect className="rail-avatar-frame" x="5" y="5" width="14" height="14" rx="2.6" ry="2.6" />
+        <path className="rail-avatar-stroke" d="M8 14.2C10.4 11.2 13.2 11.4 16 14" />
+        <circle className="rail-avatar-seal" cx="16.4" cy="16.6" r="1.35" />
+      </g>
     </svg>
   );
 }
