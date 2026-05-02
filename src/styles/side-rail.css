@@ -26,9 +26,24 @@
   pointer-events: auto;
 }
 
-.is-rail-revealing .side-rail {
-  animation: rail-reveal var(--motion-rail-reveal) var(--muse-ease-emerge) 440ms both;
-  will-change: opacity, transform;
+/*
+ * Home → sub-page reveal.
+ *
+ * Brand logo (top-left) and user chip (bottom-left) already exist on the
+ * home route — they must stay visually anchored across the transition, not
+ * animate. The only element that genuinely mounts for the first time when
+ * entering a sub-page is `.rail-icon-group` (SideRail renders it only when
+ * showPrimaryNavigation=true). Fade it in *in place* using opacity only —
+ * `.rail-icon-group` uses `transform: translate(-50%, -50%)` to self-center,
+ * so we must NOT touch `transform` here (would break the centering).
+ *
+ * The rail chrome itself (background, border) is intentionally not animated:
+ * DissolveTransition already cross-fades the home snapshot over it during
+ * the same window, which handles the visual "materialization" naturally.
+ */
+.is-rail-revealing .rail-icon-group {
+  animation: rail-icons-fade-in var(--motion-rail-reveal) var(--muse-ease-emerge) 360ms both;
+  will-change: opacity;
 }
 
 .rail-brand {

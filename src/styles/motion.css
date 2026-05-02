@@ -163,21 +163,20 @@
   }
 }
 
-@keyframes rail-reveal {
+/*
+ * Opacity-only fade for the centered nav icon group when entering a
+ * sub-page from home. Does NOT touch transform — `.rail-icon-group` uses
+ * `translate(-50%, -50%)` for self-centering and animating transform here
+ * would knock the icons off-center mid-animation.
+ */
+@keyframes rail-icons-fade-in {
   0%,
-  26% {
+  20% {
     opacity: 0;
-    transform: translate3d(-12px, 0, 0);
-  }
-
-  72% {
-    opacity: 0.72;
-    transform: translate3d(1px, 0, 0);
   }
 
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 }
 
