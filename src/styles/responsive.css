@@ -63,11 +63,30 @@
 
   .home-stage {
     min-height: 0;
-    padding: 24px 16px 26px;
+    /*
+     * The home side-rail is `position: fixed` (see side-rail.css: `.home-shell
+     * .side-rail`), so it does not reserve a grid column the way the community
+     * shell does. Centering the hero with only 16px left padding let the fixed
+     * rail (40px wide + brand icon at left: 6px, so ~46px total) overlap the
+     * "MuseHub" headline on narrow viewports. Reserve 48px on the left so the
+     * centered hero never collides with the rail.
+     */
+    padding: 24px 16px 26px 48px;
   }
 
   .home-hero {
-    width: min(540px, calc(100vw - 32px - 48px));
+    /*
+     * Previously `min(540px, calc(100vw - 32px - 48px))`. The `- 48` was
+     * copy-pasted from the community-shell math (where the rail occupies a
+     * grid column), but on the home route the rail is fixed and does not
+     * reserve layout space. Subtracting it here made the hero ~48px narrower
+     * than needed, which combined with the 21vw h1 clamp at ≤560px caused
+     * "MuseHub" to render wider than its container and get visually clipped.
+     *
+     * New calc matches the home-stage left/right padding (48 + 16 = 64) so
+     * the hero fills the available inline space without overshooting.
+     */
+    width: min(540px, calc(100vw - 64px));
   }
 
   .home-path {
@@ -157,8 +176,21 @@
   }
 
   .home-hero h1 {
-    font-size: clamp(58px, 21vw, 102px);
+    /*
+     * Re-tuned from `clamp(58px, 21vw, 102px)` → `clamp(52px, 17vw, 88px)`.
+     * At 393px viewport the old 21vw resolved to ~82px; combined with the
+     * semi-bold 780 weight and -0.1em tracking, "MuseHub" (7 glyphs) measured
+     * wider than the hero column (~313px after accounting for stage padding
+     * and fixed rail) and got clipped. 17vw at 393px = ~67px, which leaves
+     * comfortable headroom on iPhone SE-class 375px widths as well. Also add
+     * `max-width: 100%` + `overflow-wrap: anywhere` as a defence-in-depth
+     * guard: even if future type changes re-push the bound, the headline
+     * now wraps rather than overflowing its container.
+     */
+    font-size: clamp(52px, 17vw, 88px);
     letter-spacing: -0.1em;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .home-copy {
