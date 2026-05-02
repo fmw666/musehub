@@ -1241,16 +1241,21 @@
 @media (max-width: 900px) {
   .upload-stage {
     /*
-     * Asymmetric padding to compensate for the 48px side-rail grid
-     * column on the left. Without this the visual gutter is ~64px
-     * left vs ~16px right, which made the page read as right-shoved
-     * (bug report). 22px right + 6px left brings the perceived
-     * left/right whitespace closer to balanced (rail + 6 ≈ 54px on
-     * the left; 22px on the right) without altering the rail width
-     * or any desktop layout.
+     * Symmetric inner padding. The rail is a 48px grid column to the
+     * left of the stage; users' eyes read the stage as a self-contained
+     * "reading area" and rely on symmetry inside it for balance. The
+     * earlier asymmetric `6px / 22px` fix corrected the right-shove
+     * from desktop padding leaking through (cascade bug, fixed in
+     * 85b0652) but went too far the other way and pushed every block
+     * up against the rail border with only 6px of breathing room.
+     *
+     * - top:    larger so the eyebrow ("/upload AWAITING YOUR AGENT")
+     *           clears the iPhone status bar and notch comfortably
+     * - x:      modest symmetric value tuned per viewport via clamp()
+     * - bottom: a little extra so the footer rule clears the home bar
      */
-    padding: 28px 22px 32px 6px;
-    gap: 24px;
+    padding: clamp(56px, 9vh, 80px) clamp(16px, 4.5vw, 22px) clamp(64px, 10vh, 96px);
+    gap: clamp(26px, 4.2vh, 38px);
   }
 
   .upload-hero {
@@ -1260,31 +1265,97 @@
      * inner BlurFade grid items resolve to max-content and refuse to
      * shrink below their intrinsic line width, which let the italic
      * "to your agent." headline punch past the stage padding on
-     * narrow viewports even after the padding fix above. These two
-     * declarations let the column width actually constrain the
-     * headline so the clamp() font-size step (and overflow-wrap on
-     * the headline) can do their job.
+     * narrow viewports.
      */
     min-width: 0;
     width: 100%;
+    gap: 14px;
   }
 
   .upload-hero-headline {
     /*
      * Desktop min (48px) overflows the rail-adjusted content column
-     * on phones. 36–56px keeps the second line ("to your agent.")
-     * inside the column on viewports from ~360px up through ~900px.
-     * max-width / overflow-wrap are defence-in-depth so a future
-     * type change can't silently re-introduce horizontal overflow.
+     * on phones. 34–52px keeps both lines inside the stage column on
+     * viewports from ~360px up through ~900px while still feeling
+     * editorial. line-height nudged up from 0.94 → 0.98 so the
+     * descender of "g" in "agent" doesn't kiss the lede underneath.
+     * max-width / overflow-wrap are defence-in-depth.
      */
-    font-size: clamp(36px, 7.4vw, 56px);
+    font-size: clamp(34px, 7.6vw, 52px);
+    line-height: 0.98;
     max-width: 100%;
     overflow-wrap: anywhere;
   }
 
+  .upload-hero-lede {
+    font-size: 13.5px;
+    line-height: 1.62;
+  }
+
+  .upload-card {
+    /* Tighter padding gives the prompt-preview ~28px more horizontal
+     * room than the desktop 22px x value, which lets a typical
+     * skill-md URL ("https://musehub-mu.vercel.app/upload/skill.md")
+     * almost fit on one mono line at 12px. Trims the corner radius too
+     * so it stays in proportion with the smaller card. */
+    padding: 18px 16px 16px;
+    border-radius: 18px;
+    gap: 12px;
+    /* `display: grid` children default to `min-width: auto`, so a long
+     * unbreakable token in the prompt-preview (e.g. the skill URL) can
+     * push the preview wider than the card itself and visually escape
+     * the right edge — observable on 360-iPhone-SE-class viewports.
+     * Forcing the grid template to a min:0 column lets the preview
+     * (and any future grid child) honor the card's inline size. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .upload-card-heading,
+  .upload-prompt-preview,
+  .upload-actions {
+    min-width: 0;
+  }
+
+  .upload-prompt-preview {
+    padding: 14px 14px;
+    font-size: 12px;
+    line-height: 1.65;
+    border-radius: 12px;
+    /* Belt and braces: `overflow-wrap: anywhere` was already global on
+     * the preview, but explicitly setting `word-break: break-word` plus
+     * `min-width:0` (inherited via the grid fix above) ensures the
+     * preview never blows out the card on any viewport. */
+    word-break: break-word;
+  }
+
+  .upload-card-counter {
+    /* The "205 CHARS" counter sat in the same row as the eyebrow on
+     * the right; the card's blurred acid glow (.upload-card::after)
+     * lives at top:-140 right:-90 and at narrow widths bled across
+     * the counter, smudging the numerals. Lift it above the glow's
+     * stacking context. */
+    position: relative;
+    z-index: 2;
+  }
+
+  .upload-card::after {
+    /* Pull the decorative glow further off-card on phones so it stays
+     * a hint of warmth in the corner instead of drifting into the
+     * counter / heading. */
+    top: -160px;
+    right: -120px;
+    width: 200px;
+    height: 200px;
+    opacity: 0.7;
+  }
+
+  .upload-actions {
+    gap: 10px;
+  }
+
   .upload-atmos-signature {
-    font-size: clamp(200px, 70vw, 360px);
-    top: 28vh;
+    font-size: clamp(200px, 64vw, 320px);
+    top: 26vh;
     -webkit-text-stroke-width: 0.8px;
   }
 
@@ -1292,10 +1363,19 @@
     background-size: 42px 42px;
   }
 
+  .upload-agent-picker {
+    gap: 16px;
+  }
+
+  .upload-agent-picker-head {
+    gap: 4px;
+  }
+
   .upload-stage-footer {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: 12px;
+    gap: 10px;
+    padding-top: 18px;
     text-align: center;
   }
 
@@ -1307,8 +1387,28 @@
 }
 
 @media (max-width: 560px) {
+  /*
+   * Stack CTAs full-width on phones. The desktop layout puts a wide
+   * primary next to a narrow ghost; in a ~280px column that reads as
+   * "one bar then a stub". A vertical stack with both buttons at 100%
+   * width is a more honest two-step (copy → inspect) rhythm. We only
+   * apply this below 560px so iPad-class viewports (768px) still get
+   * the side-by-side layout.
+   */
+  .upload-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .upload-action {
+    width: 100%;
+    justify-content: center;
+    height: 42px;
+  }
+
   .hk-agent-card-row {
     justify-content: center;
+    gap: 10px;
   }
 
   /*
@@ -1321,12 +1421,35 @@
    * fill the wrapper.
    */
   .hk-agent-card-row > * {
-    flex: 0 0 calc(50% - 6px);
+    flex: 0 0 calc(50% - 5px);
     min-width: 0;
   }
 
   .hk-agent-card {
     width: 100%;
     min-width: 0;
+    min-height: 92px;
+    padding: 12px 10px;
+    border-radius: 12px;
+  }
+}
+
+/*
+ * Tablet band (561–900px). The mobile @media above already loosens
+ * the page; here we just widen the agent cards a little so the longer
+ * labels ("Claude Code", "Gemini CLI") don't get truncated when 5
+ * cards wrap into the row at iPad-portrait widths.
+ */
+@media (min-width: 561px) and (max-width: 900px) {
+  .hk-agent-card {
+    width: 124px;
+  }
+
+  .hk-agent-card__label {
+    font-size: 13.5px;
+  }
+
+  .hk-agent-card__count {
+    font-size: 10.5px;
   }
 }
