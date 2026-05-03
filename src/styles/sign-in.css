@@ -8,12 +8,25 @@
 /* ----------------------------------------------------------------------- */
 
 .signin-stage {
+  position: relative;
   display: grid;
+  width: 100%;
   min-height: 100dvh;
   place-items: center;
-  padding: 48px 24px;
+  /*
+   * Left padding leaves clear space for the fixed brand logo (top-left)
+   * so the sign-in card stays visually centered on the *page* rather than
+   * drifting under the anchor. Matches the 40px rail width + 24px gap.
+   */
+  padding: 48px 24px 48px max(24px, 64px);
   background: var(--muse-bg);
   color: var(--muse-text);
+}
+
+@media (max-width: 900px) {
+  .signin-stage {
+    padding: 72px 16px 32px;
+  }
 }
 
 .signin-card {

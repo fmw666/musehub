@@ -16,8 +16,12 @@
  * frame would land in the narrow 40-48px rail column and squash the entire
  * home stage down to ~48px wide (bug report 2026-05-02: "mobile home is all
  * crammed into the left nav, the right side is black").
+ *
+ * Sign-in shares the same full-bleed posture: the rail becomes a floating
+ * brand-only anchor, so the stage must occupy the entire viewport width.
  */
-.community-shell.home-shell {
+.community-shell.home-shell,
+.community-shell.signin-shell {
   grid-template-columns: minmax(0, 1fr);
 }
 

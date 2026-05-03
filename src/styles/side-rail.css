@@ -50,6 +50,36 @@
 }
 
 /*
+ * Sign-in route.
+ *
+ * Same full-bleed posture as the home route: the rail becomes a transparent
+ * floating layer pinned to the left edge so only the brand logo top-left is
+ * interactive. The center nav group is hidden (no navigation context while
+ * signing in) and so is the bottom `rail-signin` arrow (we're already here).
+ * Only the brand logo stays clickable — it navigates back home.
+ */
+.signin-shell .side-rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 40px;
+  pointer-events: none;
+}
+
+.signin-shell .side-rail::before {
+  opacity: 0;
+}
+
+.signin-shell .rail-brand {
+  pointer-events: auto;
+}
+
+.signin-shell .rail-icon-group,
+.signin-shell .rail-signin,
+.signin-shell .rail-user {
+  display: none;
+}
+
+/*
  * Home → sub-page reveal.
  *
  * Three independent motion tracks, all scoped to children/pseudo-elements

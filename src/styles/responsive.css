@@ -66,6 +66,10 @@
     width: 48px;
   }
 
+  .signin-shell .side-rail {
+    width: 48px;
+  }
+
   .rail-brand {
     top: 12px;
     left: 8px;

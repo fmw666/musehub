@@ -25,6 +25,7 @@ export function AppShell({
   const shellClassName = [
     "community-shell",
     activePageId === "home" ? "home-shell" : "",
+    activePageId === "sign-in" ? "signin-shell" : "",
     isRailRevealing ? "is-rail-revealing" : "",
     isRailRevealing ? "is-community-entering" : "",
     "min-h-screen bg-black text-white",
