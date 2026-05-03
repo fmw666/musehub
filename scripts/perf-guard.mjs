@@ -70,7 +70,13 @@ const BUDGETS = {
   "lazy-js": 40, // biggest lazy page js chunk
   "lazy-css": 8, // biggest lazy page css chunk
   "vendor-js": 80, // biggest auto-split third-party chunk (createLucideIcon today)
-  "total-js": 170, // sum of all JS
+  // Bumped 170→175 in the sign-in / auth-state-management change: the
+  // AuthProvider (reducer-based context, cross-tab storage sync, expiry
+  // watchdog) + RequireAuth guard + lazy SignInPage chunk together
+  // added ~0.4 KB gzip to main-js. The feature is now mainlined across
+  // every route (rail user affordance, gated routes), so it belongs in
+  // the core budget rather than a page chunk.
+  "total-js": 175, // sum of all JS
   "total-css": 60, // sum of all CSS
 };
 

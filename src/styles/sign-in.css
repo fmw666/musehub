@@ -23,12 +23,6 @@
   color: var(--muse-text);
 }
 
-@media (max-width: 900px) {
-  .signin-stage {
-    padding: 72px 16px 32px;
-  }
-}
-
 .signin-card {
   width: min(440px, 100%);
   display: flex;
@@ -244,4 +238,104 @@
 .rail-signin:focus-visible {
   outline: none;
   box-shadow: var(--muse-focus-ring);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Responsive: tablet / mobile                                              */
+/*                                                                          */
+/* The card keeps a single centered column on every viewport. We only       */
+/* relax the stage padding, tighten the legal gutter (120px of empty         */
+/* space breaks the vertical rhythm on short mobile viewports), move the    */
+/* "Last used" chip inline (no room for an off-card hint at ≤560px), and    */
+/* mirror the safe-area + width tweaks the rest of the app uses on mobile.  */
+/* ----------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .signin-stage {
+    /*
+     * Leave room at the top for the fixed brand logo (32px glyph + 12px
+     * top offset → keep card ≥64px away so it never collides with the
+     * anchor) and respect iOS safe-area at the bottom.
+     */
+    padding: 72px 16px calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .signin-card {
+    gap: 24px;
+  }
+
+  .signin-heading {
+    font-size: 19px;
+  }
+
+  .signin-legal {
+    /*
+     * 120px gutter is a desktop luxury — on ≤900px the card often fills
+     * most of the viewport height, pushing the legal copy off-screen.
+     * Switch to an auto-top gutter so the footer snugs under the form
+     * and the grid still centers the card vertically.
+     */
+    margin-top: 56px;
+  }
+}
+
+@media (max-width: 560px) {
+  .signin-stage {
+    /*
+     * No sign-in rail chrome on /sign-in, but the brand logo is still
+     * fixed at top-left. Tighten side gutter to 14px so the card can
+     * reach 330-350px on iPhone SE-class 375px viewports.
+     */
+    padding: 68px 14px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .signin-card {
+    width: min(400px, 100%);
+    gap: 22px;
+  }
+
+  .signin-heading {
+    font-size: 18px;
+  }
+
+  /*
+   * The "Last used" chip sits off the right edge of each button row on
+   * desktop. At narrow widths there isn't enough gutter between the card
+   * and the viewport edge for an off-card pill, so we inline it above
+   * the affected row instead.
+   */
+  .signin-last-used {
+    position: static;
+    display: block;
+    margin-bottom: -4px;
+    transform: none;
+    text-align: right;
+    font-size: 11.5px;
+    order: -1;
+  }
+
+  .signin-last-used--email {
+    bottom: auto;
+  }
+
+  /*
+   * Keep controls at the 44px iOS minimum tap target even on the
+   * smallest supported viewport.
+   */
+  .signin-google-btn.button,
+  .signin-email-btn.button {
+    height: 46px;
+    font-size: 13.5px;
+  }
+
+  .signin-email-input input,
+  .signin-email-input .input__field {
+    height: 46px;
+    font-size: 16px; /* prevents iOS Safari zoom-on-focus */
+  }
+
+  .signin-legal {
+    margin-top: 40px;
+    font-size: 11px;
+  }
 }

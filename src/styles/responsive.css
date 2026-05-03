@@ -34,11 +34,12 @@
   /*
    * Rail/stage seam softening on mobile.
    *
-   * On desktop the 1px right border + flat #0c0b09 rail reads as a calm
-   * gutter because the rail is only ~3% of the viewport. On mobile the
-   * same chrome (rail = 48px ≈ 12% of a 393px viewport) sits next to a
-   * stage whose top is washed in honey/iris (`--muse-gradient-stage`),
-   * making the seam pop as a hard cold-warm boundary.
+   * On desktop the 1px right border + flat ink rail (var(--muse-bg)) reads
+   * as a calm gutter because the rail is only ~3% of the viewport. On
+   * mobile the same chrome (rail = 48px ≈ 12% of a 393px viewport) sits
+   * next to a stage whose top is washed in honey/iris
+   * (`--muse-gradient-stage`), making the seam pop as a hard cold-warm
+   * boundary.
    *
    * Two changes erase that seam without touching the desktop look:
    *   - drop the hard `border-right` so there is no abrupt 1px cold line;
