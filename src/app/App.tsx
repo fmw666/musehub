@@ -118,10 +118,11 @@ type CurrentPageProps = {
 
 /*
  * Routes that require an authenticated session. Anonymous visitors are
- * bounced to `/sign-in` via `RequireAuth`. Community / Home / Sign-in
- * stay public so the marketing and discovery surfaces always render.
+ * bounced to `/sign-in` via `RequireAuth`. Upload / Community / Home /
+ * Sign-in stay public — upload is marketed as "hand it to your agent"
+ * and needs to read/link even when the visitor is just browsing.
  */
-const PROTECTED_PAGE_IDS = new Set<RegisteredPage["id"]>(["upload", "favorites", "repositories"]);
+const PROTECTED_PAGE_IDS = new Set<RegisteredPage["id"]>(["favorites", "repositories"]);
 
 function CurrentPage({ page, renderHomePage, onSignedIn, onRedirectToSignIn }: CurrentPageProps) {
   if (page.id === "home") {

@@ -114,7 +114,6 @@ describe("App", () => {
   });
 
   it("renders the minimal upload workspace that hands off to an agent", async () => {
-    seedSession();
     window.history.pushState(null, "", "/upload");
 
     render(<App />);
@@ -190,14 +189,28 @@ describe("App", () => {
   });
 
   it("redirects anonymous visitors from a protected route to /sign-in", async () => {
-    window.history.pushState(null, "", "/upload");
+    window.history.pushState(null, "", "/favorites");
 
     render(<App />);
 
     expect(await screen.findByRole("heading", { name: /sign in or sign up/i })).toBeInTheDocument();
     expect(window.location.pathname).toBe("/sign-in");
     expect(
-      screen.queryByRole("region", { name: /musehub upload workspace/i }),
+      screen.queryByRole("region", { name: /favorites page placeholder/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("lets anonymous visitors reach the public upload workspace", async () => {
+    window.history.pushState(null, "", "/upload");
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole("region", { name: /musehub upload workspace/i }),
+    ).toBeInTheDocument();
+    expect(window.location.pathname).toBe("/upload");
+    // Rail still shows the anonymous affordance, confirming we didn't
+    // silently upgrade the visitor to an authenticated session.
+    expect(screen.getByRole("button", { name: /^sign in$/i })).toBeInTheDocument();
   });
 });

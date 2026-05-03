@@ -255,9 +255,11 @@
     /*
      * Leave room at the top for the fixed brand logo (32px glyph + 12px
      * top offset → keep card ≥64px away so it never collides with the
-     * anchor) and respect iOS safe-area at the bottom.
+     * anchor) and respect iOS safe-area at the bottom. 20px side gutter
+     * keeps the card off the viewport edge so the form controls don't
+     * feel glued to the frame on tablet-width devices.
      */
-    padding: 72px 16px calc(28px + env(safe-area-inset-bottom));
+    padding: 64px 20px calc(28px + env(safe-area-inset-bottom));
   }
 
   .signin-card {
@@ -283,10 +285,13 @@
   .signin-stage {
     /*
      * No sign-in rail chrome on /sign-in, but the brand logo is still
-     * fixed at top-left. Tighten side gutter to 14px so the card can
-     * reach 330-350px on iPhone SE-class 375px viewports.
+     * fixed at top-left. Keep 18px symmetric side gutters so the card
+     * breathes on iPhone SE-class 375px viewports without the inputs
+     * feeling glued to the edges. The top padding is shorter than the
+     * ≤900px rule because short viewports (667px iPhone SE) otherwise
+     * push the card below the vertical middle.
      */
-    padding: 68px 14px calc(24px + env(safe-area-inset-bottom));
+    padding: 56px 18px calc(24px + env(safe-area-inset-bottom));
   }
 
   .signin-card {
