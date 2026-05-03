@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { routePaths } from "@/app/routing/route-paths";
 
-import { useAuth } from "../use-auth";
+import { useAuthSession } from "../use-auth";
 
 type RequireAuthProps = {
   children: ReactNode;
@@ -31,7 +31,7 @@ type RequireAuthProps = {
  * stays pure and React Strict Mode double-invokes don't fire twice.
  */
 export function RequireAuth({ children, onRedirect, fallback = null }: RequireAuthProps) {
-  const { status } = useAuth();
+  const { status } = useAuthSession();
 
   useEffect(() => {
     if (status === "anonymous") {

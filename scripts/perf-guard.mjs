@@ -65,17 +65,16 @@ if (shouldBuild) {
 // automatic de-duplication, resulting in a net +5KB gzip regression across
 // the payload. See docs/adr/0002-animate-ui-motion-only.md.
 const BUDGETS = {
-  "main-js": 95, // main entry js
+  "main-js": 85, // main entry js — tightened after context-split + lazy AccountSettingsModal
   "main-css": 55, // main entry css
   "lazy-js": 40, // biggest lazy page js chunk
   "lazy-css": 8, // biggest lazy page css chunk
   "vendor-js": 80, // biggest auto-split third-party chunk (createLucideIcon today)
-  // Bumped 170→175 in the sign-in / auth-state-management change: the
-  // AuthProvider (reducer-based context, cross-tab storage sync, expiry
-  // watchdog) + RequireAuth guard + lazy SignInPage chunk together
-  // added ~0.4 KB gzip to main-js. The feature is now mainlined across
-  // every route (rail user affordance, gated routes), so it belongs in
-  // the core budget rather than a page chunk.
+  // History: 170 → 175 when sign-in/auth feature landed (+ ~0.4 KB). Now
+  // pulling back to 175 even after splitting Context + lazy-loading the
+  // AccountSettingsModal — main-js dropped from 85 KB to 78.65 KB gzip,
+  // but rolldown auto-split modal/input vendor chunks now count toward
+  // total-js so the ceiling stays put.
   "total-js": 175, // sum of all JS
   "total-css": 60, // sum of all CSS
 };

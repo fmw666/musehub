@@ -1,9 +1,18 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
-import { type ReactNode, type SVGProps, useState } from "react";
+import { type ReactNode, type SVGProps, lazy, Suspense, useState } from "react";
 
 import { routePaths } from "@/app/routing/route-paths";
-import { useAuth } from "@/features/auth/use-auth";
-import { AccountSettingsModal } from "./AccountSettingsModal";
+import { useAuthActions, useAuthSession } from "@/features/auth/use-auth";
+
+/*
+ * `AccountSettingsModal` is a heavy surface (full HeroUI Modal, form
+ * fields, billing copy) that most visitors never open. Lazy-loading it
+ * keeps the rail on every route light — it enters as its own chunk the
+ * first time the user clicks "Account Settings".
+ */
+const AccountSettingsModal = lazy(() =>
+  import("./AccountSettingsModal").then((m) => ({ default: m.AccountSettingsModal })),
+);
 
 type RailUserMenuProps = {
   onNavigate?: (path: string) => void;
@@ -34,9 +43,17 @@ const defaultUsage: UserProfile["usage"] = {
 };
 
 export function RailUserMenu({ onNavigate }: RailUserMenuProps) {
-  const { status, session, signOut } = useAuth();
+  const { status, session } = useAuthSession();
+  const { signOut } = useAuthActions();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
   const [isSettingsOpen, setSettingsOpen] = useState(false);
+  /*
+   * Track whether the user has *ever* opened the settings modal. The
+   * lazy import fires the first time this flips true and is cached by
+   * the module system, so subsequent opens are instant without keeping
+   * the modal mounted.
+   */
+  const [hasOpenedSettings, setHasOpenedSettings] = useState(false);
 
   if (status !== "authenticated" || !session) {
     return (
@@ -63,6 +80,7 @@ export function RailUserMenu({ onNavigate }: RailUserMenuProps) {
 
   const handleOpenSettings = () => {
     setPopoverOpen(false);
+    setHasOpenedSettings(true);
     setSettingsOpen(true);
   };
 
@@ -145,11 +163,15 @@ export function RailUserMenu({ onNavigate }: RailUserMenuProps) {
           </div>
         </PopoverContent>
       </Popover>
-      <AccountSettingsModal
-        isOpen={isSettingsOpen}
-        onOpenChange={setSettingsOpen}
-        profile={profile}
-      />
+      {hasOpenedSettings ? (
+        <Suspense fallback={null}>
+          <AccountSettingsModal
+            isOpen={isSettingsOpen}
+            onOpenChange={setSettingsOpen}
+            profile={profile}
+          />
+        </Suspense>
+      ) : null}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { Button, Input } from "@heroui/react";
 import { type FormEvent, useEffect, useState } from "react";
 
-import { useAuth } from "../use-auth";
+import { useAuthActions, useAuthPending, useAuthSession } from "../use-auth";
 
 type SignInFormProps = {
   onAuthenticated?: () => void;
@@ -34,7 +34,9 @@ function writeLastMethod(method: "google" | "email") {
 }
 
 export function SignInForm({ onAuthenticated }: SignInFormProps) {
-  const { signInWithEmail, signInWithGoogle, pending, error, clearError, status } = useAuth();
+  const { signInWithEmail, signInWithGoogle, clearError } = useAuthActions();
+  const { pending, error } = useAuthPending();
+  const { status } = useAuthSession();
   const [email, setEmail] = useState("");
   const [lastMethod] = useState<"google" | "email" | null>(() => readLastMethod());
 
