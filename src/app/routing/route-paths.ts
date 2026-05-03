@@ -4,6 +4,7 @@ export const routePaths = {
   favorites: "/favorites",
   repositories: "/repositories",
   upload: "/upload",
+  signIn: "/sign-in",
 } as const;
 
 export type AppRouteId = keyof typeof routePaths;

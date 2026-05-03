@@ -1,14 +1,16 @@
 import type { ReactNode } from "react";
 
+import type { RegisteredPageId } from "@/app/routing/page-registry";
 import type { PrimaryNavigationItem } from "@/app/navigation/primary-navigation";
 
 import { SideRail } from "./SideRail";
 
 type AppShellProps = {
-  activePageId: PrimaryNavigationItem["id"];
+  activePageId: RegisteredPageId;
   children: ReactNode;
   isRailRevealing?: boolean;
   onNavigate: (item: PrimaryNavigationItem) => void;
+  onNavigatePath?: (path: string) => void;
   showPrimaryNavigation?: boolean;
 };
 
@@ -17,6 +19,7 @@ export function AppShell({
   children,
   isRailRevealing = false,
   onNavigate,
+  onNavigatePath,
   showPrimaryNavigation = true,
 }: AppShellProps) {
   const shellClassName = [
@@ -34,6 +37,7 @@ export function AppShell({
       <SideRail
         activePageId={activePageId}
         onNavigate={onNavigate}
+        onNavigatePath={onNavigatePath}
         showPrimaryNavigation={showPrimaryNavigation}
       />
       {children}

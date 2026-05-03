@@ -1,10 +1,12 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 import { type ReactNode, type SVGProps, useState } from "react";
 
+import { routePaths } from "@/app/routing/route-paths";
+import { useAuth } from "@/features/auth/use-auth";
 import { AccountSettingsModal } from "./AccountSettingsModal";
 
 type RailUserMenuProps = {
-  profile?: UserProfile;
+  onNavigate?: (path: string) => void;
 };
 
 export type UserProfile = {
@@ -19,27 +21,54 @@ export type UserProfile = {
   };
 };
 
-const defaultProfile: UserProfile = {
-  name: "fmw19990718",
-  email: "fmw19990718@gmail.com",
-  plan: "Free",
-  usage: {
-    fastLeft: 60,
-    qualityLeft: 12,
-    fastTotal: 150,
-    qualityTotal: 50,
-  },
+/*
+ * Default usage stats — shown until real billing/usage data is wired.
+ * Kept here (not on AuthUser) because usage belongs to a separate
+ * billing entity that doesn't exist yet.
+ */
+const defaultUsage: UserProfile["usage"] = {
+  fastLeft: 60,
+  qualityLeft: 12,
+  fastTotal: 150,
+  qualityTotal: 50,
 };
 
-export function RailUserMenu({ profile = defaultProfile }: RailUserMenuProps) {
-  const fastPercent = clampPercent(profile.usage.fastLeft, profile.usage.fastTotal);
-  const qualityPercent = clampPercent(profile.usage.qualityLeft, profile.usage.qualityTotal);
+export function RailUserMenu({ onNavigate }: RailUserMenuProps) {
+  const { status, session, signOut } = useAuth();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
   const [isSettingsOpen, setSettingsOpen] = useState(false);
+
+  if (status !== "authenticated" || !session) {
+    return (
+      <button
+        type="button"
+        className="rail-signin"
+        aria-label="Sign in"
+        onClick={() => onNavigate?.(routePaths.signIn)}
+      >
+        <SignInArrowGlyph />
+      </button>
+    );
+  }
+
+  const profile: UserProfile = {
+    name: session.user.name,
+    email: session.user.email,
+    plan: "Free",
+    usage: defaultUsage,
+  };
+
+  const fastPercent = clampPercent(profile.usage.fastLeft, profile.usage.fastTotal);
+  const qualityPercent = clampPercent(profile.usage.qualityLeft, profile.usage.qualityTotal);
 
   const handleOpenSettings = () => {
     setPopoverOpen(false);
     setSettingsOpen(true);
+  };
+
+  const handleLogout = () => {
+    setPopoverOpen(false);
+    void signOut();
   };
 
   return (
@@ -105,7 +134,12 @@ export function RailUserMenu({ profile = defaultProfile }: RailUserMenuProps) {
 
             <ul className="rail-user-menu-list" role="menu">
               <li role="none">
-                <MenuItem icon={<LogOutGlyph aria-hidden="true" />} label="Log out" tone="muted" />
+                <MenuItem
+                  icon={<LogOutGlyph aria-hidden="true" />}
+                  label="Log out"
+                  tone="muted"
+                  onSelect={handleLogout}
+                />
               </li>
             </ul>
           </div>
@@ -162,6 +196,30 @@ function UserAvatarGlyph() {
       <g className="rail-glyph-mark">
         <circle className="rail-glyph-shell" cx="12" cy="12" r="8.2" />
         <path className="rail-glyph-stroke" d="M5.4 13.4c2.4-3 4.6-3 6.6-1s4.2 2 6.6-1" />
+      </g>
+    </svg>
+  );
+}
+
+/*
+ * Sign-in arrow glyph — pure linework in the same Atelier Ink grammar
+ * as the nav icons. A simple right-pointing "enter" chevron plus a
+ * horizontal stroke that brightens to honey on hover, matching the
+ * logged-out "come in" affordance.
+ */
+function SignInArrowGlyph() {
+  return (
+    <svg className="rail-glyph rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
+      <g className="rail-glyph-mark">
+        <path
+          className="rail-glyph-shell"
+          d="M4 5.6A1.6 1.6 0 0 1 5.6 4h7.2a1.6 1.6 0 0 1 1.6 1.6V9"
+        />
+        <path
+          className="rail-glyph-shell"
+          d="M4 18.4A1.6 1.6 0 0 0 5.6 20h7.2a1.6 1.6 0 0 0 1.6-1.6V15"
+        />
+        <path className="rail-glyph-stroke" d="M10 12h10m0 0-3.2-3.2M20 12l-3.2 3.2" />
       </g>
     </svg>
   );

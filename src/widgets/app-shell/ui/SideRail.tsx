@@ -1,6 +1,7 @@
 import { Button } from "@heroui/react";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import type { RegisteredPageId } from "@/app/routing/page-registry";
 import { primaryNavigation, type PrimaryNavigationItem } from "@/app/navigation/primary-navigation";
 import { BrandMark } from "@/shared/ui/BrandMark";
 import { type RailGlyphName, RailGlyph } from "@/shared/ui/RailGlyph";
@@ -19,14 +20,16 @@ const railIconById = {
 } satisfies Record<CenterRailId, RailGlyphName>;
 
 type SideRailProps = {
-  activePageId: PrimaryNavigationItem["id"];
+  activePageId: RegisteredPageId;
   onNavigate: (item: PrimaryNavigationItem) => void;
+  onNavigatePath?: (path: string) => void;
   showPrimaryNavigation?: boolean;
 };
 
 export function SideRail({
   activePageId,
   onNavigate,
+  onNavigatePath,
   showPrimaryNavigation = true,
 }: SideRailProps) {
   const centerItems = primaryNavigation.filter(
@@ -120,7 +123,7 @@ export function SideRail({
         </div>
       ) : null}
 
-      <RailUserMenu />
+      <RailUserMenu onNavigate={(path) => onNavigatePath?.(path)} />
     </nav>
   );
 }
