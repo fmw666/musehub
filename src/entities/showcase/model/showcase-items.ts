@@ -15,6 +15,21 @@ export const showcaseItems = [
     assetPath: "/community-showcases/harnesskit-agent-cards/index.html",
     zipPath: "/community-zips/harnesskit-agent-cards.zip",
     linkUrl: "/community-showcases/harnesskit-agent-cards/index.html",
+    environment: "react",
+    assets: {
+      html: "index.html",
+      styles: ["styles.css"],
+      scripts: ["script.js"],
+    },
+    downloads: [
+      {
+        kind: "react",
+        label: "React bundle (zip)",
+        url: "/community-zips/harnesskit-agent-cards.zip",
+        description:
+          "Self-contained static React build with HTML entry, CSS, and pre-bundled JavaScript.",
+      },
+    ],
     preview: {
       width: 812,
       height: 274,
