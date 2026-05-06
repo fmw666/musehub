@@ -123,7 +123,10 @@ export function SignInForm({ onAuthenticated }: SignInFormProps) {
           isDisabled={!emailValid || busy}
           aria-label="Continue with Email"
         >
-          {pending === "signin-email" ? "Signing in…" : "Continue with Email"}
+          <span className="signin-email-btn-label">
+            {pending === "signin-email" ? "Signing in…" : "Continue with Email"}
+          </span>
+          <ArrowEnterGlyph aria-hidden="true" />
         </Button>
         {lastMethod === "email" ? (
           <span className="signin-last-used signin-last-used--email">Last used</span>
@@ -136,6 +139,35 @@ export function SignInForm({ onAuthenticated }: SignInFormProps) {
         </p>
       ) : null}
     </div>
+  );
+}
+
+/*
+ * "Atelier Ink" arrow glyph paired with the primary email submit button.
+ * One continuous calligraphic stroke + a chevron tip — same linework
+ * grammar as the rail's sign-in arrow so the form's "enter" affordance
+ * feels like a continuation of the rail icon. Stroke colour inherits
+ * from the button's `color` (deep ink on the honey gradient) so the
+ * mark stays legible without an extra paint pass.
+ */
+function ArrowEnterGlyph(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      className="signin-email-btn-arrow"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M4 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
   );
 }
 
