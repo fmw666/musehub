@@ -415,6 +415,42 @@
   padding: 0 7px;
 }
 
+.asset-env-chip {
+  border-color: rgb(var(--muse-color-acid-rgb) / 0.5);
+  background: rgb(var(--muse-color-acid-rgb) / 0.32);
+  color: rgb(var(--muse-color-black-rgb) / 0.84);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.asset-mask-dropdown-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.asset-mask-dropdown-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gallery-download-popover {
+  min-width: 220px;
+}
+
+.gallery-download-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gallery-download-item-description {
+  color: var(--muse-text-dim);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .asset-social {
   top: 13px;
   right: 14px;
