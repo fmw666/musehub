@@ -10,6 +10,7 @@ This directory is the project knowledge base. Keep docs short, current, and usef
 - `adr/`: architectural decision records.
   - `0001-project-architecture-and-guardrails.md`: layered React architecture and HeroUI v3 mandate.
   - `0002-animate-ui-motion-only.md`: Animate UI scope limited to motion effects and animated icons.
+  - `0003-multi-file-environment-aware-showcases.md`: showcases can ship many CSS/JS files, declare an environment, and offer multiple downloadable ZIP variants.
 
 ## Documentation Rules
 
