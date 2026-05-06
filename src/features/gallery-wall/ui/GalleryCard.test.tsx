@@ -75,7 +75,9 @@ describe("GalleryCard", () => {
       ),
     );
     expect(writeText).toHaveBeenCalledWith(
-      expect.stringContaining("JS URL: http://localhost:3000/community-showcases/sample/script.js"),
+      expect.stringContaining(
+        "JavaScript URL: http://localhost:3000/community-showcases/sample/script.js",
+      ),
     );
     expect(writeText).toHaveBeenCalledWith(
       expect.stringContaining("current project architecture, technology stack"),
@@ -96,5 +98,92 @@ describe("GalleryCard", () => {
     await user.click(screen.getByRole("button", { name: /copy prompt/i }));
 
     await screen.findByRole("button", { name: /prompt copied/i });
+  });
+
+  it("shows an environment chip when the showcase declares one", () => {
+    render(<GalleryCard item={{ ...baseItem, environment: "react" }} priority={0} />);
+
+    expect(screen.getByLabelText(/source environment: react/i)).toBeInTheDocument();
+  });
+
+  it("triggers the legacy single-zip download when only zipPath is provided", async () => {
+    const user = userEvent.setup();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    render(
+      <GalleryCard
+        item={{
+          ...baseItem,
+          zipPath: "/community-zips/sample.zip",
+        }}
+        priority={0}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /download code zip/i }));
+
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders a download menu when multiple downloads are declared", async () => {
+    const user = userEvent.setup();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    render(
+      <GalleryCard
+        item={{
+          ...baseItem,
+          environment: "react",
+          downloads: [
+            {
+              kind: "react",
+              label: "React bundle (zip)",
+              url: "/community-zips/sample-react.zip",
+            },
+            {
+              kind: "vanilla",
+              label: "Vanilla static (zip)",
+              url: "/community-zips/sample-vanilla.zip",
+            },
+          ],
+        }}
+        priority={0}
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: /download options/i });
+    await user.click(trigger);
+
+    const menuItem = await screen.findByRole("menuitem", { name: /vanilla static/i });
+    await user.click(menuItem);
+
+    expect(clickSpy).toHaveBeenCalled();
+  });
+
+  it("falls back to a single Download code ZIP button when only one download is declared", async () => {
+    const user = userEvent.setup();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    render(
+      <GalleryCard
+        item={{
+          ...baseItem,
+          downloads: [
+            {
+              kind: "react",
+              label: "React bundle (zip)",
+              url: "/community-zips/sample-react.zip",
+            },
+          ],
+        }}
+        priority={0}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: /download options/i })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /download code zip/i }));
+
+    expect(clickSpy).toHaveBeenCalledTimes(1);
   });
 });

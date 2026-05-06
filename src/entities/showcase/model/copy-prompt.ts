@@ -1,4 +1,4 @@
-import type { ShowcaseItem } from "./types";
+import type { ShowcaseEnvironment, ShowcaseItem } from "./types";
 
 /**
  * Local structural contract for the copy-prompt builder.
@@ -12,6 +12,44 @@ type CopyPromptInput = {
   assetPath?: string;
   sourceUrl?: string;
   tags?: readonly string[];
+  environment?: ShowcaseEnvironment;
+  assets?: {
+    html: string;
+    styles: readonly string[];
+    scripts: readonly string[];
+  };
+};
+
+const knownEnvironments: readonly ShowcaseEnvironment[] = [
+  "vanilla",
+  "react",
+  "vue",
+  "svelte",
+  "solid",
+  "angular",
+];
+
+const environmentLabels: Record<ShowcaseEnvironment, string> = {
+  vanilla: "Vanilla HTML, CSS, and JavaScript",
+  react: "React",
+  vue: "Vue",
+  svelte: "Svelte",
+  solid: "SolidJS",
+  angular: "Angular",
+};
+
+const environmentGuidance: Record<ShowcaseEnvironment, string> = {
+  vanilla:
+    "This bundle is a static HTML entry with sibling CSS and JavaScript files. Treat it as a self-contained vanilla web component reference and adapt it into the user's framework of choice.",
+  react:
+    "This bundle is a self-contained React build (entry HTML loads pre-bundled React JavaScript). Read the JavaScript to recover component structure, props, state, and effects, then re-implement using the user's React conventions and component primitives.",
+  vue: "This bundle is a self-contained Vue build. Recover component structure, reactive state, and template intent from the JavaScript, then re-implement using the user's Vue conventions.",
+  svelte:
+    "This bundle is a self-contained Svelte build. Recover component structure, stores, and reactive logic from the JavaScript, then re-implement using the user's Svelte conventions.",
+  solid:
+    "This bundle is a self-contained SolidJS build. Recover signals, components, and effects from the JavaScript, then re-implement using the user's Solid conventions.",
+  angular:
+    "This bundle is a self-contained Angular build. Recover modules, components, services, and templates from the JavaScript, then re-implement using the user's Angular conventions.",
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -28,6 +66,25 @@ function isOptionalStringArray(value: unknown): value is readonly string[] | und
   return value.every((entry) => typeof entry === "string");
 }
 
+function isOptionalEnvironment(value: unknown): value is ShowcaseEnvironment | undefined {
+  if (value === undefined) return true;
+  if (typeof value !== "string") return false;
+  return (knownEnvironments as readonly string[]).includes(value);
+}
+
+function isOptionalAssets(value: unknown): value is CopyPromptInput["assets"] | undefined {
+  if (value === undefined) return true;
+  if (!isRecord(value)) return false;
+  if (typeof value.html !== "string") return false;
+  if (!Array.isArray(value.styles) || !value.styles.every((s) => typeof s === "string")) {
+    return false;
+  }
+  if (!Array.isArray(value.scripts) || !value.scripts.every((s) => typeof s === "string")) {
+    return false;
+  }
+  return true;
+}
+
 function isCopyPromptInput(value: unknown): value is CopyPromptInput {
   if (!isRecord(value)) return false;
   if (typeof value.title !== "string") return false;
@@ -35,6 +92,8 @@ function isCopyPromptInput(value: unknown): value is CopyPromptInput {
   if (!isOptionalString(value.assetPath)) return false;
   if (!isOptionalString(value.sourceUrl)) return false;
   if (!isOptionalStringArray(value.tags)) return false;
+  if (!isOptionalEnvironment(value.environment)) return false;
+  if (!isOptionalAssets(value.assets)) return false;
   return true;
 }
 
@@ -55,6 +114,17 @@ function createSiblingAssetUrl(htmlUrl: string, siblingFileName: string): string
   return new URL(siblingFileName, htmlUrl).toString();
 }
 
+function formatAssetUrlList(label: string, urls: readonly string[]): string {
+  if (urls.length === 0) {
+    return "";
+  }
+  if (urls.length === 1) {
+    return `\n${label} URL: ${urls[0]}`;
+  }
+  const lines = urls.map((url, index) => `  ${index + 1}. ${url}`).join("\n");
+  return `\n${label} URLs:\n${lines}`;
+}
+
 export function createShowcaseCopyPrompt(item: ShowcaseItem, origin: string): string | undefined {
   if (!isCopyPromptInput(item)) {
     return undefined;
@@ -67,29 +137,39 @@ export function createShowcaseCopyPrompt(item: ShowcaseItem, origin: string): st
     return undefined;
   }
 
-  const cssUrl: string = createSiblingAssetUrl(htmlUrl, "styles.css");
-  const jsUrl: string = createSiblingAssetUrl(htmlUrl, "script.js");
+  const styleFiles: readonly string[] = input.assets?.styles ?? ["styles.css"];
+  const scriptFiles: readonly string[] = input.assets?.scripts ?? ["script.js"];
+  const cssUrls: readonly string[] = styleFiles.map((file) => createSiblingAssetUrl(htmlUrl, file));
+  const jsUrls: readonly string[] = scriptFiles.map((file) => createSiblingAssetUrl(htmlUrl, file));
 
   const tags: readonly string[] = input.tags ?? [];
   const tagLine: string = tags.length > 0 ? `\nTags: ${tags.join(", ")}` : "";
 
+  const environment: ShowcaseEnvironment = input.environment ?? "vanilla";
+  const environmentLabel: string = environmentLabels[environment];
+  const environmentNote: string = environmentGuidance[environment];
+
+  const cssBlock: string = formatAssetUrlList("CSS", cssUrls);
+  const jsBlock: string = formatAssetUrlList("JavaScript", jsUrls);
+
   return `You are a senior frontend engineering agent. Recreate the component or visual experience represented by the deployed asset bundle below inside the user's current project.
 
 Showcase title: ${input.title}
-HTML URL: ${htmlUrl}
-CSS URL: ${cssUrl}
-JS URL: ${jsUrl}${tagLine}
+Source environment: ${environmentLabel}
+HTML URL: ${htmlUrl}${cssBlock}${jsBlock}${tagLine}
 
 Context and constraints:
-- The three URLs above point to the deployed HTML entry and its sibling stylesheet and script. Fetch and read them directly as the authoritative reference.
-- Do not rely on or ask for a repository URL or a rendered preview URL; the HTML, CSS, and JavaScript above are sufficient to reproduce the visual result and interactions.
+- ${environmentNote}
+- The URLs above point to the deployed HTML entry and every sibling stylesheet and script in the bundle. Fetch and read them directly as the authoritative reference.
+- A showcase always has a single \`index.html\` entry, but it can ship multiple stylesheet and script siblings; treat the listed URLs as the complete asset surface.
+- Do not rely on or ask for a repository URL or a rendered preview URL; the listed HTML, CSS, and JavaScript files are sufficient to reproduce the visual result and interactions.
 - Different showcases may ship different HTML, CSS, and JavaScript sources, but the integration structure should remain consistent.
 - Before implementing, inspect the user's current project architecture, technology stack, directory boundaries, component patterns, styling system, and existing utilities.
 - Adapt the implementation to the user's project instead of copying the raw page structure directly.
 - If any requirement, interaction, data source, integration target, or technical constraint is unclear, stop and ask the user for clarification before proceeding.
 
 Implementation requirements:
-1. Read the HTML, CSS, and JavaScript from the URLs above and infer the reusable structure, styling, assets, states, and key interactions needed to reproduce the experience.
+1. Read every HTML, CSS, and JavaScript URL above and infer the reusable structure, styling, assets, states, and key interactions needed to reproduce the experience.
 2. Implement the result using the current project's stack, conventions, component abstractions, styling tokens, and utility APIs.
 3. Keep the solution maintainable, reusable, accessible, and testable.
 4. Avoid introducing new dependencies unless the existing project stack cannot reasonably support the implementation.

@@ -28,10 +28,16 @@ describe("createShowcaseCopyPrompt", () => {
       "CSS URL: https://musehub.example/community-showcases/sample/styles.css",
     );
     expect(prompt).toContain(
-      "JS URL: https://musehub.example/community-showcases/sample/script.js",
+      "JavaScript URL: https://musehub.example/community-showcases/sample/script.js",
     );
     expect(prompt).toContain("current project architecture, technology stack");
     expect(prompt).toContain("ask the user for clarification before proceeding");
+  });
+
+  it("describes the default vanilla environment when none is declared", () => {
+    const prompt = createShowcaseCopyPrompt(showcase, "https://musehub.example");
+
+    expect(prompt).toContain("Source environment: Vanilla HTML, CSS, and JavaScript");
   });
 
   it("does not include a repository source line or a generic preview URL label", () => {
@@ -61,5 +67,44 @@ describe("createShowcaseCopyPrompt", () => {
     const prompt = createShowcaseCopyPrompt(item, "https://musehub.example");
     expect(prompt).toBeDefined();
     expect(prompt).not.toContain("Tags:");
+  });
+
+  it("emits a numbered URL list when the showcase declares multiple style and script files", () => {
+    const item: ShowcaseItem = {
+      ...showcase,
+      assets: {
+        html: "index.html",
+        styles: ["styles.css", "theme.css"],
+        scripts: ["vendor.js", "script.js"],
+      },
+    };
+
+    const prompt = createShowcaseCopyPrompt(item, "https://musehub.example");
+    expect(prompt).toBeDefined();
+
+    expect(prompt).toContain("CSS URLs:");
+    expect(prompt).toContain("1. https://musehub.example/community-showcases/sample/styles.css");
+    expect(prompt).toContain("2. https://musehub.example/community-showcases/sample/theme.css");
+
+    expect(prompt).toContain("JavaScript URLs:");
+    expect(prompt).toContain("1. https://musehub.example/community-showcases/sample/vendor.js");
+    expect(prompt).toContain("2. https://musehub.example/community-showcases/sample/script.js");
+  });
+
+  it("describes the React environment with React-specific guidance", () => {
+    const item: ShowcaseItem = { ...showcase, environment: "react" };
+    const prompt = createShowcaseCopyPrompt(item, "https://musehub.example");
+
+    expect(prompt).toContain("Source environment: React");
+    expect(prompt).toContain("self-contained React build");
+    expect(prompt).toContain("component structure, props, state, and effects");
+  });
+
+  it("describes the Vue environment with Vue-specific guidance", () => {
+    const item: ShowcaseItem = { ...showcase, environment: "vue" };
+    const prompt = createShowcaseCopyPrompt(item, "https://musehub.example");
+
+    expect(prompt).toContain("Source environment: Vue");
+    expect(prompt).toContain("self-contained Vue build");
   });
 });

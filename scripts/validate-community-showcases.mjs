@@ -4,17 +4,17 @@ import path from "node:path";
 import process from "node:process";
 
 const rootDir = path.resolve("public/community-showcases");
-const requiredFiles = ["index.html", "styles.css", "script.js", "metadata.json"];
+const requiredCoreFiles = ["index.html", "metadata.json"];
+const allowedAssetExtensions = new Set([".css", ".js", ".mjs"]);
 const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const tagPattern = /^[a-z0-9][a-z0-9-]{0,31}$/;
 const hashPattern = /^[a-f0-9]{64}$/;
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+const filenamePattern = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?\.[a-z0-9]+$/i;
+const knownEnvironments = new Set(["vanilla", "react", "vue", "svelte", "solid", "angular"]);
+const downloadUrlPattern = /^\/community-zips\/[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?\.zip$/;
 
 const htmlBlocklist = [
-  {
-    pattern: /<script\b(?![^>]*\bsrc=["']\.\/script\.js["'])/i,
-    message: "inline or unexpected script tag",
-  },
   { pattern: /<style\b/i, message: "inline style tag" },
   { pattern: /\son[a-z]+\s*=/i, message: "inline event handler attribute" },
   { pattern: /\sstyle\s*=/i, message: "inline style attribute" },
@@ -103,18 +103,19 @@ function validateString(scope, value, options = {}) {
     value.length > max
   ) {
     fail(scope, `must be a non-empty trimmed string up to ${max} chars`);
-    return;
+    return false;
   }
 
   if (pattern && !pattern.test(value)) {
     fail(scope, "has an invalid format");
+    return false;
   }
+
+  return true;
 }
 
 function validateSourceUrl(scope, value) {
-  validateString(scope, value, { max: 500 });
-
-  if (typeof value !== "string") {
+  if (!validateString(scope, value, { max: 500 })) {
     return;
   }
 
@@ -150,6 +151,54 @@ function validateCsp(scope, html) {
   }
 }
 
+/**
+ * Extract sibling asset references from `<link rel="stylesheet" href="...">`
+ * and `<script src="...">` tags. Each reference must be a relative
+ * `./<filename>` path with no traversal segments and no remote URL.
+ */
+function extractHtmlAssetReferences(scope, html) {
+  const styleHrefs = [];
+  const scriptSrcs = [];
+
+  const linkPattern = /<link\b([^>]*)\/?>/gi;
+  for (const match of html.matchAll(linkPattern)) {
+    const attrs = match[1] ?? "";
+    if (!/\brel\s*=\s*["']stylesheet["']/i.test(attrs)) {
+      continue;
+    }
+    const hrefMatch = attrs.match(/\bhref\s*=\s*["']([^"']+)["']/i);
+    if (!hrefMatch) {
+      fail(scope, "stylesheet link is missing an href");
+      continue;
+    }
+    styleHrefs.push(hrefMatch[1]);
+  }
+
+  const scriptPattern = /<script\b([^>]*)>/gi;
+  for (const match of html.matchAll(scriptPattern)) {
+    const attrs = match[1] ?? "";
+    const srcMatch = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
+    if (!srcMatch) {
+      fail(scope, "inline or attribute-less script tag is not allowed");
+      continue;
+    }
+    scriptSrcs.push(srcMatch[1]);
+  }
+
+  return { styleHrefs, scriptSrcs };
+}
+
+function isSafeSiblingPath(value) {
+  if (typeof value !== "string" || !value.startsWith("./")) {
+    return false;
+  }
+  const remainder = value.slice(2);
+  if (remainder.length === 0 || remainder.includes("/") || remainder.includes("\\")) {
+    return false;
+  }
+  return filenamePattern.test(remainder);
+}
+
 async function validateShowcase(entry) {
   const dir = path.join(rootDir, entry.name);
   const scope = entry.name;
@@ -164,28 +213,58 @@ async function validateShowcase(entry) {
     fail(scope, `nested directories are not allowed: ${directoryName}`);
   }
 
-  for (const requiredFile of requiredFiles) {
+  for (const requiredFile of requiredCoreFiles) {
     if (!fileNames.includes(requiredFile)) {
       fail(scope, `missing required file: ${requiredFile}`);
     }
   }
 
+  const cssFiles = [];
+  const jsFiles = [];
+
   for (const fileName of fileNames) {
-    if (!requiredFiles.includes(fileName)) {
+    if (requiredCoreFiles.includes(fileName)) {
+      continue;
+    }
+
+    if (!filenamePattern.test(fileName)) {
+      fail(scope, `unexpected filename: ${fileName}`);
+      continue;
+    }
+
+    const ext = path.extname(fileName).toLowerCase();
+    if (!allowedAssetExtensions.has(ext)) {
       fail(scope, `unexpected file: ${fileName}`);
+      continue;
+    }
+
+    if (ext === ".css") {
+      cssFiles.push(fileName);
+    } else {
+      jsFiles.push(fileName);
     }
   }
 
-  if (!requiredFiles.every((fileName) => fileNames.includes(fileName))) {
+  if (cssFiles.length === 0) {
+    fail(scope, "must ship at least one stylesheet (.css)");
+  }
+  if (jsFiles.length === 0) {
+    fail(scope, "must ship at least one script (.js or .mjs)");
+  }
+
+  if (!fileNames.includes("index.html") || !fileNames.includes("metadata.json")) {
     return;
   }
 
-  const [htmlBuffer, cssBuffer, jsBuffer, metadataBuffer] = await Promise.all(
-    requiredFiles.map((fileName) => readFile(path.join(dir, fileName))),
+  const fileBuffers = new Map();
+  await Promise.all(
+    fileNames.map(async (fileName) => {
+      fileBuffers.set(fileName, await readFile(path.join(dir, fileName)));
+    }),
   );
-  const html = htmlBuffer.toString("utf8");
-  const css = cssBuffer.toString("utf8");
-  const js = jsBuffer.toString("utf8");
+
+  const html = fileBuffers.get("index.html").toString("utf8");
+  const metadataBuffer = fileBuffers.get("metadata.json");
 
   let metadata;
   try {
@@ -195,24 +274,56 @@ async function validateShowcase(entry) {
     return;
   }
 
-  validateMetadata(scope, metadata);
-  validateAssetIntegrity(scope, metadata, { htmlBuffer, cssBuffer, jsBuffer });
+  const assetFileNames = [...cssFiles, ...jsFiles];
+  validateMetadata(scope, metadata, { cssFiles, jsFiles });
+  validateAssetIntegrity(scope, metadata, fileBuffers, assetFileNames);
 
-  if (!html.includes('<link rel="stylesheet" href="./styles.css" />')) {
-    fail(`${scope}/index.html`, "must link ./styles.css exactly once");
+  const { styleHrefs, scriptSrcs } = extractHtmlAssetReferences(`${scope}/index.html`, html);
+
+  if (styleHrefs.length === 0) {
+    fail(`${scope}/index.html`, 'must link at least one stylesheet via <link rel="stylesheet">');
+  }
+  if (scriptSrcs.length === 0) {
+    fail(`${scope}/index.html`, 'must load at least one script via <script src="./...">');
   }
 
-  if (!html.includes('<script src="./script.js"></script>')) {
-    fail(`${scope}/index.html`, "must load ./script.js exactly once");
+  for (const href of styleHrefs) {
+    if (!isSafeSiblingPath(href)) {
+      fail(`${scope}/index.html`, `stylesheet href must be a relative ./filename: ${href}`);
+      continue;
+    }
+    const fileName = href.slice(2);
+    if (!cssFiles.includes(fileName)) {
+      fail(`${scope}/index.html`, `stylesheet href references missing sibling: ${href}`);
+    }
+  }
+
+  for (const src of scriptSrcs) {
+    if (!isSafeSiblingPath(src)) {
+      fail(`${scope}/index.html`, `script src must be a relative ./filename: ${src}`);
+      continue;
+    }
+    const fileName = src.slice(2);
+    if (!jsFiles.includes(fileName)) {
+      fail(`${scope}/index.html`, `script src references missing sibling: ${src}`);
+    }
   }
 
   validateCsp(`${scope}/index.html`, html);
   scanContent(`${scope}/index.html`, html, htmlBlocklist);
-  scanContent(`${scope}/styles.css`, css, cssBlocklist);
-  scanContent(`${scope}/script.js`, stripJavaScriptLiterals(js), jsBlocklist);
+
+  for (const cssFile of cssFiles) {
+    const css = fileBuffers.get(cssFile).toString("utf8");
+    scanContent(`${scope}/${cssFile}`, css, cssBlocklist);
+  }
+
+  for (const jsFile of jsFiles) {
+    const js = fileBuffers.get(jsFile).toString("utf8");
+    scanContent(`${scope}/${jsFile}`, stripJavaScriptLiterals(js), jsBlocklist);
+  }
 }
 
-function validateMetadata(scope, metadata) {
+function validateMetadata(scope, metadata, { cssFiles, jsFiles }) {
   if (!isObject(metadata)) {
     fail(`${scope}/metadata.json`, "must contain an object");
     return;
@@ -242,12 +353,28 @@ function validateMetadata(scope, metadata) {
     }
   }
 
+  if (metadata.environment !== undefined) {
+    if (typeof metadata.environment !== "string" || !knownEnvironments.has(metadata.environment)) {
+      fail(`${scope}.environment`, `must be one of ${[...knownEnvironments].join(", ")}`);
+    }
+  }
+
+  if (metadata.assets !== undefined) {
+    validateAssetsField(scope, metadata.assets, { cssFiles, jsFiles });
+  }
+
+  if (metadata.downloads !== undefined) {
+    validateDownloads(scope, metadata.downloads);
+  }
+
   if (!isObject(metadata.files)) {
     fail(`${scope}.files`, "must contain file integrity records");
     return;
   }
 
-  for (const fileName of ["index.html", "styles.css", "script.js"]) {
+  const expectedAssetFiles = ["index.html", ...cssFiles, ...jsFiles];
+
+  for (const fileName of expectedAssetFiles) {
     const record = metadata.files[fileName];
     if (!isObject(record)) {
       fail(`${scope}.files.${fileName}`, "must contain sha256 and bytes");
@@ -262,22 +389,114 @@ function validateMetadata(scope, metadata) {
       fail(`${scope}.files.${fileName}.bytes`, "must be a positive safe integer");
     }
   }
+
+  for (const fileName of Object.keys(metadata.files)) {
+    if (!expectedAssetFiles.includes(fileName)) {
+      fail(`${scope}.files`, `unexpected file integrity record: ${fileName}`);
+    }
+  }
 }
 
-function validateAssetIntegrity(scope, metadata, buffers) {
+function validateAssetsField(scope, assets, { cssFiles, jsFiles }) {
+  if (!isObject(assets)) {
+    fail(`${scope}.assets`, "must be an object with html, styles, and scripts");
+    return;
+  }
+
+  if (assets.html !== "index.html") {
+    fail(`${scope}.assets.html`, 'must equal "index.html"');
+  }
+
+  if (!Array.isArray(assets.styles) || assets.styles.length === 0) {
+    fail(`${scope}.assets.styles`, "must list at least one stylesheet filename");
+  } else {
+    for (const file of assets.styles) {
+      if (typeof file !== "string" || !cssFiles.includes(file)) {
+        fail(`${scope}.assets.styles[]`, `unknown stylesheet sibling: ${String(file)}`);
+      }
+    }
+    for (const cssFile of cssFiles) {
+      if (!assets.styles.includes(cssFile)) {
+        fail(`${scope}.assets.styles`, `must list every shipped stylesheet: missing ${cssFile}`);
+      }
+    }
+  }
+
+  if (!Array.isArray(assets.scripts) || assets.scripts.length === 0) {
+    fail(`${scope}.assets.scripts`, "must list at least one script filename");
+  } else {
+    for (const file of assets.scripts) {
+      if (typeof file !== "string" || !jsFiles.includes(file)) {
+        fail(`${scope}.assets.scripts[]`, `unknown script sibling: ${String(file)}`);
+      }
+    }
+    for (const jsFile of jsFiles) {
+      if (!assets.scripts.includes(jsFile)) {
+        fail(`${scope}.assets.scripts`, `must list every shipped script: missing ${jsFile}`);
+      }
+    }
+  }
+}
+
+function validateDownloads(scope, downloads) {
+  if (!Array.isArray(downloads) || downloads.length === 0) {
+    fail(`${scope}.downloads`, "must be a non-empty array when provided");
+    return;
+  }
+
+  const seenKinds = new Set();
+
+  for (let index = 0; index < downloads.length; index += 1) {
+    const entry = downloads[index];
+    const entryScope = `${scope}.downloads[${index}]`;
+
+    if (!isObject(entry)) {
+      fail(entryScope, "must be an object with kind, label, and url");
+      continue;
+    }
+
+    if (!validateString(`${entryScope}.kind`, entry.kind, { max: 32, pattern: idPattern })) {
+      continue;
+    }
+
+    if (seenKinds.has(entry.kind)) {
+      fail(`${entryScope}.kind`, `duplicate download kind: ${entry.kind}`);
+    }
+    seenKinds.add(entry.kind);
+
+    validateString(`${entryScope}.label`, entry.label, { max: 80 });
+
+    if (!validateString(`${entryScope}.url`, entry.url, { max: 200 })) {
+      continue;
+    }
+
+    if (!downloadUrlPattern.test(entry.url)) {
+      fail(
+        `${entryScope}.url`,
+        "must be a /community-zips/<id>.zip path served from the same origin",
+      );
+    }
+
+    if (entry.description !== undefined) {
+      validateString(`${entryScope}.description`, entry.description, { max: 240 });
+    }
+  }
+}
+
+function validateAssetIntegrity(scope, metadata, fileBuffers, assetFileNames) {
   if (!isObject(metadata) || !isObject(metadata.files)) {
     return;
   }
 
-  const records = {
-    "index.html": buffers.htmlBuffer,
-    "styles.css": buffers.cssBuffer,
-    "script.js": buffers.jsBuffer,
-  };
-
-  for (const [fileName, buffer] of Object.entries(records)) {
+  const tracked = ["index.html", ...assetFileNames];
+  for (const fileName of tracked) {
     const record = metadata.files[fileName];
     if (!isObject(record)) {
+      continue;
+    }
+
+    const buffer = fileBuffers.get(fileName);
+    if (!buffer) {
       continue;
     }
 

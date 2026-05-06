@@ -14,11 +14,29 @@
   "originalFile": "src/components/shared/agent-card.tsx",
   "assetPath": "/community-showcases/harnesskit-agent-cards/index.html",
   "importedAt": "2026-04-29",
+  "environment": "react",
   "preview": {
     "width": 812,
     "height": 274,
     "displayWidth": 1060
   },
+  "assets": {
+    "html": "index.html",
+    "styles": [
+      "styles.css"
+    ],
+    "scripts": [
+      "script.js"
+    ]
+  },
+  "downloads": [
+    {
+      "kind": "react",
+      "label": "React bundle (zip)",
+      "url": "/community-zips/harnesskit-agent-cards.zip",
+      "description": "Self-contained static React build with HTML entry, CSS, and pre-bundled JavaScript."
+    }
+  ],
   "files": {
     "index.html": {
       "sha256": "086e55317553c9aa96f66a0a1cbcdff934054e21343fa371062ee3b0653ff3f1",
