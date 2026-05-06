@@ -57,30 +57,51 @@
 .signin-google-btn.button,
 .signin-email-btn.button {
   width: 100%;
-  height: 44px;
-  border-radius: 10px;
+  height: 46px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.005em;
 }
+
+/* -- Google (secondary) ------------------------------------------------- */
 
 .signin-google-btn.button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgb(var(--muse-color-ink-rgb) / 0.06);
+  background: linear-gradient(
+    180deg,
+    rgb(var(--muse-color-ink-rgb) / 0.1) 0%,
+    rgb(var(--muse-color-ink-rgb) / 0.04) 100%
+  );
   color: var(--muse-text);
   border: 1px solid var(--muse-border);
+  box-shadow: inset 0 1px 0 rgb(var(--muse-color-ink-rgb) / 0.06);
   transition:
-    background 160ms var(--muse-ease-emerge),
-    border-color 160ms var(--muse-ease-emerge);
+    background 200ms var(--muse-ease-emerge),
+    border-color 200ms var(--muse-ease-emerge),
+    transform 160ms var(--muse-ease-emerge),
+    box-shadow 200ms var(--muse-ease-emerge);
 }
 
 .signin-google-btn.button:hover,
 .signin-google-btn.button[data-hovered="true"] {
-  background: rgb(var(--muse-color-ink-rgb) / 0.1);
+  background: linear-gradient(
+    180deg,
+    rgb(var(--muse-color-ink-rgb) / 0.14) 0%,
+    rgb(var(--muse-color-ink-rgb) / 0.06) 100%
+  );
   border-color: var(--muse-border-medium);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--muse-color-ink-rgb) / 0.1),
+    0 6px 18px rgb(var(--muse-color-black-rgb) / 0.32);
+}
+
+.signin-google-btn.button:active,
+.signin-google-btn.button[data-pressed="true"] {
+  transform: translateY(0.5px) scale(0.992);
 }
 
 .signin-google-btn.button svg {
@@ -162,19 +183,119 @@
   color: var(--muse-text-muted);
 }
 
+/* -- Email (primary) ---------------------------------------------------- */
+
+/*
+ * The email submit is the form's primary action and the only "loud"
+ * surface on the sign-in card. We render it on the Atelier Ink hero
+ * gradient (honey → coral) with deep ink type, a hairline inner
+ * highlight along the top edge for that brushed-metal feel, and a
+ * honey halo on hover. Pressing nudges the button half a pixel down
+ * with a tiny scale to mimic a physical key. The gradient + halo
+ * fade out cleanly when the button is disabled so the affordance
+ * still clearly says "fill in your email first".
+ */
 .signin-email-btn.button {
-  background: rgb(var(--muse-color-ink-rgb) / 0.08);
-  color: var(--muse-text);
-  border: 1px solid var(--muse-border);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+  background: var(--muse-gradient-action);
+  color: var(--muse-text-inverse);
+  border: 1px solid rgb(var(--muse-color-honey-rgb) / 0.55);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--muse-color-white-rgb) / 0.32),
+    inset 0 -1px 0 rgb(var(--muse-color-black-rgb) / 0.18),
+    0 6px 22px rgb(var(--muse-color-honey-rgb) / 0.22);
   transition:
-    background 160ms var(--muse-ease-emerge),
-    color 160ms var(--muse-ease-emerge);
+    transform 200ms var(--muse-ease-emerge),
+    box-shadow 240ms var(--muse-ease-emerge),
+    filter 200ms var(--muse-ease-emerge),
+    background 240ms var(--muse-ease-emerge),
+    border-color 240ms var(--muse-ease-emerge);
+}
+
+.signin-email-btn-label {
+  position: relative;
+  z-index: 1;
+}
+
+.signin-email-btn-arrow {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  transition: transform 240ms var(--muse-ease-emerge);
 }
 
 .signin-email-btn.button:not([data-disabled="true"]):hover,
 .signin-email-btn.button[data-hovered="true"] {
-  background: rgb(var(--muse-color-ink-rgb) / 0.14);
-  color: var(--muse-text-strong);
+  filter: brightness(1.04) saturate(1.06);
+  border-color: rgb(var(--muse-color-honey-rgb) / 0.7);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--muse-color-white-rgb) / 0.4),
+    inset 0 -1px 0 rgb(var(--muse-color-black-rgb) / 0.18),
+    0 12px 32px rgb(var(--muse-color-honey-rgb) / 0.32),
+    0 0 0 1px rgb(var(--muse-color-honey-rgb) / 0.18);
+  transform: translateY(-0.5px);
+}
+
+.signin-email-btn.button:not([data-disabled="true"]):hover .signin-email-btn-arrow,
+.signin-email-btn.button[data-hovered="true"] .signin-email-btn-arrow {
+  transform: translateX(2px);
+}
+
+.signin-email-btn.button:not([data-disabled="true"]):active,
+.signin-email-btn.button[data-pressed="true"] {
+  transform: translateY(0.5px) scale(0.985);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--muse-color-white-rgb) / 0.22),
+    inset 0 -1px 0 rgb(var(--muse-color-black-rgb) / 0.22),
+    0 4px 14px rgb(var(--muse-color-honey-rgb) / 0.22);
+}
+
+.signin-email-btn.button:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgb(var(--muse-color-white-rgb) / 0.32),
+    inset 0 -1px 0 rgb(var(--muse-color-black-rgb) / 0.18),
+    0 6px 22px rgb(var(--muse-color-honey-rgb) / 0.22),
+    0 0 0 3px rgb(var(--muse-color-honey-rgb) / 0.32);
+}
+
+.signin-email-btn.button[data-disabled="true"],
+.signin-email-btn.button:disabled {
+  background: rgb(var(--muse-color-ink-rgb) / 0.06);
+  color: var(--muse-text-muted);
+  border-color: var(--muse-border-soft);
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
+.signin-email-btn.button[data-disabled="true"] .signin-email-btn-arrow,
+.signin-email-btn.button:disabled .signin-email-btn-arrow {
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signin-google-btn.button,
+  .signin-email-btn.button,
+  .signin-email-btn-arrow {
+    transition: none;
+  }
+
+  .signin-email-btn.button:not([data-disabled="true"]):hover .signin-email-btn-arrow,
+  .signin-email-btn.button[data-hovered="true"] .signin-email-btn-arrow,
+  .signin-email-btn.button:not([data-disabled="true"]):hover,
+  .signin-email-btn.button[data-hovered="true"],
+  .signin-google-btn.button:not([data-disabled="true"]):hover,
+  .signin-google-btn.button[data-hovered="true"] {
+    transform: none;
+  }
 }
 
 .signin-error {
