@@ -1,0 +1,147 @@
+/* Antimetal-style hero - layout/visual approximation
+   Hero canvas is positioned absolutely behind the content, exactly like the real site
+   (.hero-dotted-video has class "absolute top-... h-...") */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+.hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at center, #0a1840 0%, #050a1c 60%, #000 100%);
+    overflow: hidden;
+}
+
+/* The Three.js canvas mounts inside this container */
+.hero-dotted-video {
+    position: absolute;
+    left: 50%;
+    top: 96px;
+    transform: translateX(-50%);
+    width: min(1440px, 100vw);
+    height: 640px;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+@media (max-width: 992px) {
+    .hero-dotted-video {
+        top: 283px;
+        height: 320px;
+        width: min(720px, 100vw);
+    }
+}
+
+.hero-dotted-video canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Decorative concentric rings (subtle, like the real site) */
+.hero-rings {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    display: grid;
+    place-items: center;
+}
+
+.ring {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    aspect-ratio: 1;
+}
+
+.ring-1 {
+    width: 292px;
+}
+.ring-2 {
+    width: 560px;
+}
+.ring-3 {
+    width: 812px;
+}
+.ring-4 {
+    width: 1100px;
+}
+
+/* Hero foreground content */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 32px;
+    padding: 200px 24px 120px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.hero-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.hero-title > span {
+    display: inline-block;
+}
+
+.hero-percent {
+    font-family: "Silkscreen", monospace;
+    font-weight: 700;
+    color: #e0f6ff;
+    padding: 0 4px;
+}
+
+.hero-cta {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: #fff;
+    color: #08122d;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.hero-cta:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+@media (max-width: 992px) {
+    .hero-cta {
+        height: 44px;
+    }
+}

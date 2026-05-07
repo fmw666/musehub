@@ -1,0 +1,59 @@
+{
+  "id": "antimetal-hero-replica",
+  "title": "Antimetal Hero — 1:1 Replica",
+  "tags": ["webgl", "shader", "hero", "three-js"],
+  "sourceUrl": "https://antimetal.com",
+  "sourcePlatform": "website",
+  "originalFile": "https://antimetal.com/",
+  "assetPath": "/community-showcases/antimetal-hero-replica/index.html",
+  "importedAt": "2026-05-07",
+  "environment": "vanilla",
+  "assets": {
+    "html": "index.html",
+    "styles": ["style.css"],
+    "scripts": ["app.js", "hero.js", "shaders.js", "three-vendor.js"],
+    "media": ["video.mp4", "video-mask.avif"]
+  },
+  "downloads": [
+    {
+      "kind": "vanilla",
+      "label": "Vanilla static (zip)",
+      "url": "/community-zips/antimetal-hero-replica.zip",
+      "description": "Self-contained static HTML bundle with bundled three.js and original hero video assets."
+    }
+  ],
+  "files": {
+    "index.html": {
+      "sha256": "d3a4b646e41705675ece6b2a31ee58b8cc3d68bef4e114cccacf556b6538fc8c",
+      "bytes": 1234
+    },
+    "style.css": {
+      "sha256": "19502b8b7ffe2c4e69ae1532b40d6deca99596fed12efaf52edd34d4bed43371",
+      "bytes": 2823
+    },
+    "app.js": {
+      "sha256": "bb42fbaed0701fae658e356ae37bf84cd38caeb70634f127d6ada88e34c72055",
+      "bytes": 212
+    },
+    "hero.js": {
+      "sha256": "e98bf3e54096f09ba01e01563b90f91893740fe6c6767d471049bc29cc6ccf87",
+      "bytes": 16999
+    },
+    "shaders.js": {
+      "sha256": "dec791391362c6213a22e82200cbfb352f1c6e72fbb0faa47386e2e4b75ce767",
+      "bytes": 9922
+    },
+    "three-vendor.js": {
+      "sha256": "3941dac5cfae00aab14ded68704291eb34cc8c0c5b2cb7bd6ceae33ad2965dcc",
+      "bytes": 679991
+    },
+    "video.mp4": {
+      "sha256": "92b2b6b706814381a1291bc5b470f1b0ab592d9116f602ea637cc66b61ddce92",
+      "bytes": 2813614
+    },
+    "video-mask.avif": {
+      "sha256": "7fb00faf05a0a5effdcf57c2ad4333c30d8154db76fe967addc044ddce59fb51",
+      "bytes": 8343
+    }
+  }
+}
