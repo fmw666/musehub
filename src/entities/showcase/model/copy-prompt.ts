@@ -17,6 +17,7 @@ type CopyPromptInput = {
     html: string;
     styles: readonly string[];
     scripts: readonly string[];
+    media?: readonly string[];
   };
 };
 
@@ -82,6 +83,11 @@ function isOptionalAssets(value: unknown): value is CopyPromptInput["assets"] | 
   if (!Array.isArray(value.scripts) || !value.scripts.every((s) => typeof s === "string")) {
     return false;
   }
+  if (value.media !== undefined) {
+    if (!Array.isArray(value.media) || !value.media.every((s) => typeof s === "string")) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -139,8 +145,12 @@ export function createShowcaseCopyPrompt(item: ShowcaseItem, origin: string): st
 
   const styleFiles: readonly string[] = input.assets?.styles ?? ["styles.css"];
   const scriptFiles: readonly string[] = input.assets?.scripts ?? ["script.js"];
+  const mediaFiles: readonly string[] = input.assets?.media ?? [];
   const cssUrls: readonly string[] = styleFiles.map((file) => createSiblingAssetUrl(htmlUrl, file));
   const jsUrls: readonly string[] = scriptFiles.map((file) => createSiblingAssetUrl(htmlUrl, file));
+  const mediaUrls: readonly string[] = mediaFiles.map((file) =>
+    createSiblingAssetUrl(htmlUrl, file),
+  );
 
   const tags: readonly string[] = input.tags ?? [];
   const tagLine: string = tags.length > 0 ? `\nTags: ${tags.join(", ")}` : "";
@@ -151,25 +161,30 @@ export function createShowcaseCopyPrompt(item: ShowcaseItem, origin: string): st
 
   const cssBlock: string = formatAssetUrlList("CSS", cssUrls);
   const jsBlock: string = formatAssetUrlList("JavaScript", jsUrls);
+  const mediaBlock: string = formatAssetUrlList("Media", mediaUrls);
+  const mediaNote: string =
+    mediaUrls.length > 0
+      ? "\n- The Media URLs above are the showcase's video assets. Treat them as illustrative material that the rebuilt experience should be able to play, not as scriptable content."
+      : "";
 
   return `You are a senior frontend engineering agent. Recreate the component or visual experience represented by the deployed asset bundle below inside the user's current project.
 
 Showcase title: ${input.title}
 Source environment: ${environmentLabel}
-HTML URL: ${htmlUrl}${cssBlock}${jsBlock}${tagLine}
+HTML URL: ${htmlUrl}${cssBlock}${jsBlock}${mediaBlock}${tagLine}
 
 Context and constraints:
 - ${environmentNote}
-- The URLs above point to the deployed HTML entry and every sibling stylesheet and script in the bundle. Fetch and read them directly as the authoritative reference.
-- A showcase always has a single \`index.html\` entry, but it can ship multiple stylesheet and script siblings; treat the listed URLs as the complete asset surface.
-- Do not rely on or ask for a repository URL or a rendered preview URL; the listed HTML, CSS, and JavaScript files are sufficient to reproduce the visual result and interactions.
-- Different showcases may ship different HTML, CSS, and JavaScript sources, but the integration structure should remain consistent.
+- The URLs above point to the deployed HTML entry and every sibling stylesheet, script, and media file in the bundle. Fetch and read them directly as the authoritative reference.
+- A showcase always has a single \`index.html\` entry but may ship multiple stylesheet, script, and media siblings (videos use \`.mp4\` or \`.webm\`); treat the listed URLs as the complete asset surface.${mediaNote}
+- Do not rely on or ask for a repository URL or a rendered preview URL; the listed HTML, CSS, JavaScript, and media files are sufficient to reproduce the visual result and interactions.
+- Different showcases may ship different HTML, CSS, JavaScript, and media sources, but the integration structure should remain consistent.
 - Before implementing, inspect the user's current project architecture, technology stack, directory boundaries, component patterns, styling system, and existing utilities.
 - Adapt the implementation to the user's project instead of copying the raw page structure directly.
 - If any requirement, interaction, data source, integration target, or technical constraint is unclear, stop and ask the user for clarification before proceeding.
 
 Implementation requirements:
-1. Read every HTML, CSS, and JavaScript URL above and infer the reusable structure, styling, assets, states, and key interactions needed to reproduce the experience.
+1. Read every HTML, CSS, JavaScript, and media URL above and infer the reusable structure, styling, assets, states, and key interactions needed to reproduce the experience.
 2. Implement the result using the current project's stack, conventions, component abstractions, styling tokens, and utility APIs.
 3. Keep the solution maintainable, reusable, accessible, and testable.
 4. Avoid introducing new dependencies unless the existing project stack cannot reasonably support the implementation.

@@ -10,14 +10,17 @@ export type ShowcaseEnvironment = "vanilla" | "react" | "vue" | "svelte" | "soli
 
 /**
  * Explicit asset listing for a showcase. Lets a single `index.html` reference
- * any number of sibling stylesheet and script files instead of the legacy
- * fixed `styles.css` + `script.js` pair. Filenames are sibling paths relative
- * to the entry HTML and must not contain directory traversal segments.
+ * any number of sibling stylesheet, script, and media files instead of the
+ * legacy fixed `styles.css` + `script.js` pair. Filenames are sibling paths
+ * relative to the entry HTML and must not contain directory traversal
+ * segments. `media` is reserved for video assets (`.mp4` / `.webm`) referenced
+ * from the HTML entry via `<video>` or `<source>` tags.
  */
 export type ShowcaseAssets = {
   html: string;
   styles: readonly string[];
   scripts: readonly string[];
+  media?: readonly string[];
 };
 
 /**
