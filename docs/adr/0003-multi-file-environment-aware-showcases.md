@@ -29,16 +29,20 @@ A community showcase still has a single `index.html` entry and lives in a flat
 directory under `public/community-showcases/<id>/`. Beyond that:
 
 - Sibling stylesheet files (`*.css`), script files (`*.js` or `*.mjs`), and
-  video media files (`*.mp4` or `*.webm`) are allowed alongside `index.html`
-  and `metadata.json`. Nested directories remain disallowed.
+  static media files are allowed alongside `index.html` and `metadata.json`.
+  Static media covers both video (`*.mp4`, `*.webm`) and image (`*.png`,
+  `*.webp`, `*.avif`, `*.svg`, `*.jpg`, `*.jpeg`). Nested directories remain
+  disallowed.
 - The directory holds at most **10 files in total** (counting `index.html`,
-  `metadata.json`, and every shipped asset), and **every file must be ≤ 5 MiB**.
+  `metadata.json`, and every shipped asset), and **every file must be ≤ 5 MB**.
   These caps keep showcases fast to validate, fast to download, and trivially
   servable as static content from `public/`.
 - `metadata.json` may declare an explicit `assets` block with `html`, `styles`,
   `scripts`, and optional `media` lists. When present, it must enumerate every
-  shipped CSS / JS / media file exactly once. When omitted, the legacy
-  convention (`styles.css` + `script.js`, no media) still works.
+  shipped CSS / JS / media file exactly once. The `media` list groups video
+  and image siblings together because the gallery card and copy-prompt treat
+  them as a single static-media surface. When omitted, the legacy convention
+  (`styles.css` + `script.js`, no media) still works.
 - `metadata.json` may declare an `environment` (`vanilla`, `react`, `vue`,
   `svelte`, `solid`, `angular`). The Community gallery surfaces this as a chip
   on the card and the copy-prompt builder switches its guidance accordingly.
@@ -49,12 +53,19 @@ directory under `public/community-showcases/<id>/`. Beyond that:
   `zipPath` field on `ShowcaseItem` continues to work as a fallback.
 - The validator (`scripts/validate-community-showcases.mjs`) enforces this
   schema, requires that every `<link rel="stylesheet">`, `<script src>`,
-  `<video src>`, and `<source src>` in `index.html` resolves to an actual
-  sibling file via a relative `./<name>` reference, and rejects unexpected
-  file types, nested directories, more than 10 files per showcase, or any
-  single file larger than 5 MiB. The HTML / CSS / JS content blocklists are
-  unchanged. Video files are not content-scanned (binary formats are inert
-  with respect to the existing blocklists).
+  `<img src>`, `<video src>`, and `<source src>` in `index.html` resolves to
+  an actual sibling file via a relative `./<name>` reference, and rejects
+  unexpected file types, nested directories, more than 10 files per showcase,
+  or any single file larger than 5 MB. The HTML / CSS / JS content blocklists
+  are unchanged. Raster video and image files are not content-scanned (binary
+  formats are inert), but every shipped `*.svg` is content-scanned for
+  `<script>`, inline event handlers, `<foreignObject>`, scriptable URLs, and
+  remote URLs because SVG is XML and can host scripts when navigated to or
+  embedded via `<object>`.
+- The CSP meta tag in `index.html` is unchanged. Same-origin video and image
+  playback is already covered by `default-src 'self'` (for `<video>` /
+  `<source>`) and `img-src 'self' data:` (for `<img>`); no additional
+  directive is needed when a showcase ships media.
 
 ## Consequences
 

@@ -30,12 +30,14 @@ index.html
 metadata.json
 ```
 
-It must also contain at least one stylesheet (`*.css`) and at least one script (`*.js` or `*.mjs`). Beyond that, you may ship any combination of additional `.css`, `.js`, `.mjs`, `.mp4`, and `.webm` siblings. Nested folders and any other file extensions are not allowed.
+It must also contain at least one stylesheet (`*.css`) and at least one script (`*.js` or `*.mjs`).
 
-### Limits
+A showcase directory has the following constraints:
 
-- **Total file count:** at most **10** files per showcase directory, counting `index.html`, `metadata.json`, and every shipped asset.
-- **Per-file size:** every file must be **at most 5 MiB** (5 × 1024 × 1024 bytes). The cap applies uniformly to `index.html`, `metadata.json`, every CSS/JS file, and every video file. If a video is larger, re-encode or trim it before uploading.
+- Up to 10 files per showcase, each at most 5 MB.
+- Allowed file extensions: `.html`, `.css`, `.js`, `.mjs`, `.json` (the showcase code), plus `.mp4`, `.webm` (video assets) and `.png`, `.webp`, `.avif`, `.svg`, `.jpg`/`.jpeg` (image assets).
+- All files must sit directly in the showcase directory; nested folders are not allowed.
+- `index.html` must reference siblings only via relative `"./<name>"` paths.
 
 ### Layout examples
 
@@ -59,20 +61,23 @@ vendor.js
 app.js
 ```
 
-A layout that includes one or more videos:
+A layout that includes media (video and image assets):
 
 ```text
 index.html
 metadata.json
-styles.css
-script.js
-hero.mp4
-loop.webm
+style.css
+hero.js
+shaders.js
+app.js
+vendor.three.js
+video.mp4
+video-mask.avif
 ```
 
 ## HTML Shell
 
-`index.html` must load only local files via relative `./<filename>` references. Each `<link rel="stylesheet">`, `<script src>`, `<video src>`, and `<source src>` reference must resolve to an actual sibling file in the showcase directory. There is no upper limit on the number of stylesheet links or script tags beyond the overall 10-file directory cap.
+`index.html` must load only local files via relative `./<filename>` references. Each `<link rel="stylesheet">`, `<script src>`, `<img src>`, `<video src>`, and `<source src>` reference must resolve to an actual sibling file in the showcase directory. There is no upper limit on the number of stylesheet links, script tags, or media tags beyond the overall 10-file directory cap.
 
 Minimal single-file example:
 
@@ -106,25 +111,19 @@ Multi-file example (any number of CSS/JS siblings, single `index.html` entry):
 <script src="./app.js"></script>
 ```
 
-Video example (use a `<video>` element with sibling sources only; remote URLs are rejected):
+Media example (use sibling sources only; remote URLs are rejected):
 
 ```html
-<video controls preload="metadata" poster="">
-  <source src="./hero.mp4" type="video/mp4" />
-  <source src="./hero.webm" type="video/webm" />
+<video controls preload="metadata" poster="./video-mask.avif">
+  <source src="./video.mp4" type="video/mp4" />
 </video>
+
+<img src="./hero.png" alt="Hero illustration" />
 ```
 
-If your showcase ships any video file, the CSP meta tag must also allow it. Add `media-src 'self'` to the directive list:
+The CSP template above already allows same-origin video and image playback through the `default-src 'self'` and `img-src 'self' data:` directives, so no extra directive is required when adding media assets.
 
-```text
-default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';
-img-src 'self' data:; media-src 'self'; font-src 'self' data:;
-connect-src 'none'; object-src 'none'; base-uri 'none';
-form-action 'none'; frame-ancestors 'self'
-```
-
-No inline scripts, inline styles, event handler attributes, remote URLs, forms, iframes, objects, embeds, or base tags are allowed.
+No inline scripts, inline styles, event handler attributes, remote URLs, forms, iframes, objects, embeds, or base tags are allowed. SVG files must not contain `<script>`, inline event handlers, `<foreignObject>`, or scriptable URLs.
 
 ## Metadata Schema
 
@@ -143,9 +142,9 @@ No inline scripts, inline styles, event handler attributes, remote URLs, forms, 
   "environment": "vanilla",
   "assets": {
     "html": "index.html",
-    "styles": ["styles.css"],
-    "scripts": ["script.js"],
-    "media": []
+    "styles": ["style.css"],
+    "scripts": ["hero.js", "shaders.js", "app.js", "vendor.three.js"],
+    "media": ["video.mp4", "video-mask.avif"]
   },
   "downloads": [
     {
@@ -157,8 +156,13 @@ No inline scripts, inline styles, event handler attributes, remote URLs, forms, 
   ],
   "files": {
     "index.html": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
-    "styles.css": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
-    "script.js": { "sha256": "<64 lowercase hex chars>", "bytes": 0 }
+    "style.css": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "hero.js": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "shaders.js": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "app.js": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "vendor.three.js": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "video.mp4": { "sha256": "<64 lowercase hex chars>", "bytes": 0 },
+    "video-mask.avif": { "sha256": "<64 lowercase hex chars>", "bytes": 0 }
   }
 }
 ```
@@ -166,9 +170,9 @@ No inline scripts, inline styles, event handler attributes, remote URLs, forms, 
 Field rules:
 
 - `environment`: optional, one of `vanilla`, `react`, `vue`, `svelte`, `solid`, `angular`. Drives the `Copy prompt` text and the environment chip on the gallery card. Defaults to `vanilla` for the prompt builder when omitted.
-- `assets`: optional. When present, `html` must equal `"index.html"`, and `styles` / `scripts` must list every shipped stylesheet and script exactly once. When the directory ships any `.mp4` / `.webm` file, `assets.media` must list every video file exactly once; if no video is shipped, `media` may be omitted or set to `[]`.
+- `assets`: optional. When present, `html` must equal `"index.html"`, and `styles` / `scripts` must list every shipped stylesheet and script exactly once. When the directory ships any media file (video or image), `assets.media` must list every media file exactly once; when no media is shipped, `media` may be omitted or set to `[]`.
 - `downloads`: optional, non-empty array when provided. Each entry must have a unique `kind`, a human-readable `label`, and a `url` of the form `/community-zips/<id>.zip` (same-origin only). When two or more entries are present, the gallery card surfaces a download menu so the visitor can pick the desired bundle.
-- `files`: must contain a sha256 + bytes record for `index.html` and for every CSS / JS / video file present in the directory.
+- `files`: must contain a sha256 + bytes record for `index.html` and for every other file shipped in the directory (CSS, JS, media). Files must use one of the allowed extensions listed above.
 
 Compute SHA-256 and byte length from the final file contents.
 
@@ -177,9 +181,10 @@ Compute SHA-256 and byte length from the final file contents.
 - JavaScript must not use `eval`, `new Function`, `document.write`, string-based timers, remote dynamic imports, network APIs, persistent browser storage, or cookies.
 - CSS must not use remote imports, `javascript:` URLs, CSS expressions, XBL bindings, or legacy behavior bindings.
 - HTML must only reference siblings via relative `./<filename>` paths. No remote URLs.
-- Each `<link rel="stylesheet">`, `<script src>`, `<video src>`, and `<source src>` must point to a file that actually exists in the showcase directory.
-- Video files must be `.mp4` or `.webm` only.
-- The directory must contain at most 10 files total, and no single file may exceed 5 MiB.
+- Each `<link rel="stylesheet">`, `<script src>`, `<img src>`, `<video src>`, and `<source src>` must point to a file that actually exists in the showcase directory.
+- Video files must be `.mp4` or `.webm` only. Image files must be `.png`, `.webp`, `.avif`, `.svg`, `.jpg`, or `.jpeg` only.
+- SVG files must not contain `<script>`, inline event handlers, `<foreignObject>`, or scriptable URLs.
+- The directory must contain at most 10 files total, and no single file may exceed 5 MB.
 - The generated showcase must pass `npm run validate:showcases`.
 
 ## Pull Request Flow
