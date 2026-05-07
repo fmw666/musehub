@@ -5,7 +5,19 @@ import process from "node:process";
 
 const rootDir = path.resolve("public/community-showcases");
 const requiredCoreFiles = ["index.html", "metadata.json"];
-const allowedAssetExtensions = new Set([".css", ".js", ".mjs"]);
+const stylesheetExtensions = new Set([".css"]);
+const scriptExtensions = new Set([".js", ".mjs"]);
+const videoExtensions = new Set([".mp4", ".webm"]);
+const imageExtensions = new Set([".png", ".webp", ".avif", ".svg", ".jpg", ".jpeg"]);
+const mediaExtensions = new Set([...videoExtensions, ...imageExtensions]);
+const allowedAssetExtensions = new Set([
+  ...stylesheetExtensions,
+  ...scriptExtensions,
+  ...mediaExtensions,
+]);
+const svgExtension = ".svg";
+const maxFileCount = 10;
+const maxFileBytes = 5 * 1024 * 1024;
 const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const tagPattern = /^[a-z0-9][a-z0-9-]{0,31}$/;
 const hashPattern = /^[a-f0-9]{64}$/;
@@ -13,6 +25,12 @@ const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const filenamePattern = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?\.[a-z0-9]+$/i;
 const knownEnvironments = new Set(["vanilla", "react", "vue", "svelte", "solid", "angular"]);
 const downloadUrlPattern = /^\/community-zips\/[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?\.zip$/;
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
 
 const htmlBlocklist = [
   { pattern: /<style\b/i, message: "inline style tag" },
@@ -34,6 +52,29 @@ const cssBlocklist = [
   { pattern: /expression\s*\(/i, message: "CSS expression" },
   { pattern: /-moz-binding\s*:/i, message: "XBL binding" },
   { pattern: /\bbehavior\s*:/i, message: "legacy behavior binding" },
+];
+
+/*
+ * SVG is XML and can host scripts, inline event handlers, foreign HTML, and
+ * scriptable URLs. Browsers don't run scripts when SVG is loaded as an `<img>`
+ * source, but they do when the SVG is opened directly or embedded via
+ * `<object>`. Scan every shipped .svg file for the actual XSS vectors. We do
+ * not block plain `http(s)://` strings here because SVG `xmlns` attributes
+ * (e.g. `http://www.w3.org/2000/svg`) are namespace identifiers, not network
+ * fetches; the showcase CSP already pins runtime loads to the same origin.
+ */
+const svgBlocklist = [
+  { pattern: /<script\b/i, message: "script element in SVG" },
+  { pattern: /\son[a-z]+\s*=/i, message: "inline event handler in SVG" },
+  { pattern: /<foreignObject\b/i, message: "foreignObject in SVG" },
+  {
+    pattern: /\b(?:href|xlink:href|src)\s*=\s*["']\s*(?:javascript:|data:text\/html)/i,
+    message: "scriptable URL in SVG",
+  },
+  {
+    pattern: /\b(?:href|xlink:href|src)\s*=\s*["']\s*https?:\/\//i,
+    message: "remote URL in SVG",
+  },
 ];
 
 const jsBlocklist = [
@@ -152,13 +193,18 @@ function validateCsp(scope, html) {
 }
 
 /**
- * Extract sibling asset references from `<link rel="stylesheet" href="...">`
- * and `<script src="...">` tags. Each reference must be a relative
- * `./<filename>` path with no traversal segments and no remote URL.
+ * Extract sibling asset references from `<link rel="stylesheet" href="...">`,
+ * `<script src="...">`, and the media tags `<img src="...">`,
+ * `<video src="...">`, and `<source src="...">`. Each reference must be a
+ * relative `./<filename>` path with no traversal segments and no remote URL.
+ * Tags without a `src` are skipped here (e.g. `<source srcset>` inside a
+ * `<picture>` is not statically validated; the directory still cannot ship
+ * unknown extensions, so any actually-loaded sibling is still constrained).
  */
 function extractHtmlAssetReferences(scope, html) {
   const styleHrefs = [];
   const scriptSrcs = [];
+  const mediaSrcs = [];
 
   const linkPattern = /<link\b([^>]*)\/?>/gi;
   for (const match of html.matchAll(linkPattern)) {
@@ -185,7 +231,17 @@ function extractHtmlAssetReferences(scope, html) {
     scriptSrcs.push(srcMatch[1]);
   }
 
-  return { styleHrefs, scriptSrcs };
+  const mediaTagPattern = /<(?:img|video|source)\b([^>]*)\/?>/gi;
+  for (const match of html.matchAll(mediaTagPattern)) {
+    const attrs = match[1] ?? "";
+    const srcMatch = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
+    if (!srcMatch) {
+      continue;
+    }
+    mediaSrcs.push(srcMatch[1]);
+  }
+
+  return { styleHrefs, scriptSrcs, mediaSrcs };
 }
 
 function isSafeSiblingPath(value) {
@@ -219,8 +275,17 @@ async function validateShowcase(entry) {
     }
   }
 
+  if (fileNames.length > maxFileCount) {
+    fail(
+      scope,
+      `must ship at most ${maxFileCount} files (got ${fileNames.length}); ` +
+        "trim the bundle or split it into multiple showcases",
+    );
+  }
+
   const cssFiles = [];
   const jsFiles = [];
+  const mediaFiles = [];
 
   for (const fileName of fileNames) {
     if (requiredCoreFiles.includes(fileName)) {
@@ -238,10 +303,12 @@ async function validateShowcase(entry) {
       continue;
     }
 
-    if (ext === ".css") {
+    if (stylesheetExtensions.has(ext)) {
       cssFiles.push(fileName);
-    } else {
+    } else if (scriptExtensions.has(ext)) {
       jsFiles.push(fileName);
+    } else if (mediaExtensions.has(ext)) {
+      mediaFiles.push(fileName);
     }
   }
 
@@ -263,6 +330,16 @@ async function validateShowcase(entry) {
     }),
   );
 
+  for (const fileName of fileNames) {
+    const buffer = fileBuffers.get(fileName);
+    if (buffer.byteLength > maxFileBytes) {
+      fail(
+        `${scope}/${fileName}`,
+        `file is ${formatBytes(buffer.byteLength)}; per-file size cap is ${formatBytes(maxFileBytes)}`,
+      );
+    }
+  }
+
   const html = fileBuffers.get("index.html").toString("utf8");
   const metadataBuffer = fileBuffers.get("metadata.json");
 
@@ -274,11 +351,14 @@ async function validateShowcase(entry) {
     return;
   }
 
-  const assetFileNames = [...cssFiles, ...jsFiles];
-  validateMetadata(scope, metadata, { cssFiles, jsFiles });
+  const assetFileNames = [...cssFiles, ...jsFiles, ...mediaFiles];
+  validateMetadata(scope, metadata, { cssFiles, jsFiles, mediaFiles });
   validateAssetIntegrity(scope, metadata, fileBuffers, assetFileNames);
 
-  const { styleHrefs, scriptSrcs } = extractHtmlAssetReferences(`${scope}/index.html`, html);
+  const { styleHrefs, scriptSrcs, mediaSrcs } = extractHtmlAssetReferences(
+    `${scope}/index.html`,
+    html,
+  );
 
   if (styleHrefs.length === 0) {
     fail(`${scope}/index.html`, 'must link at least one stylesheet via <link rel="stylesheet">');
@@ -309,6 +389,20 @@ async function validateShowcase(entry) {
     }
   }
 
+  for (const src of mediaSrcs) {
+    if (!isSafeSiblingPath(src)) {
+      fail(
+        `${scope}/index.html`,
+        `<img>/<video>/<source> src must be a relative ./filename: ${src}`,
+      );
+      continue;
+    }
+    const fileName = src.slice(2);
+    if (!mediaFiles.includes(fileName)) {
+      fail(`${scope}/index.html`, `<img>/<video>/<source> src references missing sibling: ${src}`);
+    }
+  }
+
   validateCsp(`${scope}/index.html`, html);
   scanContent(`${scope}/index.html`, html, htmlBlocklist);
 
@@ -321,9 +415,17 @@ async function validateShowcase(entry) {
     const js = fileBuffers.get(jsFile).toString("utf8");
     scanContent(`${scope}/${jsFile}`, stripJavaScriptLiterals(js), jsBlocklist);
   }
+
+  for (const mediaFile of mediaFiles) {
+    if (path.extname(mediaFile).toLowerCase() !== svgExtension) {
+      continue;
+    }
+    const svg = fileBuffers.get(mediaFile).toString("utf8");
+    scanContent(`${scope}/${mediaFile}`, svg, svgBlocklist);
+  }
 }
 
-function validateMetadata(scope, metadata, { cssFiles, jsFiles }) {
+function validateMetadata(scope, metadata, { cssFiles, jsFiles, mediaFiles }) {
   if (!isObject(metadata)) {
     fail(`${scope}/metadata.json`, "must contain an object");
     return;
@@ -360,7 +462,7 @@ function validateMetadata(scope, metadata, { cssFiles, jsFiles }) {
   }
 
   if (metadata.assets !== undefined) {
-    validateAssetsField(scope, metadata.assets, { cssFiles, jsFiles });
+    validateAssetsField(scope, metadata.assets, { cssFiles, jsFiles, mediaFiles });
   }
 
   if (metadata.downloads !== undefined) {
@@ -372,7 +474,7 @@ function validateMetadata(scope, metadata, { cssFiles, jsFiles }) {
     return;
   }
 
-  const expectedAssetFiles = ["index.html", ...cssFiles, ...jsFiles];
+  const expectedAssetFiles = ["index.html", ...cssFiles, ...jsFiles, ...mediaFiles];
 
   for (const fileName of expectedAssetFiles) {
     const record = metadata.files[fileName];
@@ -397,7 +499,7 @@ function validateMetadata(scope, metadata, { cssFiles, jsFiles }) {
   }
 }
 
-function validateAssetsField(scope, assets, { cssFiles, jsFiles }) {
+function validateAssetsField(scope, assets, { cssFiles, jsFiles, mediaFiles }) {
   if (!isObject(assets)) {
     fail(`${scope}.assets`, "must be an object with html, styles, and scripts");
     return;
@@ -435,6 +537,28 @@ function validateAssetsField(scope, assets, { cssFiles, jsFiles }) {
         fail(`${scope}.assets.scripts`, `must list every shipped script: missing ${jsFile}`);
       }
     }
+  }
+
+  if (assets.media !== undefined) {
+    if (!Array.isArray(assets.media)) {
+      fail(`${scope}.assets.media`, "must be an array of video filenames when provided");
+      return;
+    }
+    for (const file of assets.media) {
+      if (typeof file !== "string" || !mediaFiles.includes(file)) {
+        fail(`${scope}.assets.media[]`, `unknown media sibling: ${String(file)}`);
+      }
+    }
+    for (const mediaFile of mediaFiles) {
+      if (!assets.media.includes(mediaFile)) {
+        fail(`${scope}.assets.media`, `must list every shipped media file: missing ${mediaFile}`);
+      }
+    }
+  } else if (mediaFiles.length > 0) {
+    fail(
+      `${scope}.assets.media`,
+      "must list every shipped media file when the directory contains video assets",
+    );
   }
 }
 

@@ -107,4 +107,35 @@ describe("createShowcaseCopyPrompt", () => {
     expect(prompt).toContain("Source environment: Vue");
     expect(prompt).toContain("self-contained Vue build");
   });
+
+  it("lists declared video and image assets under a Media URL block", () => {
+    const item: ShowcaseItem = {
+      ...showcase,
+      assets: {
+        html: "index.html",
+        styles: ["styles.css"],
+        scripts: ["script.js"],
+        media: ["video.mp4", "video-mask.avif", "icon.svg"],
+      },
+    };
+
+    const prompt = createShowcaseCopyPrompt(item, "https://musehub.example");
+    expect(prompt).toBeDefined();
+
+    expect(prompt).toContain("Media URLs:");
+    expect(prompt).toContain("1. https://musehub.example/community-showcases/sample/video.mp4");
+    expect(prompt).toContain(
+      "2. https://musehub.example/community-showcases/sample/video-mask.avif",
+    );
+    expect(prompt).toContain("3. https://musehub.example/community-showcases/sample/icon.svg");
+    expect(prompt).toContain("static media assets (video and image files)");
+  });
+
+  it("omits the Media URL block when no media is declared", () => {
+    const prompt = createShowcaseCopyPrompt(showcase, "https://musehub.example");
+
+    expect(prompt).toBeDefined();
+    expect(prompt).not.toContain("Media URL");
+    expect(prompt).not.toContain("Media URLs");
+  });
 });

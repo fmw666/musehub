@@ -3,6 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://github.com/fmw666/musehub#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fmw666/musehub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fmw666/musehub/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && vite build",

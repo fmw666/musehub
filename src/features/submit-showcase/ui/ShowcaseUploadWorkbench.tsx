@@ -12,7 +12,11 @@ import {
 } from "@heroui/react";
 import { ArrowUpRight, Check, Copy, FileText } from "lucide-react";
 
-import { showcaseUploadSkillPath } from "@/entities/upload/model/showcase-upload-schema";
+import {
+  showcaseUploadRepositoryDefaultBranch,
+  showcaseUploadRepositoryUrl,
+  showcaseUploadSkillPath,
+} from "@/entities/upload/model/showcase-upload-schema";
 
 type SkillState =
   | { status: "idle" }
@@ -39,7 +43,7 @@ export function ShowcaseUploadWorkbench() {
       ? showcaseUploadSkillPath
       : `${window.location.origin}${showcaseUploadSkillPath}`;
 
-  const agentPrompt = `Read ${skillUrl} and follow it to publish a MuseHub community showcase. Ask me for anything you need (title, source URL, tags, assets) before committing, then open a pull request.`;
+  const agentPrompt = `Read ${skillUrl} and follow it to publish a MuseHub community showcase. Ask me for anything you need (title, source URL, tags, assets) before committing, then open a pull request against ${showcaseUploadRepositoryUrl} on the ${showcaseUploadRepositoryDefaultBranch} branch.`;
 
   useEffect(() => {
     if (!copied) return;
