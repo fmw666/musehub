@@ -13,8 +13,10 @@ export type ShowcaseEnvironment = "vanilla" | "react" | "vue" | "svelte" | "soli
  * any number of sibling stylesheet, script, and media files instead of the
  * legacy fixed `styles.css` + `script.js` pair. Filenames are sibling paths
  * relative to the entry HTML and must not contain directory traversal
- * segments. `media` is reserved for video assets (`.mp4` / `.webm`) referenced
- * from the HTML entry via `<video>` or `<source>` tags.
+ * segments. `media` covers both video (`.mp4` / `.webm`) and image
+ * (`.png` / `.webp` / `.avif` / `.svg` / `.jpg` / `.jpeg`) siblings
+ * referenced from the HTML entry via `<video>`, `<source>`, or `<img>` tags
+ * (or loaded indirectly by JavaScript / CSS).
  */
 export type ShowcaseAssets = {
   html: string;

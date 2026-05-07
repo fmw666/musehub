@@ -164,7 +164,7 @@ export function createShowcaseCopyPrompt(item: ShowcaseItem, origin: string): st
   const mediaBlock: string = formatAssetUrlList("Media", mediaUrls);
   const mediaNote: string =
     mediaUrls.length > 0
-      ? "\n- The Media URLs above are the showcase's video assets. Treat them as illustrative material that the rebuilt experience should be able to play, not as scriptable content."
+      ? "\n- The Media URLs above are the showcase's static media assets (video and image files). Treat them as illustrative material that the rebuilt experience should be able to display or play, not as scriptable content."
       : "";
 
   return `You are a senior frontend engineering agent. Recreate the component or visual experience represented by the deployed asset bundle below inside the user's current project.
@@ -176,7 +176,7 @@ HTML URL: ${htmlUrl}${cssBlock}${jsBlock}${mediaBlock}${tagLine}
 Context and constraints:
 - ${environmentNote}
 - The URLs above point to the deployed HTML entry and every sibling stylesheet, script, and media file in the bundle. Fetch and read them directly as the authoritative reference.
-- A showcase always has a single \`index.html\` entry but may ship multiple stylesheet, script, and media siblings (videos use \`.mp4\` or \`.webm\`); treat the listed URLs as the complete asset surface.${mediaNote}
+- A showcase always has a single \`index.html\` entry but may ship multiple stylesheet, script, and media siblings (videos use \`.mp4\` / \`.webm\`; images use \`.png\` / \`.webp\` / \`.avif\` / \`.svg\` / \`.jpg\` / \`.jpeg\`); treat the listed URLs as the complete asset surface.${mediaNote}
 - Do not rely on or ask for a repository URL or a rendered preview URL; the listed HTML, CSS, JavaScript, and media files are sufficient to reproduce the visual result and interactions.
 - Different showcases may ship different HTML, CSS, JavaScript, and media sources, but the integration structure should remain consistent.
 - Before implementing, inspect the user's current project architecture, technology stack, directory boundaries, component patterns, styling system, and existing utilities.
