@@ -7,12 +7,15 @@ const rootDir = path.resolve("public/community-showcases");
 const requiredCoreFiles = ["index.html", "metadata.json"];
 const stylesheetExtensions = new Set([".css"]);
 const scriptExtensions = new Set([".js", ".mjs"]);
-const mediaExtensions = new Set([".mp4", ".webm"]);
+const videoExtensions = new Set([".mp4", ".webm"]);
+const imageExtensions = new Set([".png", ".webp", ".avif", ".svg", ".jpg", ".jpeg"]);
+const mediaExtensions = new Set([...videoExtensions, ...imageExtensions]);
 const allowedAssetExtensions = new Set([
   ...stylesheetExtensions,
   ...scriptExtensions,
   ...mediaExtensions,
 ]);
+const svgExtension = ".svg";
 const maxFileCount = 10;
 const maxFileBytes = 5 * 1024 * 1024;
 const idPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -49,6 +52,29 @@ const cssBlocklist = [
   { pattern: /expression\s*\(/i, message: "CSS expression" },
   { pattern: /-moz-binding\s*:/i, message: "XBL binding" },
   { pattern: /\bbehavior\s*:/i, message: "legacy behavior binding" },
+];
+
+/*
+ * SVG is XML and can host scripts, inline event handlers, foreign HTML, and
+ * scriptable URLs. Browsers don't run scripts when SVG is loaded as an `<img>`
+ * source, but they do when the SVG is opened directly or embedded via
+ * `<object>`. Scan every shipped .svg file for the actual XSS vectors. We do
+ * not block plain `http(s)://` strings here because SVG `xmlns` attributes
+ * (e.g. `http://www.w3.org/2000/svg`) are namespace identifiers, not network
+ * fetches; the showcase CSP already pins runtime loads to the same origin.
+ */
+const svgBlocklist = [
+  { pattern: /<script\b/i, message: "script element in SVG" },
+  { pattern: /\son[a-z]+\s*=/i, message: "inline event handler in SVG" },
+  { pattern: /<foreignObject\b/i, message: "foreignObject in SVG" },
+  {
+    pattern: /\b(?:href|xlink:href|src)\s*=\s*["']\s*(?:javascript:|data:text\/html)/i,
+    message: "scriptable URL in SVG",
+  },
+  {
+    pattern: /\b(?:href|xlink:href|src)\s*=\s*["']\s*https?:\/\//i,
+    message: "remote URL in SVG",
+  },
 ];
 
 const jsBlocklist = [
@@ -168,10 +194,12 @@ function validateCsp(scope, html) {
 
 /**
  * Extract sibling asset references from `<link rel="stylesheet" href="...">`,
- * `<script src="...">`, and `<video src="...">` / `<source src="...">` tags.
- * Each reference must be a relative `./<filename>` path with no traversal
- * segments and no remote URL. `<source>` tags are only inspected when a
- * `src` attribute is present (we ignore `srcset` etc.).
+ * `<script src="...">`, and the media tags `<img src="...">`,
+ * `<video src="...">`, and `<source src="...">`. Each reference must be a
+ * relative `./<filename>` path with no traversal segments and no remote URL.
+ * Tags without a `src` are skipped here (e.g. `<source srcset>` inside a
+ * `<picture>` is not statically validated; the directory still cannot ship
+ * unknown extensions, so any actually-loaded sibling is still constrained).
  */
 function extractHtmlAssetReferences(scope, html) {
   const styleHrefs = [];
@@ -203,7 +231,7 @@ function extractHtmlAssetReferences(scope, html) {
     scriptSrcs.push(srcMatch[1]);
   }
 
-  const mediaTagPattern = /<(?:video|source)\b([^>]*)\/?>/gi;
+  const mediaTagPattern = /<(?:img|video|source)\b([^>]*)\/?>/gi;
   for (const match of html.matchAll(mediaTagPattern)) {
     const attrs = match[1] ?? "";
     const srcMatch = attrs.match(/\bsrc\s*=\s*["']([^"']+)["']/i);
@@ -363,12 +391,15 @@ async function validateShowcase(entry) {
 
   for (const src of mediaSrcs) {
     if (!isSafeSiblingPath(src)) {
-      fail(`${scope}/index.html`, `<video>/<source> src must be a relative ./filename: ${src}`);
+      fail(
+        `${scope}/index.html`,
+        `<img>/<video>/<source> src must be a relative ./filename: ${src}`,
+      );
       continue;
     }
     const fileName = src.slice(2);
     if (!mediaFiles.includes(fileName)) {
-      fail(`${scope}/index.html`, `<video>/<source> src references missing sibling: ${src}`);
+      fail(`${scope}/index.html`, `<img>/<video>/<source> src references missing sibling: ${src}`);
     }
   }
 
@@ -383,6 +414,14 @@ async function validateShowcase(entry) {
   for (const jsFile of jsFiles) {
     const js = fileBuffers.get(jsFile).toString("utf8");
     scanContent(`${scope}/${jsFile}`, stripJavaScriptLiterals(js), jsBlocklist);
+  }
+
+  for (const mediaFile of mediaFiles) {
+    if (path.extname(mediaFile).toLowerCase() !== svgExtension) {
+      continue;
+    }
+    const svg = fileBuffers.get(mediaFile).toString("utf8");
+    scanContent(`${scope}/${mediaFile}`, svg, svgBlocklist);
   }
 }
 
