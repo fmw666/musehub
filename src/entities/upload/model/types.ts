@@ -28,6 +28,7 @@ export type ShowcaseUploadAssets = {
   html: "index.html";
   styles: readonly string[];
   scripts: readonly string[];
+  media?: readonly string[];
 };
 
 /**
