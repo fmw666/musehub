@@ -67,11 +67,12 @@ describe("App", () => {
       await screen.findByRole("region", { name: /musehub community feed/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/harnesskit agent cards high fidelity demo/i)).toBeInTheDocument();
-    expect(screen.getAllByTitle(/preview/i)).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: /open in new window/i })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: /download code zip/i })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: /view source project/i })).toHaveLength(1);
+    expect(screen.getByText(/antimetal hero — 1:1 replica/i)).toBeInTheDocument();
+    expect(screen.getAllByTitle(/preview/i)).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /open in new window/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /download code zip/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /view source project/i })).toHaveLength(2);
     expect(screen.getByRole("searchbox", { name: /search by title or tag/i })).toBeInTheDocument();
     expect(container.querySelector(".dissolve-transition-layer")).toBeInTheDocument();
     expect(container.querySelector(".is-rail-revealing")).toBeInTheDocument();
