@@ -57,5 +57,16 @@ export const showcaseUploadZipsRoot = "public/community-zips";
 
 export const showcaseUploadSkillPath = "/upload/skill.md";
 
+/**
+ * Canonical upstream GitHub repository for MuseHub. Showcase pull requests
+ * must target this repo's default branch (`main`). Surfaced to agents both
+ * via `public/upload/skill.md` and via the upload workbench prompt so that
+ * an agent reading either source knows where to push and where to open the
+ * pull request.
+ */
+export const showcaseUploadRepositoryUrl = "https://github.com/fmw666/musehub";
+
+export const showcaseUploadRepositoryDefaultBranch = "main";
+
 export const showcaseUploadCsp =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'";
