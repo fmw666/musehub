@@ -224,24 +224,26 @@ function UserAvatarGlyph() {
 }
 
 /*
- * Sign-in arrow glyph — pure linework in the same Atelier Ink grammar
- * as the nav icons. A simple right-pointing "enter" chevron plus a
- * horizontal stroke that brightens to honey on hover, matching the
- * logged-out "come in" affordance.
+ * Sign-in glyph — Atelier Ink "knock at the door" mark.
+ *
+ * The previous version drew a doorway bracket plus a 45°-tipped arrow
+ * piercing through it, which read as too sharp and orthogonal next to
+ * the calligraphic, all-curve grammar of the other rail glyphs.
+ *
+ * This version reuses the same medallion shell as the authenticated
+ * UserAvatarGlyph so the bottom-left rail slot is visually the *same*
+ * disc whether the visitor is signed in or not — only the inscription
+ * changes. Inside the medallion sits one calmer "→" inscription with a
+ * gentle, rounded chevron (stroke-linecap / stroke-linejoin both round
+ * via .rail-glyph-stroke) that lights up honey on hover. No straight
+ * brackets, no piercing tip, no hard right angles.
  */
 function SignInArrowGlyph() {
   return (
     <svg className="rail-glyph rail-avatar" viewBox="0 0 24 24" aria-hidden="true">
       <g className="rail-glyph-mark">
-        <path
-          className="rail-glyph-shell"
-          d="M4 5.6A1.6 1.6 0 0 1 5.6 4h7.2a1.6 1.6 0 0 1 1.6 1.6V9"
-        />
-        <path
-          className="rail-glyph-shell"
-          d="M4 18.4A1.6 1.6 0 0 0 5.6 20h7.2a1.6 1.6 0 0 0 1.6-1.6V15"
-        />
-        <path className="rail-glyph-stroke" d="M10 12h10m0 0-3.2-3.2M20 12l-3.2 3.2" />
+        <circle className="rail-glyph-shell" cx="12" cy="12" r="8.2" />
+        <path className="rail-glyph-stroke" d="M4.8 12h9m-2.4-2.4L13.8 12l-2.4 2.4" />
       </g>
     </svg>
   );
