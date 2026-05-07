@@ -199,7 +199,8 @@ Compute SHA-256 and byte length from the final file contents.
 
 ## Security Rules
 
-- JavaScript must not use `eval`, `new Function`, `document.write`, string-based timers, remote dynamic imports, network APIs, persistent browser storage, or cookies.
+- JavaScript must not use `eval`, `new Function`, `document.write`, string-based timers, remote dynamic imports, persistent browser storage, or cookies.
+- Network APIs (`fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `navigator.sendBeacon`, `importScripts`) are not blocklisted at the source level. The runtime CSP (`default-src 'self'` plus `connect-src 'none'`) already rejects every off-origin call, so vendored libraries that only reference these symbols inside unused code paths (for example `three.js` core) are accepted.
 - CSS must not use remote imports, `javascript:` URLs, CSS expressions, XBL bindings, or legacy behavior bindings.
 - HTML must only reference siblings via relative `./<filename>` paths. No remote URLs.
 - Each `<link rel="stylesheet">`, `<script src>`, `<img src>`, `<video src>`, and `<source src>` must point to a file that actually exists in the showcase directory.
