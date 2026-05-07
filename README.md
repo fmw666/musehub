@@ -2,6 +2,10 @@
 
 MuseHub is a React + Vite + TypeScript application prepared for AI-assisted development. The UI system is HeroUI v3 with Tailwind CSS v4 and local CSS for art direction.
 
+- Repository: <https://github.com/fmw666/musehub>
+- Issues: <https://github.com/fmw666/musehub/issues>
+- Community showcases live under `public/community-showcases/<kebab-case-id>/`. To submit one, follow `public/upload/skill.md` and open a pull request against the `main` branch of the repository above.
+
 ## Commands
 
 ```bash
