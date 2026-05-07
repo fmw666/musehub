@@ -4,6 +4,27 @@ Interface name: `musehub.communityShowcase.upload.v1`
 
 Use this skill when a user asks an agent to upload a showcase asset into MuseHub Community. The app is static frontend only, so an upload means preparing repository files and opening a GitHub pull request. Do not claim that Vite can persist files at runtime.
 
+## Upstream Repository
+
+Open every showcase pull request against the canonical MuseHub repository.
+
+- **Repository:** <https://github.com/fmw666/musehub>
+- **Default branch:** `main`
+- **Showcase directory root:** `public/community-showcases/<kebab-case-id>/`
+- **Downloadable ZIP root (optional):** `public/community-zips/<kebab-case-id>.zip`
+- **Showcase entry registry:** `src/entities/showcase/model/showcase-items.ts`
+- **Issue tracker:** <https://github.com/fmw666/musehub/issues>
+
+If the agent has direct push access to the canonical repository, it may push the feature branch (`cursor/...` or `showcase/...`) to `origin` and open the pull request from `<branch>` against `main`.
+
+If the agent does not have direct push access:
+
+1. Fork <https://github.com/fmw666/musehub> on GitHub under the agent's or user's account.
+2. Push the feature branch to the fork (e.g. `git push -u <fork-remote> showcase/<kebab-case-id>`).
+3. Open the pull request on github.com from `<your-username>:showcase/<kebab-case-id>` into `fmw666/musehub:main`.
+
+Either way, the PR target is always `fmw666/musehub` on the `main` branch.
+
 ## Required Agent Capabilities
 
 - Read remote or local source material requested by the user.
@@ -189,10 +210,37 @@ Compute SHA-256 and byte length from the final file contents.
 
 ## Pull Request Flow
 
-1. Create a branch, for example `showcase/<kebab-case-id>`.
-2. Add the showcase directory and update `src/entities/showcase/model/showcase-items.ts` so Community can list it. Mirror any `environment`, `assets`, and `downloads` fields from `metadata.json` on the showcase entry so the gallery card surfaces them.
-3. Run `npm run validate:showcases`, `npm run lint`, `npm run test`, and `npm run build`.
-4. Commit the files and open a pull request.
+1. Make sure the local repository points at the canonical remote. If the agent is starting from scratch, clone it:
+
+   ```bash
+   git clone https://github.com/fmw666/musehub.git
+   cd musehub
+   ```
+
+   If the agent already has a workspace with a different `origin`, add the canonical repo as a second remote (for example `upstream`) and use that for the push.
+
+2. Create a feature branch, for example:
+
+   ```bash
+   git checkout -b showcase/<kebab-case-id>
+   ```
+
+3. Add the showcase directory under `public/community-showcases/<kebab-case-id>/` and update `src/entities/showcase/model/showcase-items.ts` so Community can list it. Mirror any `environment`, `assets`, and `downloads` fields from `metadata.json` on the showcase entry so the gallery card surfaces them. If the showcase ships a downloadable ZIP, place it at `public/community-zips/<kebab-case-id>.zip` and reference that path from `downloads[].url`.
+
+4. Run all quality gates locally:
+
+   ```bash
+   npm run validate:showcases
+   npm run lint
+   npm run test
+   npm run build
+   ```
+
+5. Commit the files with a descriptive message and push the branch to GitHub:
+   - With direct write access: `git push -u origin showcase/<kebab-case-id>` (against `https://github.com/fmw666/musehub`).
+   - Without direct write access: push to your fork instead, then open the PR from your fork into `fmw666/musehub:main`.
+
+6. Open the pull request at <https://github.com/fmw666/musehub/compare/main...showcase/<kebab-case-id>?expand=1> (substitute the fork owner if you pushed to a fork) targeting the `main` branch.
 
 Suggested PR title:
 
