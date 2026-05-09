@@ -1,0 +1,62 @@
+{
+  "id": "evomap-design-themes",
+  "title": "EvoMap Hero Themes — Halftone Field Variants",
+  "tags": [
+    "webgl",
+    "halftone",
+    "hero",
+    "theme",
+    "shader",
+    "fluid",
+    "three-js"
+  ],
+  "sourceUrl": "https://github.com/evomap/evomap-design-dashboard",
+  "sourcePlatform": "github",
+  "originalFile": "design_online/",
+  "assetPath": "/community-showcases/evomap-design-themes/index.html",
+  "importedAt": "2026-05-09",
+  "environment": "vanilla",
+  "preview": {
+    "width": 1440,
+    "height": 900,
+    "displayWidth": 1080
+  },
+  "assets": {
+    "html": "index.html",
+    "styles": [
+      "styles.css"
+    ],
+    "scripts": [
+      "script.js"
+    ],
+    "media": [
+      "logo-mask.png"
+    ]
+  },
+  "downloads": [
+    {
+      "kind": "vanilla",
+      "label": "Vanilla static (zip)",
+      "url": "/community-zips/evomap-design-themes.zip",
+      "description": "Self-contained static bundle with bundled three.js, halftone + cellular engines, and 8 curated theme variants."
+    }
+  ],
+  "files": {
+    "index.html": {
+      "sha256": "051477a926aa1f324f7d3f4945e3a6aab9647ba7185bb2247fe108f368bda09a",
+      "bytes": 5252
+    },
+    "styles.css": {
+      "sha256": "e3fde9ba9c77e1277c8e3698a5eb75516d0176c928d28f19d9b522f05713db03",
+      "bytes": 19887
+    },
+    "script.js": {
+      "sha256": "e9f0a86ffeeb37d9e7e62fb1a6a7a4375b49c916baed93380587a1f09bb428ac",
+      "bytes": 910037
+    },
+    "logo-mask.png": {
+      "sha256": "fd46cda8d9eecb2a8a35a0a043c45ac6e099fa802e3171c3375a26699dabbbb8",
+      "bytes": 58139
+    }
+  }
+}

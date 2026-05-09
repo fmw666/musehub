@@ -4,3 +4,9 @@ coverage
 tmp
 public/community-showcases/**
 package-lock.json
+# Upstream snapshot of evomap/evomap-design-dashboard. Do not reformat —
+# the dashboard ships in its own style and is rebuilt verbatim into
+# public/community-showcases/evomap-design-themes/ via
+# scripts/build-evomap-design-themes.mjs. Keep diffs against upstream
+# minimal so future re-pulls are clean.
+vendor/

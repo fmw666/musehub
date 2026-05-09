@@ -1,0 +1,45 @@
+// 06. Newspaper Halftone — print, no fluid, larger dots.
+import { baseShape } from "../shared.js";
+
+export default {
+    id: "newspaper",
+    name: "06 · Newspaper",
+    tagline: "Print halftone (no fluid)",
+    shaderConfig: {
+        ...baseShape,
+        dotColor: "#0a0a0a",
+        dotSize: 9,
+        dotMargin: 1,
+        minDotSize: 1.4,
+        gridLayout: "straight",
+        gamma: 1.1,
+        animSpeed: 1,
+        fluidStrength: 0.0,
+        disableFluid: true,
+        dotAlphaMultiplier: 1.4,
+        ringRotationSpeed: 0,
+        breath: 0,
+    },
+    theme: {
+        "--bg-from": "#f5efe6",
+        "--bg-via": "#ede4d3",
+        "--bg-to": "#f5efe6",
+        "--bg-mode": "linear",
+        "--text": "#0a0a0a",
+        "--text-soft": "rgba(10,10,10,0.65)",
+        "--ring": "rgba(10,10,10,0.08)",
+        "--cta-bg": "#0a0a0a",
+        "--cta-fg": "#f5efe6",
+        "--cta-shadow": "none",
+        "--accent": "#0a0a0a",
+        "--font-serif": "1",
+        "--cta-radius": "0px",
+    },
+    copy: {
+        eyebrow: "EST. 2026 · VOL I",
+        lineA: "Map of",
+        lineB: "agent economies.",
+        body: "Set in newsprint. The only static node in a moving network.",
+        cta: "Read the issue",
+    },
+};

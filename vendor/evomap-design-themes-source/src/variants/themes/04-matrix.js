@@ -1,0 +1,45 @@
+// 04. Matrix Green — terminal aesthetic + brick grid.
+import { baseShape } from "../shared.js";
+
+export default {
+    id: "matrix",
+    name: "04 · Matrix",
+    tagline: "Terminal green on black",
+    shaderConfig: {
+        ...baseShape,
+        ringSoftness: 0.008,
+        dotColor: "#00ff88",
+        dotSize: 5,
+        dotMargin: 1,
+        minDotSize: 0.5,
+        gridLayout: "alternating-grid",
+        gamma: 0.7,
+        animSpeed: 6,
+        fluidStrength: 0.12,
+        dotAlphaMultiplier: 1.3,
+        ringRotationSpeed: 0.08,
+        breath: 0.6,
+    },
+    theme: {
+        "--bg-from": "#000000",
+        "--bg-via": "#001a0d",
+        "--bg-to": "#000000",
+        "--bg-mode": "radial",
+        "--text": "#00ff88",
+        "--text-soft": "rgba(0,255,136,0.7)",
+        "--ring": "rgba(0,255,136,0.1)",
+        "--cta-bg": "transparent",
+        "--cta-fg": "#00ff88",
+        "--cta-border": "1px solid #00ff88",
+        "--cta-shadow": "0 0 24px rgba(0,255,136,0.4)",
+        "--accent": "#00ff88",
+        "--font-mono": "1",
+    },
+    copy: {
+        eyebrow: "// NODE.ONLINE",
+        lineA: "Every agent",
+        lineB: "is a coordinate.",
+        body: "Discover by capability, not by URL. Route by intent, not by docs.",
+        cta: "$ evomap up",
+    },
+};

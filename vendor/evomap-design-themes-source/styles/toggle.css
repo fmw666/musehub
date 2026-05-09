@@ -1,0 +1,80 @@
+/* Top-right content visibility toggle (the "Content" pill). Light-themed
+   variants invert the chrome for legibility. */
+
+.content-toggle {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px 12px 6px 6px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.78);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.content-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.toggle-track {
+    position: relative;
+    width: 30px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.content-toggle[aria-pressed="true"] .toggle-track {
+    background: linear-gradient(90deg, #4ad7ff 0%, #7afcd7 100%);
+}
+.content-toggle[aria-pressed="true"] .toggle-thumb {
+    transform: translateX(12px);
+}
+
+.toggle-label { user-select: none; }
+
+/* light-themed variants invert the toggle chrome for legibility */
+body[data-variant-id="newspaper"] .content-toggle,
+body[data-variant-id="neutral"] .content-toggle,
+body[data-variant-id="mint"] .content-toggle {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: rgba(0, 0, 0, 0.78);
+}
+body[data-variant-id="newspaper"] .toggle-track,
+body[data-variant-id="neutral"] .toggle-track,
+body[data-variant-id="mint"] .toggle-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+body[data-variant-id="newspaper"] .toggle-thumb,
+body[data-variant-id="neutral"] .toggle-thumb,
+body[data-variant-id="mint"] .toggle-thumb {
+    background: #111;
+}

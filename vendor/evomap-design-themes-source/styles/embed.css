@@ -1,0 +1,31 @@
+/* Embed mode (`?embed=1`).
+   The MuseHub community wall iframes this showcase into a small card
+   per row. Inside that card we want the hero canvas to read as a
+   self-contained piece of motion art — the variant switcher, top-right
+   content toggle, and bottom stats strip belong to the standalone
+   dashboard, not the gallery preview. main.js sets `data-embed="1"`
+   on <body> when it sees `?embed=1`; everything below is purely
+   visibility / layout cleanup keyed off that one attribute. */
+
+body[data-embed="1"] .switcher,
+body[data-embed="1"] .content-toggle {
+    display: none !important;
+}
+
+/* Stats footer makes the hero feel like a full marketing page; in a
+   gallery card we want the dotted-logo to dominate, not a tiny illegible
+   row of metrics. The CTA pill + hint also become noisy in a 4:3
+   thumbnail, so collapse them along with the stats. */
+body[data-embed="1"] .stats,
+body[data-embed="1"] .cta-pill,
+body[data-embed="1"] .hint {
+    display: none !important;
+}
+
+/* Recenter the remaining title + quote inside the available card area
+   now that the stats footer no longer occupies the bottom band.
+   Without this the copy stays welded to the upper third of the hero
+   stage and the lower half reads as empty space. */
+body[data-embed="1"] .hero-content {
+    justify-content: center;
+}
