@@ -1,0 +1,706 @@
+/*
+ * Bundled stylesheet for the MuseHub `evomap-design-themes` showcase.
+ * Concatenated from the upstream `styles/*.css` files in @import order.
+ * Source: vendor/evomap-design-themes-source/styles/
+ */
+
+/* ── base.css ── */
+/* CSS variables (theme tokens) and global resets.
+   Theme values are swapped at runtime by src/main.js when a variant is
+   selected — every selector elsewhere in this folder reads from these. */
+
+:root {
+    --bg-from: #0a1840;
+    --bg-via: #050a1c;
+    --bg-to: #000000;
+    --bg-mode: radial;
+    --text: #ffffff;
+    --text-soft: rgba(255, 255, 255, 0.72);
+    --ring: rgba(255, 255, 255, 0.06);
+    --cta-bg: #ffffff;
+    --cta-fg: #08122d;
+    --cta-border: none;
+    --cta-shadow: none;
+    --cta-radius: 999px;
+    --accent: #e0f6ff;
+
+    --font-sans: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    --font-mono-stack: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular,
+        Menlo, monospace;
+    --font-serif-stack: "Iowan Old Style", "Apple Garamond", Garamond, "Times New Roman",
+        serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    transition: color 0.4s ease;
+}
+
+body[data-variant-id="newspaper"],
+:root[style*="--font-serif"] body {
+    font-family: var(--font-serif-stack);
+}
+body[data-variant-id="matrix"],
+:root[style*="--font-mono"] body {
+    font-family: var(--font-mono-stack);
+    letter-spacing: 0.02em;
+}
+
+/* ── hero.css ── */
+/* Hero stage layout, background gradient, and the dotted-video canvas mount.
+   The canvas spans the full viewport (inset: 0); the WebGL renderer's actual
+   size is driven by ResizeObserver in createHero.js. */
+
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(
+        ellipse at center,
+        var(--bg-from) 0%,
+        var(--bg-via) 60%,
+        var(--bg-to) 100%
+    );
+    transition: background 0.6s ease;
+}
+
+body[data-variant-id="aurora"] .hero-bg,
+body[data-variant-id="newspaper"] .hero-bg {
+    background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-via) 50%, var(--bg-to) 100%);
+}
+
+body[data-variant-id="sunset"] .hero-bg,
+body[data-variant-id="mint"] .hero-bg,
+body[data-variant-id="neutral"] .hero-bg,
+body[data-variant-id="frost"] .hero-bg {
+    background: linear-gradient(180deg, var(--bg-from) 0%, var(--bg-via) 50%, var(--bg-to) 100%);
+}
+
+/* concentric rings */
+.hero-rings {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+}
+
+.ring {
+    position: absolute;
+    border: 1px solid var(--ring);
+    border-radius: 50%;
+    aspect-ratio: 1;
+    transition: border-color 0.6s ease;
+}
+.ring-1 { width: 292px; }
+.ring-2 { width: 560px; }
+.ring-3 { width: 812px; }
+.ring-4 { width: 1100px; }
+
+/* Dotted-video logo — centred behind the foreground copy.
+   Full-viewport so the halftone fade reads at the screen edges. */
+.hero-dotted-video {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.hero-dotted-video canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ── content.css ── */
+/* Foreground content — centred title + quote + CTA pill + hint + bottom stats.
+   Matches the EvoMap landing layout. The whole .hero-content block becomes
+   pointer-events:none so clicks fall through to the WebGL canvas; only the
+   CTA pill opts back in. */
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+    pointer-events: none;
+}
+
+.title {
+    font-size: clamp(32px, 5.6vw, 84px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 28px;
+    color: var(--text);
+}
+
+.accent {
+    background: linear-gradient(90deg, #4ad7ff 0%, #7afcd7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
+}
+
+/* matrix / newspaper still get to feel different */
+body[data-variant-id="newspaper"] .title {
+    font-style: italic;
+    font-weight: 400;
+}
+body[data-variant-id="matrix"] .title {
+    font-family: var(--font-mono-stack);
+}
+
+.quote {
+    font-size: clamp(13px, 1vw, 15px);
+    line-height: 1.65;
+    color: var(--text-soft);
+    max-width: 540px;
+    margin: 0 auto 36px;
+}
+
+.cta-pill {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    color: #111;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    box-shadow: 0 10px 40px rgba(255, 255, 255, 0.08);
+    margin-bottom: 28px;
+    cursor: pointer;
+}
+
+.cta-pill a {
+    color: #2196f3;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.15s, transform 0.15s;
+}
+.copy-btn:hover { background: rgba(0, 0, 0, 0.06); }
+.copy-btn.copied {
+    transform: scale(1.1);
+    color: #2196f3;
+}
+
+.hint {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.7;
+}
+body[data-variant-id="newspaper"] .hint,
+body[data-variant-id="neutral"] .hint,
+body[data-variant-id="mint"] .hint {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+/* Bottom stats strip (fixed, four columns). pointer-events:none so the WebGL
+   canvas underneath still receives mouse events and updates the fluid splat. */
+.stats {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 48px;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 0 8vw;
+    pointer-events: none;
+    color: var(--text);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-soft);
+    letter-spacing: 0.02em;
+}
+
+.stat-value {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* content-hidden state — fade title / quote / cta / hint / stats out
+   when the top-right toggle is flipped off. */
+.hero-content,
+.stats {
+    transition:
+        opacity 0.45s ease,
+        transform 0.45s ease,
+        filter 0.45s ease;
+}
+
+body.content-hidden .hero-content,
+body.content-hidden .stats {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(4px);
+    pointer-events: none !important;
+}
+
+/* ─── Split-pane layout: only the Cellular variant (12) ───
+   Pulls the title / quote / CTA / hint into a left column, leaving the
+   right half clear for the cellular field. Scoped via [data-variant-id]
+   so all other variants keep their original centred layout. */
+body[data-variant-id="cellular"] .hero-content {
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+    padding: 0 6vw 0 6vw;
+    max-width: 52vw;
+}
+body[data-variant-id="cellular"] .title {
+    font-size: clamp(36px, 5.6vw, 76px);
+    margin-bottom: 24px;
+}
+body[data-variant-id="cellular"] .quote {
+    margin: 0 0 28px 0;
+    text-align: left;
+}
+body[data-variant-id="cellular"] .cta-pill {
+    margin-bottom: 22px;
+}
+body[data-variant-id="cellular"] .hint {
+    text-align: left;
+}
+
+/* Left-third readability mask: covers the leftmost ~33% of the hero with
+   the page bg color, fading from opaque at the left edge to fully
+   transparent before the right edge so the cellular field stays visible. */
+body[data-variant-id="cellular"] .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 33.333%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(
+        to right,
+        #020611 0%,
+        rgba(2, 6, 17, 0.92) 35%,
+        rgba(2, 6, 17, 0.55) 70%,
+        rgba(2, 6, 17, 0) 100%
+    );
+}
+
+@media (max-width: 768px) {
+    /* On narrow screens the field would overlap the text — fall back to
+       the centred layout. The hero engine itself is unaffected so the
+       field still draws full-screen. */
+    body[data-variant-id="cellular"] .hero-content {
+        align-items: center;
+        text-align: center;
+        max-width: 100%;
+        padding: 0 24px;
+    }
+    body[data-variant-id="cellular"] .quote,
+    body[data-variant-id="cellular"] .hint {
+        text-align: center;
+    }
+    body[data-variant-id="cellular"] .hero::after {
+        display: none;
+    }
+}
+
+/* ─── Genesis (theme 13) intro: hide centred copy during the ring →
+       collapse → burst sequence, then reveal each block in a rhythmic
+       stagger right when the logo silhouette finishes forming. ───
+
+   State machine (toggled from main.js):
+     • body.intro-active                       → all copy hidden, no transitions
+     • body.intro-active.intro-text-revealing  → run the staggered reveal
+     • (neither class)                         → normal copy, no animation
+
+   Scoped to data-variant-id="genesis" so a future theme that opts into
+   the intro overlay won't get its copy hidden as a side-effect. */
+body[data-variant-id="genesis"].intro-active .hero-content > .title,
+body[data-variant-id="genesis"].intro-active .hero-content > .quote,
+body[data-variant-id="genesis"].intro-active .hero-content > .cta-pill,
+body[data-variant-id="genesis"].intro-active .hero-content > .hint {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+    /* Disable the global fade transition during the hidden phase — we
+       don't want the items to "fade out" the moment the class is set
+       on first paint; they should be invisible from the start. */
+    transition: none;
+    will-change: opacity, transform, filter;
+}
+
+@keyframes genesisCopyReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(6px);
+    }
+    60% {
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Once the logo is formed, switch from "hidden" to "playing the keyframe"
+   for each of the four copy blocks. forwards keeps the final state so the
+   intro classes can be removed later without the copy disappearing. */
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .title,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .quote,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .cta-pill,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .hint {
+    /* Override the static "hidden" rule above; the keyframe animation
+       sets the visible end-state via forwards. */
+    opacity: 0;
+    animation: genesisCopyReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger: title leads, then quote, then CTA, then hint. The cadence
+   (~180ms) is tuned to feel "rhythmic" rather than mechanical — each
+   block has time to settle before the next starts moving. */
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .title {
+    animation-delay: 0s;
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .quote {
+    animation-delay: 0.18s;
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .cta-pill {
+    animation-delay: 0.42s;
+    /* Slightly different curve for the CTA so it has a small "pop" — the
+       primary call-to-action deserves to feel like the punctuation. */
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .hint {
+    animation-delay: 0.62s;
+}
+
+/* ── toggle.css ── */
+/* Top-right content visibility toggle (the "Content" pill). Light-themed
+   variants invert the chrome for legibility. */
+
+.content-toggle {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 6px 12px 6px 6px;
+    border-radius: 999px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.78);
+    font-family: inherit;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.content-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.toggle-track {
+    position: relative;
+    width: 30px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.content-toggle[aria-pressed="true"] .toggle-track {
+    background: linear-gradient(90deg, #4ad7ff 0%, #7afcd7 100%);
+}
+.content-toggle[aria-pressed="true"] .toggle-thumb {
+    transform: translateX(12px);
+}
+
+.toggle-label { user-select: none; }
+
+/* light-themed variants invert the toggle chrome for legibility */
+body[data-variant-id="newspaper"] .content-toggle,
+body[data-variant-id="neutral"] .content-toggle,
+body[data-variant-id="mint"] .content-toggle {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: rgba(0, 0, 0, 0.78);
+}
+body[data-variant-id="newspaper"] .toggle-track,
+body[data-variant-id="neutral"] .toggle-track,
+body[data-variant-id="mint"] .toggle-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+body[data-variant-id="newspaper"] .toggle-thumb,
+body[data-variant-id="neutral"] .toggle-thumb,
+body[data-variant-id="mint"] .toggle-thumb {
+    background: #111;
+}
+
+/* ── switcher.css ── */
+/* Variant switcher — the floating pill in the bottom-right that opens a
+   panel listing every theme. JS toggles `.is-open` on the wrapper to slide
+   the panel up; everything else here is purely presentation. */
+
+.switcher {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 100;
+    font-family: var(--font-sans);
+    color: #fff;
+}
+
+.switcher-toggle {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(8, 12, 28, 0.85);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.switcher-toggle:hover {
+    background: rgba(8, 12, 28, 0.95);
+    transform: translateY(-1px);
+}
+
+.switcher-toggle-label { font-weight: 500; }
+.switcher-toggle-count {
+    font-family: var(--font-mono-stack);
+    font-size: 11px;
+    opacity: 0.7;
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.switcher-panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    width: 280px;
+    max-height: 0;
+    overflow: hidden;
+    background: rgba(8, 12, 28, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, max-height 0.3s ease;
+}
+
+.switcher.is-open .switcher-panel {
+    max-height: 560px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.switcher-panel-header,
+.switcher-panel-footer {
+    padding: 12px 16px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+.switcher-panel-header { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.switcher-panel-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-transform: none;
+    letter-spacing: 0;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.switcher-panel-hint { color: rgba(255, 255, 255, 0.35); }
+
+.switcher-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+.switcher-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    color: #fff;
+    font-size: 13px;
+}
+
+.switcher-item:hover { background: rgba(255, 255, 255, 0.06); }
+
+.switcher-item.is-active {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.switcher-item-num {
+    font-family: var(--font-mono-stack);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    width: 24px;
+    flex: 0 0 24px;
+}
+
+.switcher-item.is-active .switcher-item-num { color: rgba(255, 255, 255, 0.9); }
+.switcher-item-name { font-weight: 400; }
+.switcher-item.is-active .switcher-item-name { font-weight: 500; }
+
+.switcher-list::-webkit-scrollbar { width: 6px; }
+.switcher-list::-webkit-scrollbar-track { background: transparent; }
+.switcher-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+/* ── responsive.css ── */
+/* Mobile / tablet adjustments. */
+
+@media (max-width: 720px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+        bottom: 24px;
+        gap: 18px 12px;
+    }
+    .quote br { display: none; }
+}
+
+@media (max-width: 640px) {
+    .switcher { right: 12px; bottom: 12px; }
+    .switcher-panel { width: calc(100vw - 24px); right: 0; }
+    .content-toggle { top: 14px; right: 14px; }
+}
+
+/* ── embed.css ── */
+/* Embed mode (`?embed=1`).
+   The MuseHub community wall iframes this showcase into a small card
+   per row. Inside that card we want the hero canvas to read as a
+   self-contained piece of motion art — the variant switcher, top-right
+   content toggle, and bottom stats strip belong to the standalone
+   dashboard, not the gallery preview. main.js sets `data-embed="1"`
+   on <body> when it sees `?embed=1`; everything below is purely
+   visibility / layout cleanup keyed off that one attribute. */
+
+body[data-embed="1"] .switcher,
+body[data-embed="1"] .content-toggle {
+    display: none !important;
+}
+
+/* Stats footer makes the hero feel like a full marketing page; in a
+   gallery card we want the dotted-logo to dominate, not a tiny illegible
+   row of metrics. The CTA pill + hint also become noisy in a 4:3
+   thumbnail, so collapse them along with the stats. */
+body[data-embed="1"] .stats,
+body[data-embed="1"] .cta-pill,
+body[data-embed="1"] .hint {
+    display: none !important;
+}
+
+/* Recenter the remaining title + quote inside the available card area
+   now that the stats footer no longer occupies the bottom band.
+   Without this the copy stays welded to the upper third of the hero
+   stage and the lower half reads as empty space. */
+body[data-embed="1"] .hero-content {
+    justify-content: center;
+}
+
