@@ -86,3 +86,25 @@ npm run build
 ```
 
 Use `npm run typecheck` for a fast TypeScript-only check. Tests use Vitest and Testing Library. Linting uses ESLint flat config with TypeScript-aware rules. Formatting uses Prettier.
+
+## Cursor Cloud specific instructions
+
+This is a frontend-only React + Vite + TypeScript SPA with no backend or external service dependencies. Node.js v22+ and npm are the only system requirements.
+
+### Running the dev server
+
+```bash
+npm run dev
+```
+
+Vite starts on `http://localhost:5173` by default with HMR enabled. No environment variables or secrets are required.
+
+### Quality gate commands
+
+See the "Quality Gates" section above. The full CI pipeline is `npm run ci`, which chains: validate:showcases → lint → guard:design → guard:motion → test → build → guard:perf.
+
+### Notes
+
+- `npm run format:check` may report pre-existing formatting issues in files outside `src/`. These do not block lint or build.
+- The `npm run build` script runs `tsc --noEmit` before `vite build`, so a successful build implies type-safety.
+- No database, Docker, or API keys are needed — all data is static/mocked in the frontend.
