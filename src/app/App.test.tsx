@@ -68,11 +68,20 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/harnesskit agent cards high fidelity demo/i)).toBeInTheDocument();
     expect(screen.getByText(/antimetal hero — 1:1 replica/i)).toBeInTheDocument();
-    expect(screen.getAllByTitle(/preview/i)).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /open in new window/i })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /download code zip/i })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: /view source project/i })).toHaveLength(2);
+    expect(screen.getByText(/evomap theme · aurora/i)).toBeInTheDocument();
+    expect(screen.getByText(/evomap theme · cellular field/i)).toBeInTheDocument();
+    /*
+     * Two original showcases (`harnesskit-agent-cards`,
+     * `antimetal-hero-replica`) plus six EvoMap design-dashboard
+     * variants curated in `showcase-items.ts`. Update both this
+     * assertion and the count assertions below if the showcase list
+     * gains or loses an entry.
+     */
+    expect(screen.getAllByTitle(/preview/i)).toHaveLength(8);
+    expect(screen.getAllByRole("button", { name: /open in new window/i })).toHaveLength(8);
+    expect(screen.getAllByRole("button", { name: /copy prompt/i })).toHaveLength(8);
+    expect(screen.getAllByRole("button", { name: /download code zip/i })).toHaveLength(8);
+    expect(screen.getAllByRole("button", { name: /view source project/i })).toHaveLength(8);
     expect(screen.getByRole("searchbox", { name: /search by title or tag/i })).toBeInTheDocument();
     expect(container.querySelector(".dissolve-transition-layer")).toBeInTheDocument();
     expect(container.querySelector(".is-rail-revealing")).toBeInTheDocument();
