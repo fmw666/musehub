@@ -1,0 +1,292 @@
+/* Foreground content — centred title + quote + CTA pill + hint + bottom stats.
+   Matches the EvoMap landing layout. The whole .hero-content block becomes
+   pointer-events:none so clicks fall through to the WebGL canvas; only the
+   CTA pill opts back in. */
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+    pointer-events: none;
+}
+
+.title {
+    font-size: clamp(32px, 5.6vw, 84px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 28px;
+    color: var(--text);
+}
+
+.accent {
+    background: linear-gradient(90deg, #4ad7ff 0%, #7afcd7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: italic;
+}
+
+/* matrix / newspaper still get to feel different */
+body[data-variant-id="newspaper"] .title {
+    font-style: italic;
+    font-weight: 400;
+}
+body[data-variant-id="matrix"] .title {
+    font-family: var(--font-mono-stack);
+}
+
+.quote {
+    font-size: clamp(13px, 1vw, 15px);
+    line-height: 1.65;
+    color: var(--text-soft);
+    max-width: 540px;
+    margin: 0 auto 36px;
+}
+
+.cta-pill {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    color: #111;
+    padding: 14px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    box-shadow: 0 10px 40px rgba(255, 255, 255, 0.08);
+    margin-bottom: 28px;
+    cursor: pointer;
+}
+
+.cta-pill a {
+    color: #2196f3;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.15s, transform 0.15s;
+}
+.copy-btn:hover { background: rgba(0, 0, 0, 0.06); }
+.copy-btn.copied {
+    transform: scale(1.1);
+    color: #2196f3;
+}
+
+.hint {
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.7;
+}
+body[data-variant-id="newspaper"] .hint,
+body[data-variant-id="neutral"] .hint,
+body[data-variant-id="mint"] .hint {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+/* Bottom stats strip (fixed, four columns). pointer-events:none so the WebGL
+   canvas underneath still receives mouse events and updates the fluid splat. */
+.stats {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 48px;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 0 8vw;
+    pointer-events: none;
+    color: var(--text);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-soft);
+    letter-spacing: 0.02em;
+}
+
+.stat-value {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+/* content-hidden state — fade title / quote / cta / hint / stats out
+   when the top-right toggle is flipped off. */
+.hero-content,
+.stats {
+    transition:
+        opacity 0.45s ease,
+        transform 0.45s ease,
+        filter 0.45s ease;
+}
+
+body.content-hidden .hero-content,
+body.content-hidden .stats {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(4px);
+    pointer-events: none !important;
+}
+
+/* ─── Split-pane layout: only the Cellular variant (12) ───
+   Pulls the title / quote / CTA / hint into a left column, leaving the
+   right half clear for the cellular field. Scoped via [data-variant-id]
+   so all other variants keep their original centred layout. */
+body[data-variant-id="cellular"] .hero-content {
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+    padding: 0 6vw 0 6vw;
+    max-width: 52vw;
+}
+body[data-variant-id="cellular"] .title {
+    font-size: clamp(36px, 5.6vw, 76px);
+    margin-bottom: 24px;
+}
+body[data-variant-id="cellular"] .quote {
+    margin: 0 0 28px 0;
+    text-align: left;
+}
+body[data-variant-id="cellular"] .cta-pill {
+    margin-bottom: 22px;
+}
+body[data-variant-id="cellular"] .hint {
+    text-align: left;
+}
+
+/* Left-third readability mask: covers the leftmost ~33% of the hero with
+   the page bg color, fading from opaque at the left edge to fully
+   transparent before the right edge so the cellular field stays visible. */
+body[data-variant-id="cellular"] .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 33.333%;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(
+        to right,
+        #020611 0%,
+        rgba(2, 6, 17, 0.92) 35%,
+        rgba(2, 6, 17, 0.55) 70%,
+        rgba(2, 6, 17, 0) 100%
+    );
+}
+
+@media (max-width: 768px) {
+    /* On narrow screens the field would overlap the text — fall back to
+       the centred layout. The hero engine itself is unaffected so the
+       field still draws full-screen. */
+    body[data-variant-id="cellular"] .hero-content {
+        align-items: center;
+        text-align: center;
+        max-width: 100%;
+        padding: 0 24px;
+    }
+    body[data-variant-id="cellular"] .quote,
+    body[data-variant-id="cellular"] .hint {
+        text-align: center;
+    }
+    body[data-variant-id="cellular"] .hero::after {
+        display: none;
+    }
+}
+
+/* ─── Genesis (theme 13) intro: hide centred copy during the ring →
+       collapse → burst sequence, then reveal each block in a rhythmic
+       stagger right when the logo silhouette finishes forming. ───
+
+   State machine (toggled from main.js):
+     • body.intro-active                       → all copy hidden, no transitions
+     • body.intro-active.intro-text-revealing  → run the staggered reveal
+     • (neither class)                         → normal copy, no animation
+
+   Scoped to data-variant-id="genesis" so a future theme that opts into
+   the intro overlay won't get its copy hidden as a side-effect. */
+body[data-variant-id="genesis"].intro-active .hero-content > .title,
+body[data-variant-id="genesis"].intro-active .hero-content > .quote,
+body[data-variant-id="genesis"].intro-active .hero-content > .cta-pill,
+body[data-variant-id="genesis"].intro-active .hero-content > .hint {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+    /* Disable the global fade transition during the hidden phase — we
+       don't want the items to "fade out" the moment the class is set
+       on first paint; they should be invisible from the start. */
+    transition: none;
+    will-change: opacity, transform, filter;
+}
+
+@keyframes genesisCopyReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(6px);
+    }
+    60% {
+        filter: blur(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Once the logo is formed, switch from "hidden" to "playing the keyframe"
+   for each of the four copy blocks. forwards keeps the final state so the
+   intro classes can be removed later without the copy disappearing. */
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .title,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .quote,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .cta-pill,
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .hint {
+    /* Override the static "hidden" rule above; the keyframe animation
+       sets the visible end-state via forwards. */
+    opacity: 0;
+    animation: genesisCopyReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger: title leads, then quote, then CTA, then hint. The cadence
+   (~180ms) is tuned to feel "rhythmic" rather than mechanical — each
+   block has time to settle before the next starts moving. */
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .title {
+    animation-delay: 0s;
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .quote {
+    animation-delay: 0.18s;
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .cta-pill {
+    animation-delay: 0.42s;
+    /* Slightly different curve for the CTA so it has a small "pop" — the
+       primary call-to-action deserves to feel like the punctuation. */
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+body[data-variant-id="genesis"].intro-active.intro-text-revealing .hero-content > .hint {
+    animation-delay: 0.62s;
+}

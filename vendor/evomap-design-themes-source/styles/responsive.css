@@ -1,0 +1,16 @@
+/* Mobile / tablet adjustments. */
+
+@media (max-width: 720px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+        bottom: 24px;
+        gap: 18px 12px;
+    }
+    .quote br { display: none; }
+}
+
+@media (max-width: 640px) {
+    .switcher { right: 12px; bottom: 12px; }
+    .switcher-panel { width: calc(100vw - 24px); right: 0; }
+    .content-toggle { top: 14px; right: 14px; }
+}

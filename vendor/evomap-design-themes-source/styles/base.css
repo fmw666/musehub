@@ -1,0 +1,54 @@
+/* CSS variables (theme tokens) and global resets.
+   Theme values are swapped at runtime by src/main.js when a variant is
+   selected — every selector elsewhere in this folder reads from these. */
+
+:root {
+    --bg-from: #0a1840;
+    --bg-via: #050a1c;
+    --bg-to: #000000;
+    --bg-mode: radial;
+    --text: #ffffff;
+    --text-soft: rgba(255, 255, 255, 0.72);
+    --ring: rgba(255, 255, 255, 0.06);
+    --cta-bg: #ffffff;
+    --cta-fg: #08122d;
+    --cta-border: none;
+    --cta-shadow: none;
+    --cta-radius: 999px;
+    --accent: #e0f6ff;
+
+    --font-sans: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    --font-mono-stack: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular,
+        Menlo, monospace;
+    --font-serif-stack: "Iowan Old Style", "Apple Garamond", Garamond, "Times New Roman",
+        serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    transition: color 0.4s ease;
+}
+
+body[data-variant-id="newspaper"],
+:root[style*="--font-serif"] body {
+    font-family: var(--font-serif-stack);
+}
+body[data-variant-id="matrix"],
+:root[style*="--font-mono"] body {
+    font-family: var(--font-mono-stack);
+    letter-spacing: 0.02em;
+}

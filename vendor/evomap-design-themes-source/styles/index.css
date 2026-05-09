@@ -1,0 +1,11 @@
+/* Stylesheet entry — concatenates all sub-modules.
+   Keep this file in import-order: tokens/resets first, then layout layers,
+   widgets, then media queries last so cascade overrides land correctly. */
+
+@import "./base.css";
+@import "./hero.css";
+@import "./content.css";
+@import "./toggle.css";
+@import "./switcher.css";
+@import "./responsive.css";
+@import "./embed.css";
